@@ -1,53 +1,82 @@
-# Project Charter
+# `01_PROJECT_CHARTER.md`
 
-## Working title
+## Project Charter
 
-**Higgs Event Lab: Reproducible Signal-versus-Background Classification and Model Trade-off Workbench**
+### Working Title
 
-## Problem statement
+**Higgs Event Lab:** *Reproducible Signal-versus-Background Classification and Model Trade-off Workbench*
 
-The course project asks us to classify simulated particle-collision events as Higgs-associated signal or background. A model score alone is not enough for a defensible project: we need a fair comparison across feature groups and model families, transparent metrics, reproducible data handling, and an explanation of which model is useful under an explicitly stated evaluation objective.
+---
 
-## Primary research question
+### Problem Statement
 
-How do low-level kinematic features, seven expert-derived high-level features, and their combination affect the performance and compute cost of classical ML models versus a compact neural network on a documented HIGGS sample?
+The course project requires classifying simulated particle-collision events as signal or background. In the HIGGS benchmark, the signal represents a hypothetical exotic-Higgs process and the background represents a top-quark process with matching final-state particles (Baldi et al., 2014; see `docs/08_PHYSICS_BACKGROUND.md`, Section 5).
 
-## Product question
+> **Note:** This project is **not** a re-creation of the 2012 ATLAS/CMS Higgs boson discovery.
 
-Can we provide an easy-to-use research workbench that loads a completed experiment's saved results, compares model/feature choices, explains trade-offs and exports a reproducible snapshot?
+A standalone model score is insufficient for a defensible analysis. This project focuses on establishing a fair comparison across feature groups and model families, transparent evaluation metrics, reproducible data pipelines, and a rationale for model selection based on explicitly declared evaluation objectives.
 
-## Intended users
+---
 
-Course assessors, students learning ML for high-energy physics, and researchers doing exploratory benchmark comparisons. The prototype is educational/research software, not a detector control system or an approved physics analysis tool.
+### Core Questions
 
-## Required scope from the course brief
+* **Primary Research Question:**
+How do low-level kinematic features, seven expert-derived high-level features, and their combination affect performance and compute cost across classical ML models versus a compact neural network on a documented HIGGS sample?
+* **Product Question:**
+Can we provide an easy-to-use research workbench that loads saved experiment artifacts, compares model/feature trade-offs, and exports reproducible execution snapshots?
 
-- UCI HIGGS simulated event-classification dataset.
-- Compare 21 low-level inputs, 7 high-level expert-derived inputs and all 28 inputs.
-- Logistic Regression and XGBoost classical baselines.
-- A compact MLP with batch normalization and dropout.
-- Same held-out evaluation data for fair comparisons; fit preprocessing on training data only.
-- Report ROC-AUC, PR-AUC / average precision, calibration and training time.
-- Begin with a documented 250,000–1,000,000 event subset; do not start with all 11 million events.
+---
 
-## Planned extension, not a required claim
+### Target Audience
 
-Choose an operating threshold on validation data for a declared target signal efficiency; report the corresponding background rejection on test data. Add uncertainty estimates for the main model comparison only when runtime permits. This supports an interpretable trade-off but does not equal discovery significance.
+Course assessors, students learning ML applications in high-energy physics (HEP), and researchers performing exploratory benchmark comparisons.
 
-## Non-goals
+> **Disclaimer:** This prototype is educational/research software — it is not a detector control system or an approved physics analysis tool.
 
-- Proving that the Higgs boson exists; it has already been observed experimentally.
-- Simulating the Higgs field or all particle masses.
-- Claiming real-data discovery, production detector performance, real-world calibrated probabilities or statistical significance from the benchmark alone.
-- Training on the entire dataset before smaller-sample correctness is established.
-- Building a general-purpose model-training platform before the required benchmark works.
+---
 
-## Success criteria
+### Scope Breakdown
 
-1. Data provenance, schema, row count, feature groups, split and seed are recorded.
-2. Baselines and MLP are evaluated on the same untouched held-out set.
-3. Preprocessing and threshold selection do not use test data.
-4. Results are saved as machine-readable artifacts and used consistently by the report and dashboard.
-5. A new teammate can reproduce the starter run from the documentation.
-6. The dashboard never invents results when no valid experiment artifacts exist.
-7. Mid-semester and end-semester claims are scoped to what has actually been run.
+#### Required Scope (Course Brief)
+
+* **Dataset:** UCI HIGGS simulated event-classification dataset.
+* **Feature Sets:** Compare performance across:
+1. 21 low-level kinematic inputs
+2. 7 high-level expert-derived inputs
+3. All 28 inputs combined
+
+
+* **Models:**
+* **Classical Baselines:** Logistic Regression, XGBoost
+* **Deep Learning:** Compact Multi-Layer Perceptron (MLP) with Batch Normalization and Dropout
+
+
+* **Evaluation Protocol:** Use a fixed held-out evaluation dataset; fit all preprocessing transforms exclusively on training data.
+* **Metrics:** Report ROC-AUC, PR-AUC / Average Precision, model calibration, and training time.
+* **Dataset Scaling:** Begin with a documented **250,000–1,000,000 event subset** (do not process the full 11-million-row dataset initially).
+
+#### Planned Extension *(Optional / Secondary)*
+
+Select an operating decision threshold on validation data for a declared target signal efficiency, then report the corresponding background rejection on test data. Add uncertainty estimates for primary model comparisons if runtime budget allows. *(Supports interpretable trade-off analysis without claiming statistical discovery significance.)*
+
+---
+
+### Non-Goals
+
+* ❌ **Experimental Validation:** Proving the existence of the Higgs boson (already experimentally verified).
+* ❌ **Full Simulation:** Simulating the full Higgs field or fundamental particle mass generation.
+* ❌ **Real-World Claims:** Claiming real-data discovery, production detector performance, or statistically calibrated physical probabilities.
+* ❌ **Premature Scale:** Training on all 11 million events before small-sample correctness is verified.
+* ❌ **Over-engineering:** Building a generic model-training framework before the baseline HIGGS benchmark is fully operational.
+
+---
+
+### Success Criteria
+
+* [ ] Data provenance, schema, row count, feature groupings, split definitions, and random seeds are fully recorded.
+* [ ] All baselines and neural networks are evaluated on the identical, untouched held-out test split.
+* [ ] Data preprocessing and operating threshold selections strictly exclude test data.
+* [ ] Metrics and outputs are persisted as machine-readable artifacts and used consistently by reports and dashboards.
+* [ ] A new team member can successfully reproduce the baseline pipeline using the project documentation.
+* [ ] The interactive dashboard displays only verified experiment artifacts and never fabricates results.
+* [ ] Project milestones (mid-semester / end-semester) report exclusively on completed execution runs.
