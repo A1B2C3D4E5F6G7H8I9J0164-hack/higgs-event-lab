@@ -1,0 +1,30 @@
+file_column_index,model_input_index,name,group,kind,description
+0,,class_label,target,label,"1 = signal, 0 = background (UCI). Never include in the feature matrix."
+1,0,lepton_pt,low_level,kinematic,Transverse momentum of the charged lepton
+2,1,lepton_eta,low_level,kinematic,Pseudorapidity of the charged lepton
+3,2,lepton_phi,low_level,kinematic,Azimuthal angle of the charged lepton
+4,3,missing_energy_magnitude,low_level,kinematic,Magnitude of the missing transverse energy (stands in for the undetected neutrino)
+5,4,missing_energy_phi,low_level,kinematic,Azimuthal angle of the missing transverse energy
+6,5,jet_1_pt,low_level,kinematic,Transverse momentum of jet 1
+7,6,jet_1_eta,low_level,kinematic,Pseudorapidity of jet 1
+8,7,jet_1_phi,low_level,kinematic,Azimuthal angle of jet 1
+9,8,jet_1_btag,low_level,kinematic,b-tagging value of jet 1
+10,9,jet_2_pt,low_level,kinematic,Transverse momentum of jet 2
+11,10,jet_2_eta,low_level,kinematic,Pseudorapidity of jet 2
+12,11,jet_2_phi,low_level,kinematic,Azimuthal angle of jet 2
+13,12,jet_2_btag,low_level,kinematic,b-tagging value of jet 2
+14,13,jet_3_pt,low_level,kinematic,Transverse momentum of jet 3
+15,14,jet_3_eta,low_level,kinematic,Pseudorapidity of jet 3
+16,15,jet_3_phi,low_level,kinematic,Azimuthal angle of jet 3
+17,16,jet_3_btag,low_level,kinematic,b-tagging value of jet 3
+18,17,jet_4_pt,low_level,kinematic,Transverse momentum of jet 4
+19,18,jet_4_eta,low_level,kinematic,Pseudorapidity of jet 4
+20,19,jet_4_phi,low_level,kinematic,Azimuthal angle of jet 4
+21,20,jet_4_btag,low_level,kinematic,b-tagging value of jet 4
+22,21,m_jj,high_level,derived,Invariant mass of a two-jet combination
+23,22,m_jjj,high_level,derived,Invariant mass of a three-jet combination
+24,23,m_lv,high_level,derived,Invariant mass of the lepton plus neutrino (missing energy) system
+25,24,m_jlv,high_level,derived,Invariant mass of a jet plus lepton plus neutrino system
+26,25,m_bb,high_level,derived,Invariant mass of the two b-jet system
+27,26,m_wbb,high_level,derived,Invariant mass of the W candidate plus two b-jets
+28,27,m_wwbb,high_level,derived,Invariant mass of the W W b b system
