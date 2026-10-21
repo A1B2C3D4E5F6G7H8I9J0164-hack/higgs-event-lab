@@ -1,51 +1,70 @@
-# Start Here — Team Leader Setup
+# `00_START_HERE.md`
 
-## Purpose of this repository
+## Start Here — Team Leader Setup
 
-This is the shared home for a five-person course project. It starts with a clear scientific scope, a folder structure, ownership boundaries and a review process. Model implementation follows only after the foundation is agreed.
+### Purpose of This Repository
 
-## Team leader checklist for Krishna
+This repository is the shared home for a five-person course project. It establishes a clear scientific scope, folder structure, ownership boundaries, and review process before model implementation begins.
 
-### One-time repository setup
+---
 
-1. Create a new **private** repository named `higgs-event-lab` under the intended GitHub account. Keep it separate from the existing `HiggsLens` repository.
-2. Upload the files from this starter scaffold as the initial commit.
-3. Add Saumya Mishra, Aditya Rana, Rachit Gupta and Ronit Singh as collaborators using their exact GitHub usernames. Collect the usernames rather than guessing.
-4. Keep `main` as the stable branch. Ask everyone to work on issue branches and merge via pull requests.
-5. Create labels: `area:docs`, `area:data`, `area:classical-ml`, `area:deep-learning`, `area:app`, `area:deployment`, `type:bug`, `type:feature`, `type:research`, `priority:p0`, `priority:p1`, `priority:p2`, `stage:midsem`, `stage:endsem`.
-6. Create a GitHub Project board with columns `Backlog`, `Ready`, `In Progress`, `In Review`, `Blocked`, `Done`.
-7. Assign owners using `team/TASK_BACKLOG.csv`; add deadlines after the course's actual dates are confirmed.
-8. Agree on a single artifact/output schema before separate model and app modules are developed.
+### Team Leader Checklist for Krishna
 
-### What not to do yet
+#### One-Time Repository Setup
 
-- Do not upload the HIGGS dataset or large prediction files.
-- Do not start five incompatible notebooks or separate apps.
-- Do not add fabricated model scores to screenshots or README badges.
-- Do not attempt full-dataset training before the starter experiment is reliable.
-- Do not deploy until the test suite, data-source display and limitation statement are in place.
+* **Create Repository:** Create a new private repository named `higgs-event-lab` under the intended GitHub account (keep separate from the existing `HiggsLens` repository).
+* **Initial Commit:** Upload the files from this starter scaffold as the initial commit.
+* **Collaborator Access:** Add Saumya Mishra, Aditya Rana, Rachit Gupta, and Ronit Singh as collaborators using their exact GitHub usernames (collect usernames rather than guessing).
+* **Branch Policy:** Maintain `main` as the stable branch. Require all work to occur on issue branches and merge via pull requests.
+* **Labels:** Create labels according to `docs/04_GITHUB_WORKFLOW.md`:
+* **Areas:** `area:docs`, `area:data`, `area:classical-ml`, `area:deep-learning`, `area:evaluation`, `area:app`, `area:deployment`
+* **Types:** `type:bug`, `type:feature`, `type:research`
+* **Priorities:** `priority:p0`, `priority:p1`, `priority:p2`
+* **Stages:** `stage:foundation`, `stage:midsem`, `stage:endsem`
 
-## First team meeting agenda (30–40 minutes)
 
-1. Agree on project goal and scientific boundary (5 min).
-2. Read each folder's purpose and confirm ownership (10 min).
-3. Agree on repo name, visibility, branch/PR rules and issue board (5 min).
-4. Confirm whether mid-semester requires a proposal, demo, notebook or all three (5 min).
-5. Create the first five to eight issues and define done criteria (10 min).
-6. Record decisions/blockers and next check-in (5 min).
+* **Project Board:** Set up a GitHub Project board with six status columns:
+`Backlog` | `Ready` | `In Progress` | `In Review` | `Blocked` | `Done`
+* **Task Backlog:** Assign owners using `team/TASK_BACKLOG.csv` and populate deadlines once confirmed with course dates.
+* **Schema Agreement:** Agree on a single artifact/output schema prior to separate model and app module development.
 
-## Definition of done for this setup phase
+---
 
-- A new repository exists at the chosen owner/name and the initial scaffold is committed.
-- All five members have collaborator access.
-- Every folder contract and team owner is clear.
-- No dataset or secret is tracked.
-- A starter issue backlog and meeting notes exist.
-- Team members can clone the repo and open a small PR.
+### What Not to Do Yet
 
-## Suggested local commands after the empty GitHub repository is created
+* ❌ **No Data Tracking:** Do not upload the HIGGS dataset or large prediction files.
+* ❌ **No Fragmented Workflows:** Do not start five incompatible notebooks or separate apps.
+* ❌ **No Fabricated Metrics:** Do not add fake model scores to screenshots or README badges.
+* ❌ **No Premature Scale:** Do not attempt full-dataset training before the starter experiment is reliable.
+* ❌ **No Early Deployment:** Do not deploy until the test suite, data-source display, and limitation statements are complete.
 
-Unzip the starter, open a terminal in the extracted folder, then run:
+---
+
+### First Team Meeting Agenda (30–40 Minutes)
+
+1. **Goal & Scope (5 min):** Agree on project goal and scientific boundaries.
+2. **Folder Contracts (10 min):** Review folder purposes and confirm module ownership.
+3. **Workflow Rules (5 min):** Agree on repo name, visibility, branch/PR rules, and project board.
+4. **Deliverable Clarification (5 min):** Confirm mid-semester requirements (proposal, demo, notebook, or all three).
+5. **Issue Creation (10 min):** Draft the first 5–8 issues and define clear "Definition of Done" criteria.
+6. **Wrap-Up (5 min):** Record key decisions, blockers, and set the next check-in time.
+
+---
+
+### Definition of Done for Setup Phase
+
+* [ ] A new repository exists at `<OWNER>/higgs-event-lab` with the initial scaffold committed.
+* [ ] All five team members have accepted collaborator invites.
+* [ ] Folder contracts and team ownership are clear to all members.
+* [ ] No raw datasets or secrets are tracked in git history.
+* [ ] Starter issue backlog and initial meeting notes are created.
+* [ ] Team members can successfully clone the repo and open a test PR.
+
+---
+
+### Suggested Local Setup Commands
+
+Once the empty GitHub repository is created, extract the starter files, open your terminal in the root directory, and execute:
 
 ```bash
 git init
@@ -54,6 +73,7 @@ git commit -m "chore: initialize Higgs Event Lab project scaffold"
 git branch -M main
 git remote add origin https://github.com/<OWNER>/higgs-event-lab.git
 git push -u origin main
+
 ```
 
-Replace `<OWNER>` with the intended GitHub username. If the GitHub repository was initialized with its own README or license, reconcile the histories rather than overwriting blindly.
+> **Note:** Replace `<OWNER>` with the target GitHub username. If the GitHub repository was initialized with a default `README` or license, reconcile git histories prior to pushing.
