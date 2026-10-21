@@ -1,0 +1,188 @@
+# QA and Test Plan
+
+> **Owner:** Saumya Mishra (END-04, MID-07). **Companion files:** `team/BUG_TRACKER.md`, `team/CHANGELOG.md`, `tests/`.
+> **Principle:** Saumya coordinates and verifies; module owners write and fix the tests and code for their own modules (`team/TEAM_CHARTER.md`).
+> **Honest status:** only documentation, repository hygiene, the feature dictionary and the notebook style can be tested today. Sections 3 and 4 are ready-to-use checklists for teammate code that does not exist yet.
+
+---
+
+## 1. Test levels
+
+| Level | What | Where | Run by |
+|---|---|---|---|
+| L0 Repository hygiene | Files exist, no data or secrets, links work, no unsourced metrics | `tests/unit/test_repo_hygiene.py` | Everyone before each PR |
+| L1 Schema | Feature dictionary and column order | `tests/unit/test_feature_dictionary.py` | Everyone |
+| L2 Notebook readability | Markdown explanations, comment-free, short code cells | `tests/unit/test_notebook_style.py` | Everyone |
+| L3 Raw data | 29 columns, labels, no NaN, class mix | `tests/integration/smoke_check_raw_file.py` | Aditya, Saumya (on every data change) |
+| L4 Unit tests of project code | Loader, features, splits, metrics, artifacts | `tests/unit/` (added by owners) | Module owners |
+| L5 Integration | Tiny synthetic data through the whole flow and into the dashboard | `tests/integration/` | Krishna, Saumya |
+| L6 Reproducibility review | Fresh clone, follow the setup guide, compare outputs | manual (section 5) | Saumya |
+| L7 Release gate | Final checks before deployment | manual (section 7) | Saumya signs, Krishna decides |
+
+Synthetic data are for testing code paths only and must never be presented as HIGGS results (`tests/README.md`).
+
+---
+
+## 2. How to run what exists
+
+```bash
+python -m pytest tests/unit -q
+python tests/integration/smoke_check_raw_file.py data/raw/HIGGS.csv.gz --rows 100000
+```
+
+### 2.1 Test log (real results; update at every QA run)
+
+| Date | Command | Result | Notes |
+|---|---|---|---|
+| 2026-10-21 | `pytest tests/unit` on the original uploaded scaffold plus new files | Two failures found and fixed: placeholder citation author, changelog layout | See BUG-004 |
+| 2026-10-21 | `pytest tests/unit` after fixes | **26 passed, 0 failed** | Final sweep of the delivered repository |
+| 2026-10-21 | Negative controls: copy of the repo with injected faults (a fake ROC-AUC claim in a report, an empty `HIGGS.csv.gz`, a fake API key in `app/config.py`, a `#` comment in a notebook code cell) | 4 tests failed as intended, 22 passed | Shows the guards detect what they are meant to detect |
+| 2026-10-21 | `smoke_check_raw_file.py` on **synthetic** files (a valid one; files with a wrong column count, an invalid label, an empty cell, NaN, infinity, a text value, and a header row) | Valid file passed; every faulty file failed with the correct message | Proves the checker works. **It was not run on the real HIGGS file, which was unavailable in the sandbox. Run it on the real file and paste the output here.** |
+| _pending_ | `smoke_check_raw_file.py` on the real `HIGGS.csv.gz` | _not yet run_ | Aditya or Saumya |
+
+---
+
+## 3. Checklists for reviewing teammates' contributions
+
+Use the matching list when a PR from that person arrives. Tick each item, paste evidence (command and real output) in the PR, and raise a bug for any failure. Where an item needs code to exist, it is marked *(when code lands)*.
+
+### 3.1 Aditya Rana: data pipeline, EDA, classical ML (MID-01, 02, 03; END-01)
+
+- [ ] Data source is the official UCI URL and the PR records retrieval date, file name and checksum.
+- [ ] Loader reads in chunks; it never loads all 11 million rows to demonstrate the pipeline.
+- [ ] Loader output has exactly 28 feature columns whose names and order equal `docs/feature_dictionary.csv`; label is a separate vector with values 0 and 1 only.
+- [ ] Off-by-one check: `low_level` is 21 columns, `high_level` is 7, `all` is 28.
+- [ ] Sampling rule and seed are written down; class fraction of the sample is printed.
+- [ ] Split happens before any scaler or imputer is fitted; scaler fitted on train only (test with a toy set).
+- [ ] Same split indices are saved and reused by every model.
+- [ ] Logistic Regression and XGBoost settings (including trees, depth, learning rate, early stopping) are recorded; tuning used validation only.
+- [ ] Metrics: ROC-AUC, average precision, Brier or calibration, training time, all read from a saved file, not typed by hand.
+- [ ] EDA figures are generated from the actual sample and have axis labels, units where relevant, and a one-line interpretation in Markdown.
+- [ ] EDA confirms or corrects the open assumptions in `docs/09` section 4 (BUG-014) and BUG-006.
+- [ ] Unit tests exist for: unexpected columns, label leakage, wrong row counts.
+- [ ] No data, `.parquet`, `.pkl` or large outputs staged.
+
+### 3.2 Rachit Gupta: MLP and reproducibility (MID-04, END-02)
+
+- [ ] Uses the same split indices, feature groups and metrics as the classical models.
+- [ ] Architecture includes batch normalization and dropout, and is "compact" (record layer sizes and parameter count).
+- [ ] `model.eval()` and `torch.no_grad()` are used for validation and test inference (watch item W-07).
+- [ ] Preprocessing fitted on train only; early stopping and hyperparameters selected on validation only.
+- [ ] Seeds set for Python, NumPy and PyTorch; device, epochs, batch size, learning rate, early-stopping patience, training time recorded.
+- [ ] Re-running with the same seed reproduces the metrics within a stated tolerance (CPU) or the nondeterminism is documented (GPU).
+- [ ] Predictions saved in the agreed artifact schema.
+- [ ] Tests for tensor shapes and target dtype/handling.
+- [ ] Comparison to classical models uses the same test rows and reports spread over seeds where available.
+
+### 3.3 Krishna: protocol, evaluation, artifacts, integration, deployment (MID-05, END-03, END-06, END-07)
+
+- [ ] One documented artifact schema exists, accepted by Aditya, Rachit and Ronit before dashboard work (MID-05).
+- [ ] Split, metric and seed protocol is written as an ADR and matches `docs/10` (resolves BUG-011).
+- [ ] Metric functions have unit tests including edge cases (single class, ties, all-one predictions).
+- [ ] Operating threshold is computed from validation data only; test results are reported at the frozen threshold (W-05).
+- [ ] Every number in the report traces to a saved artifact file and run ID.
+- [ ] Deployment: smoke test passes, no secrets tracked, limitation statement visible, rollback tested and written down.
+- [ ] Released version is tagged and `CHANGELOG.md` entry exists.
+
+### 3.4 Ronit Singh: dashboard (MID-06, END-05)
+
+- [ ] Starting the app does not train a model and finishes quickly.
+- [ ] With an empty `outputs/` folder the app shows a clear empty-state instruction and no numbers (W-09).
+- [ ] A malformed or incompatible artifact produces a readable error, not a stack trace or silent wrong data (W-10).
+- [ ] Every chart shows data source, event count, split, feature group and model metadata.
+- [ ] Validation-selected threshold is visibly distinguished from test evaluation.
+- [ ] The simulated-data limitation statement is visible on the main view.
+- [ ] No hard-coded scores; any mock data is labelled **MOCK** and excluded from submitted material.
+- [ ] Export contains the metric table plus experiment metadata.
+- [ ] Screenshots or a described UI behaviour are attached to the PR.
+- [ ] Basic usability test with one person who has not seen the app: can they find the best model and the data source in under two minutes?
+
+### 3.5 Saumya's own documentation (reviewed by Krishna and Ronit)
+
+- [ ] Every document claim about the dataset matches the UCI page (re-check on any edit).
+- [ ] Each `[PROPOSED]` and `[verify]` marker is resolved or still visible.
+- [ ] Setup guide commands are run on a clean clone (section 5) after every code change.
+- [ ] Ronit confirms the documents are readable by a non-physicist.
+
+---
+
+## 4. Notebook explanation and readability checklist (agreed style from `CONTRIBUTING.md`)
+
+**Automated** (`test_notebook_style.py`): first cell is Markdown; each code cell has a Markdown cell before it with at least 25 words; no `#` comments in code cells; code cells at most 40 lines; outputs under 20,000 characters.
+
+**Manual**, per major section:
+
+- [ ] States the **question** the section answers.
+- [ ] States **why** the step is needed.
+- [ ] States **what the code will do**.
+- [ ] States the **expected output**.
+- [ ] Gives an **interpretation** and a "what could go wrong" note.
+- [ ] Uses plain language; every new term is defined on first use or links to `docs/08` glossary.
+- [ ] Plots have titles, axis labels, units and a legend; colours are distinguishable (not only red versus green).
+- [ ] Source, row count, seed, split, package versions, model settings and runtime are printed once near the top.
+- [ ] Logic reused across notebooks lives in `src/higgs_event_lab/`, not copy-pasted.
+- [ ] "Restart kernel and run all" succeeds from top to bottom.
+- [ ] No placeholder scores, no unrun result text, no absolute local paths.
+
+---
+
+## 5. Reproducibility review (L6)
+
+Performed by Saumya on a clean clone, using only the written instructions.
+
+1. Clone the repository into a new empty folder.
+2. Follow `docs/11_SETUP_GUIDE.md` literally; write down every step that needed outside knowledge.
+3. Run L0 to L3 tests; record pass or fail.
+4. Run the starter experiment with the documented seed; compare saved metrics with the author's within the stated tolerance.
+5. Open a bug for every step that failed or was unclear; update the guide.
+6. Record the result in the test log (section 2.1).
+
+Pass condition: a person who was not involved can reproduce the starter run without asking anyone.
+
+---
+
+## 6. Wording and claims review
+
+Search the report, README, notebooks and dashboard text for the following and fix every hit.
+
+| Search for | Problem | Replace with |
+|---|---|---|
+| "discover", "detect the Higgs", "found the Higgs" | Implies a real discovery | "classify simulated signal and background events" |
+| "probability of being a Higgs" | Scores are not physical probabilities | "classifier score" |
+| "significance", "sigma" | Not computed in this project | Remove, or state explicitly that it is out of scope |
+| "state of the art", "outperforms the paper" | Unsupported comparison with different protocol | Compare only with runs from our own pipeline |
+| "accuracy" without ROC-AUC / PR-AUC | Insufficient metric | Add the required metrics |
+| Any number for ROC-AUC, PR-AUC, accuracy | Must come from a saved artifact | Cite run ID and file |
+| "real data", "detector" | The data are simulated | "simulated events" |
+
+The test `test_no_unsourced_metric_numbers_in_docs_and_reports` automatically flags metric-looking numbers in `docs/`, `reports/` and `team/` Markdown. Lines that legitimately contain such a number (for example a definition) can carry the marker `<!-- allow-metric -->`.
+
+---
+
+## 7. Release gate verification (from `docs/05`)
+
+Saumya signs off only when every box is ticked. Any unticked box blocks documentation sign-off and is reported to Krishna.
+
+- [ ] No fabricated or mismatched metrics (every table cell traced to an artifact).
+- [ ] No known data leakage (W-01 to W-05 tests present and passing).
+- [ ] Data source documented, with retrieval date, row count and checksum.
+- [ ] Artifact loading works from a clean clone.
+- [ ] No secrets and no raw data in the repository or its history (`git log --stat` spot-check).
+- [ ] No wording that claims a real discovery (section 6).
+- [ ] Limitations section present in the report and visible in the app.
+- [ ] Setup guide verified on a clean clone.
+- [ ] `team/CHANGELOG.md` and `team/BUG_TRACKER.md` up to date; no open P0 or P1 without Krishna's decision.
+- [ ] Citations present: UCI dataset, Baldi et al. 2014, and any physics sources.
+
+---
+
+## 8. Roles summary
+
+| Activity | Saumya | Module owner |
+|---|---|---|
+| Write unit tests for the code | Reviews | Writes |
+| Reproduce a reported bug | Does | Assists |
+| Fix a root cause | Only docs, tests, packaging, low-risk cross-cutting | Fixes |
+| Verify the fix | Does | Confirms |
+| Update changelog and known issues | Does | Supplies details in PR |
+| Release decision | Reports status | Krishna decides |
