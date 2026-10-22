@@ -5,6 +5,9 @@ type: software
 version: 0.1.0
 abstract: "A reproducible course project scaffold for comparing machine-learning classifiers on the simulated UCI HIGGS event dataset."
 authors:
-  - family-names: "Project team"
-    given-names: "Higgs Event Lab"
+  - name: "Krishna"
+  - name: "Saumya Mishra"
+  - name: "Aditya Rana"
+  - name: "Rachit Gupta"
+  - name: "Ronit Singh"
 license: MIT

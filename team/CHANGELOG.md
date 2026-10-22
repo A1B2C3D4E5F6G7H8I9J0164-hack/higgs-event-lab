@@ -24,8 +24,9 @@ Here is the content formatted with clean spacing, clear headings, and consistent
 
 ## [Unreleased]
 
-### Added
-
+* **2026-10-22:** `src/higgs_event_lab/features.py` — Schema definitions and deterministic feature group accessors (`low_level`, `high_level`, `all`) matching UCI schema and `docs/feature_dictionary.csv` (`MID-01`). *(Aditya)*
+* **2026-10-22:** `src/higgs_event_lab/data.py` — Chunked streaming loader (`iter_higgs_chunks`), schema/type/value validators (`validate_raw_chunk`), and reproducible sampling workflow with later-chunk comparison (`extract_sample`) (`MID-01`). *(Aditya)*
+* **2026-10-22:** `tests/unit/test_features.py`, `tests/unit/test_data_loader.py`, and `tests/integration/test_data_pipeline.py` — Unit and integration tests covering tiny uncompressed/compressed CSVs, feature group separation, error reporting, and reproducible extraction (`MID-01`). *(Aditya)*
 * **2026-10-21:** `docs/08_PHYSICS_BACKGROUND.md` — Higgs field, Higgs mechanism, Higgs boson, link to the HIGGS task, glossary (`FND-05`). *(Saumya)*
 * **2026-10-21:** `docs/09_DATASET_GUIDE.md` and `docs/feature_dictionary.csv` — Data card and the $21 + 7$ feature dictionary, verified against the UCI page. *(Saumya)*
 * **2026-10-21:** `docs/10_OBJECTIVES_AND_METHODOLOGY.md` — Objectives, experiment matrix, pipeline, metrics, and leakage controls. Defaults marked `[PROPOSED]` need Krishna's approval. *(Saumya)*

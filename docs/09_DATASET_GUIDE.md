@@ -149,9 +149,49 @@ The script streams only the first rows and checks: 29 columns, numeric values, l
 
 ---
 
-## 8. Data governance reminders
+## 8. Chunked Data Loader and Extraction (MID-01)
+
+### 8.1 Location and Public Interface
+The reusable data loader and schema validation components live in:
+- `src/higgs_event_lab/features.py`: defines verified column schemas (`TARGET_COLUMN`, `LOW_LEVEL_FEATURES`, `HIGH_LEVEL_FEATURES`, `ALL_FEATURES`, `ALL_COLUMNS`), feature groups, and `get_feature_columns()`.
+- `src/higgs_event_lab/data.py`: chunked streaming loader, validation, and sample extraction workflow.
+
+Key functions:
+- `iter_higgs_chunks(path, chunk_size=50_000, feature_group="all", max_rows=None, dtype=np.float32, target_dtype=np.int64)`: Memory-safe generator yielding `HiggsBatch(X, y)` named tuples. Supports `(X, y)` tuple unpacking.
+- `load_higgs_sample(path, n_rows, feature_group="all", chunk_size=50_000)`: Loads a concatenated sample of `n_rows` events.
+- `extract_sample(source_path, output_path, n_rows, chunk_size=50_000, seed=None, compare_later_chunk=True, later_chunk_offset_rows=500_000)`: Extracts a reproducible subset into an ignored destination (e.g. `data/processed/`), records a sidecar `.manifest.json`, and verifies class balance against a later chunk.
+- `validate_raw_chunk(df, expected_num_cols=29)`: Strict schema and content validation.
+
+### 8.2 Target Separation & Feature Group Selection
+- `class_label` is column 0 in the raw file. It is separated into `y` and strictly excluded from `X`.
+- Supported feature groups:
+  - `low_level`: 21 kinematic features (`lepton_pt` to `jet_4_btag`)
+  - `high_level`: 7 derived invariant mass features (`m_jj` to `m_wwbb`)
+  - `all`: all 28 features in deterministic UCI order.
+
+### 8.3 How to Choose Chunk Size
+- Default: `50_000` rows (~11 MB RAM per chunk), well suited for 8 GB RAM machines.
+- For lower memory environments: `10_000` rows.
+- For high-memory workstations or fast NVMe SSDs: `100_000` rows.
+
+### 8.4 Error Reporting
+The loader fails fast and clearly without silently dropping rows:
+- Missing file: `FileNotFoundError`.
+- Column count != 29: `SchemaValidationError`.
+- Non-numeric or header rows: `NonNumericDataError`.
+- Missing or infinite values: `MissingOrNonFiniteValueError`.
+- Labels outside {0.0, 1.0}: `InvalidLabelError`.
+
+### 8.5 Working without the full dataset
+- Unit tests use synthetic fixtures generated in-memory (`tests/unit/test_data_loader.py` and `tests/unit/test_features.py`).
+- Teammates can run on a small sample extracted via CLI without processing the entire 11M rows.
+
+---
+
+## 9. Data governance reminders
 
 - Raw data stays in `data/raw/` and is **never committed** (`.gitignore` enforces this).
+- Sampled and interim datasets (e.g., in `data/processed/` or `data/interim/`) must **never be committed**.
 - Do not silently switch to a mirror (for example OpenML or TensorFlow Datasets); both exist, but ADR-0001 requires Krishna's approval and disclosure in the report.
 - Cite both the UCI dataset and the Nature Communications paper in the report.
 - The dataset licence (CC BY 4.0) is different from the project code licence (MIT). Keep the two attributions separate.

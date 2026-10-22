@@ -22,9 +22,31 @@ METRIC_CLAIM = re.compile(
 ALLOW_MARKER = "<!-- allow-metric -->"
 
 
+import subprocess
+
+def _get_git_ignored_paths(paths):
+    try:
+        rel_paths = [str(p.relative_to(ROOT)) for p in paths]
+        proc = subprocess.run(
+            ["git", "check-ignore", "--stdin"],
+            cwd=ROOT,
+            input="\n".join(rel_paths),
+            capture_output=True,
+            text=True,
+        )
+        return set(proc.stdout.splitlines())
+    except Exception:
+        return set()
+
+
 def project_files():
-    for path in ROOT.rglob("*"):
-        if path.is_file() and not (set(path.relative_to(ROOT).parts) & SKIP_DIRS):
+    candidates = [
+        path for path in ROOT.rglob("*")
+        if path.is_file() and not (set(path.relative_to(ROOT).parts) & SKIP_DIRS)
+    ]
+    ignored = _get_git_ignored_paths(candidates)
+    for path in candidates:
+        if str(path.relative_to(ROOT)) not in ignored:
             yield path
 
 

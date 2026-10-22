@@ -118,14 +118,14 @@ Expect all tests to pass on a clean checkout. If one fails, read the assertion m
 
 ## 7. Run the pipeline **[pending: Aditya, Rachit, Krishna]**
 
-When the modules land, this section must be replaced with the real commands. Until then it is a placeholder, and **no results exist**.
+When the modules land, this section is updated with the real working commands.
 
-| Step | Planned command | Owner |
-|---|---|---|
-| Prepare a 250k-row subset | `python -m higgs_event_lab.data ...` | Aditya (MID-01) |
-| Train classical baselines | `python -m higgs_event_lab.classical ...` | Aditya (MID-03, END-01) |
-| Train the MLP | `python -m higgs_event_lab.neural ...` | Rachit (MID-04) |
-| Evaluate and write artifacts | `python -m higgs_event_lab.evaluation ...` | Krishna (MID-05) |
+| Step | Command | Status & Owner | Expected output |
+|---|---|---|---|
+| Prepare a 250k-row subset | `PYTHONPATH=src python -m higgs_event_lab.data --source data/raw/HIGGS.csv.gz --output data/processed/higgs_sample_250k.csv.gz --rows 250000` | **[works now]** Aditya (MID-01) | `data/processed/higgs_sample_250k.csv.gz` and `.manifest.json` |
+| Train classical baselines | `python -m higgs_event_lab.classical ...` | **[pending]** Aditya (MID-03, END-01) | `artifacts/classical_*.json` |
+| Train the MLP | `python -m higgs_event_lab.neural ...` | **[pending]** Rachit (MID-04) | `artifacts/mlp_*.json` |
+| Evaluate and write artifacts | `python -m higgs_event_lab.evaluation ...` | **[pending]** Krishna (MID-05) | `artifacts/eval_*.json` |
 
 Each owner must add the **exact working command** and expected output file names to this table in their PR. Saumya verifies them by running them on a clean clone.
 

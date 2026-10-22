@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Dataset and generated data
+data/raw/*
+!data/raw/README.md
+HIGGS.csv
+HIGGS.csv.gz
+*.csv.gz
+*.parquet
+
+# Model checkpoints and serialized artifacts
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.pkl
+*.npy
+*.npz
+*.ubj
+
+# Generated outputs
+outputs/*
+artifacts/*
+
+# Operating system and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Jupyter
+*.ipynb_checkpoints/

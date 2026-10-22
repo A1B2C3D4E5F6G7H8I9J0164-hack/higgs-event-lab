@@ -2,10 +2,9 @@
 
 This is the planned home for reusable, tested code. The scaffold does not implement models yet.
 
-Planned modules, to be added as issues are approved:
-
-- `data.py`: source access, schema checks and sampling/chunking.
-- `features.py`: label separation and low-level/high-level/all feature groups.
+Modules status:
+- `features.py`: **[implemented, MID-01]** verified UCI schema, feature group mappings (`low_level`, `high_level`, `all`), label exclusion safeguards.
+- `data.py`: **[implemented, MID-01]** memory-safe chunked loader (`iter_higgs_chunks`), schema/type/value validation (`validate_raw_chunk`), reproducible sampling with later-chunk check (`extract_sample`).
 - `splits.py`: explicit reproducible split policy.
 - `classical.py`: Logistic Regression and XGBoost baseline wrappers.
 - `neural.py`: compact PyTorch MLP and training.
