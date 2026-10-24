@@ -74,9 +74,19 @@ python -c "import numpy, pandas, sklearn, xgboost, torch; print('imports ok')"
 
 ## 5. Download and check the data **[works now]**
 
+You can download and prepare the dataset automatically or manually:
+
+**Option A: Automated script (recommended)**
+```bash
+python scripts/download_data.py --prepare-subset
+```
+This fetches the archive into `data/raw/HIGGS.csv.gz`, checks the SHA-256 hash, and extracts the 250k benchmark subset into `data/processed/higgs_sample_250k.csv.gz`.
+
+**Option B: Manual download**
 1. Open the **official** dataset page: <https://archive.ics.uci.edu/dataset/280/higgs>.
 2. Download the dataset file (`HIGGS.csv.gz`, about 2.6 GB). If the page offers a zip wrapper, extract the `.csv.gz` from it.
 3. Move it to `data/raw/HIGGS.csv.gz`. Do **not** rename the file and do **not** commit it (`.gitignore` blocks it).
+
 4. Record a checksum for the data card:
 
    ```bash

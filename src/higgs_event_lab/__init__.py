@@ -8,8 +8,10 @@ from higgs_event_lab.data import (
     extract_sample,
     iter_higgs_chunks,
     load_higgs_sample,
+    stage_interim_clean_data,
     validate_raw_chunk,
 )
+
 from higgs_event_lab.evaluation import (
     compute_classification_metrics,
     select_operating_threshold,
@@ -69,7 +71,9 @@ __all__ = [
     "extract_sample",
     "iter_higgs_chunks",
     "load_higgs_sample",
+    "stage_interim_clean_data",
     "validate_raw_chunk",
+
     "LogisticRegressionConfig",
     "build_classical_pipeline",
     "train_logistic_regression",
