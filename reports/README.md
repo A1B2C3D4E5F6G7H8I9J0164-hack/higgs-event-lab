@@ -25,4 +25,5 @@ Store report source files and selected small figures in this folder. Place large
 
 ## Current Drafts
 
-* **`01_report_draft_methodology_limitations.md`**: Covers methodology and limitations; contains no result numbers (placeholders are marked `[RUN: ...]`).
+* **`01_report_draft_methodology_limitations.md`**: Covers methodology and limitations; contains no result numbers (placeholders are marked `[RUN: ...]`). *(Saumya)*
+* **`02_neural_network_benchmarks.md`**: Covers compact MLP architecture, regularisation, cross-feature benchmark protocol, and artifact export; placeholders marked `[RUN: ...]`. *(Rachit)*
