@@ -17,6 +17,9 @@ data/processed/*
 !data/processed/README.md
 data/interim/*
 !data/interim/README.md
+data/external/*
+!data/external/README.md
+
 HIGGS.csv
 HIGGS.csv.gz
 *.csv.gz
