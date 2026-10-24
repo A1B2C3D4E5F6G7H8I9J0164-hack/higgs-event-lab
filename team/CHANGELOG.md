@@ -22,6 +22,8 @@
 
 ### Added
 
+* **2026-10-25:** `app/main.py`, `app/loader.py`, `app/metrics.py`, `app/styles.py`, `app/visualizations.py`, `app/views/`, `tests/unit/test_app_loader.py`, `tests/unit/test_app_metrics.py`, and `app/README.md` — HiggsLens interactive scientific Streamlit dashboard with 6 focused sections, robust `higgs-experiment-v1` artifact loader, multi-run comparison, calibration diagrams, held-out ROC/PR curves, and interactive decision threshold operating-point workbench (`MID-06`, `END-05`). *(Ronit)*
+
 * **2026-10-25:** `src/higgs_event_lab/classical.py`, `tests/unit/test_classical.py`, and `reports/03_classical_baseline_benchmarks.md` — Scikit-learn Logistic Regression baseline with leakage-free scaling via Pipeline, validation-only operating threshold selection, cross-feature group benchmarking (`low_level`, `high_level`, `all`), and `higgs-experiment-v1` artifact export (`MID-03`). *(Aditya)*
 * **2026-10-25:** `notebooks/01_midsem/01_eda_and_feature_groups.ipynb` — Comprehensive exploratory data analysis notebook analyzing schema semantics, data hygiene, empirical class balance, discrete b-tag distribution, kinematic features, and cross-feature correlations (`MID-02`). *(Aditya)*
 * **2026-10-25:** `src/higgs_event_lab/protocol.py`, `tests/unit/test_protocol.py`, and `docs/13_EXPERIMENT_PROTOCOL_AND_ARTIFACTS.md` — Shared deterministic train/validation/test split protocol (`higgs-split-v1`) and artifact contract (`higgs-experiment-v1`) for fair benchmark comparison without dataset persistence (`MID-05`, PR #4). *(Krishna)*
