@@ -7,8 +7,8 @@ FND-05,foundation,Prepare scientific terminology and citations,Saumya Mishra,Kri
 MID-01,midsem,Implement chunked data access and schema checks,Aditya Rana,Saumya QA,P0,Works on a small documented sample; no data committed; tests pass,In Review
 MID-02,midsem,Create EDA and feature-group inspection,Aditya Rana,Saumya docs,P1,Counts/distributions/feature descriptions are generated from actual sample,Backlog
 MID-03,midsem,Implement Logistic Regression baseline by feature group,Aditya Rana,Rachit review,P0,Consistent split and metrics; result metadata saved,Backlog
-MID-04,midsem,Implement compact MLP baseline,Rachit Gupta,Aditya review,P0,Compact MLP with batch norm/dropout; reproducible config and predictions,Backlog
-MID-05,midsem,Define and test shared experiment artifact schema,Krishna,Aditya; Rachit; Ronit,P0,One documented schema accepted before dashboard implementation,Backlog
+MID-04,midsem,Implement compact MLP baseline,Rachit Gupta,Aditya review,P0,Compact MLP with batch norm/dropout; reproducible config and predictions,Done
+MID-05,midsem,Define and test shared experiment artifact schema,Krishna,Aditya; Rachit; Ronit,P0,One documented schema accepted before dashboard implementation,Done
 MID-06,midsem,Build minimal results dashboard shell,Ronit Singh,Krishna,P1,Loads real saved artifact; empty/error states work; no hard-coded scores,Backlog
 MID-07,midsem,Create/review methodology and setup documentation,Saumya Mishra,All owners,P1,Reproducibility steps match actual current code,Backlog
 END-01,endsem,Add XGBoost and finalize classical comparisons,Aditya Rana,Krishna,P0,Same held-out test data; runtime and metrics saved,Backlog
