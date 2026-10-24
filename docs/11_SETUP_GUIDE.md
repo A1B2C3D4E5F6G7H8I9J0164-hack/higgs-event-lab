@@ -124,8 +124,8 @@ When the modules land, this section is updated with the real working commands.
 |---|---|---|---|
 | Prepare a 250k-row subset | `PYTHONPATH=src python -m higgs_event_lab.data --source data/raw/HIGGS.csv.gz --output data/processed/higgs_sample_250k.csv.gz --rows 250000` | **[works now]** Aditya (MID-01) | `data/processed/higgs_sample_250k.csv.gz` and `.manifest.json` |
 | Train classical baselines | `python -m higgs_event_lab.classical ...` | **[pending]** Aditya (MID-03, END-01) | `artifacts/classical_*.json` |
-| Train the MLP | `PYTHONPATH=src python -m higgs_event_lab.neural --data data/processed/higgs_sample_250k.csv.gz --rows 250000 --output-dir outputs/mlp_run` | **[works after dependencies are installed]** Rachit (MID-04) | Measured `metrics.json` and `test_predictions.csv` in the named output directory |
-| Shared split and artifact contract | `PYTHONPATH=src python -m pytest tests/unit/test_protocol.py tests/unit/test_neural.py -q` | **[works after dependencies are installed]** Krishna (MID-05) | Contract and MLP unit-test result |
+| Train the MLP | `PYTHONPATH=src python -m higgs_event_lab.neural --data data/processed/higgs_sample_250k.csv.gz --rows 250000 --all-groups --output-dir outputs` | **[works now]** Rachit (MID-04) | Measured `metrics.json` and `test_predictions.csv` for each feature group in `outputs/mlp_<group>/` |
+| Shared split and artifact contract | `PYTHONPATH=src python -m pytest tests/unit/test_protocol.py tests/unit/test_neural.py -q` | **[works now]** Krishna (MID-05) | Contract and MLP unit-test result |
 
 Each owner must add the **exact working command** and expected output file names to this table in their PR. Saumya verifies them by running them on a clean clone.
 
