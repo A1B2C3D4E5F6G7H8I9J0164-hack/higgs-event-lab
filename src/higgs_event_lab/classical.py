@@ -276,7 +276,7 @@ def run_feature_group_benchmarks(
 
     for group in groups:
         batch = load_higgs_sample(data_path, n_rows=row_count, feature_group=group)
-        split = create_stratified_splits(batch.y, SplitConfig(seed=config.seed))
+        split = create_stratified_splits(batch.y.to_numpy(), SplitConfig(seed=config.seed))
         result = train_logistic_regression(batch.X, batch.y, split=split, config=config)
 
         run_dir = base / f"logreg_{group}"
@@ -361,7 +361,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     batch = load_higgs_sample(args.data, n_rows=args.rows, feature_group=args.feature_group)
-    split = create_stratified_splits(batch.y, SplitConfig(seed=config.seed))
+    split = create_stratified_splits(batch.y.to_numpy(), SplitConfig(seed=config.seed))
     result = train_logistic_regression(batch.X, batch.y, split=split, config=config)
 
     target_dir = Path(args.output_dir)
