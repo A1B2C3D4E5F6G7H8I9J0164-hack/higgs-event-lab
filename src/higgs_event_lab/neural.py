@@ -18,11 +18,10 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.calibration import calibration_curve
-from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
 from higgs_event_lab.data import load_higgs_sample
+from higgs_event_lab.evaluation import compute_classification_metrics
 from higgs_event_lab.protocol import SplitConfig, SplitIndices, create_stratified_splits, new_experiment_artifact
 
 
@@ -115,18 +114,7 @@ def _predict(model: Any, X: np.ndarray, device: str, batch_size: int) -> np.ndar
 
 
 def _metrics(y_true: np.ndarray, probability: np.ndarray) -> dict[str, Any]:
-    if set(np.unique(y_true)) != {0, 1}:
-        raise ValueError("metrics require both classes in an evaluation split")
-    fraction_true, fraction_predicted = calibration_curve(y_true, probability, n_bins=10, strategy="uniform")
-    return {
-        "roc_auc": float(roc_auc_score(y_true, probability)),
-        "pr_auc": float(average_precision_score(y_true, probability)),
-        "brier_score": float(brier_score_loss(y_true, probability)),
-        "calibration": {
-            "fraction_positives": fraction_true.tolist(),
-            "mean_predicted_value": fraction_predicted.tolist(),
-        },
-    }
+    return compute_classification_metrics(y_true, probability)
 
 
 def train_mlp(
