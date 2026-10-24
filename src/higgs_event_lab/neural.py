@@ -229,17 +229,62 @@ def write_run_artifacts(
     return metadata_path, prediction_path
 
 
+def run_feature_group_benchmarks(
+    *,
+    data_path: str | Path,
+    row_count: int,
+    output_base_dir: str | Path = "outputs",
+    config: MLPConfig = MLPConfig(),
+    groups: tuple[str, ...] = ("low_level", "high_level", "all"),
+) -> dict[str, dict[str, Any]]:
+    """Run fair benchmarks across specified feature groups using identical split seed."""
+    base = Path(output_base_dir)
+    results: dict[str, dict[str, Any]] = {}
+    for group in groups:
+        batch = load_higgs_sample(data_path, n_rows=row_count, feature_group=group)
+        split = create_stratified_splits(batch.y, SplitConfig(seed=config.seed))
+        result = train_mlp(batch.X, batch.y, split=split, config=config)
+        run_dir = base / f"mlp_{group}"
+        if run_dir.exists():
+            import shutil
+            shutil.rmtree(run_dir)
+        write_run_artifacts(
+            result,
+            run_dir=run_dir,
+            run_id=f"mlp_{group}",
+            feature_group=group,
+            feature_names=list(batch.X.columns),
+            data_source=str(data_path),
+            row_count=row_count,
+            config=config,
+        )
+        results[group] = result
+    return results
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Train the compact HIGGS MLP on a documented subset.")
     parser.add_argument("--data", default="data/processed/higgs_sample_250k.csv.gz")
     parser.add_argument("--rows", type=int, default=250_000)
     parser.add_argument("--feature-group", choices=("low_level", "high_level", "all"), default="all")
+    parser.add_argument("--all-groups", action="store_true", help="Train and export benchmarks for all 3 feature groups")
     parser.add_argument("--output-dir", default="outputs/mlp_run")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--epochs", type=int, default=30)
     args = parser.parse_args(argv)
-    batch = load_higgs_sample(args.data, n_rows=args.rows, feature_group=args.feature_group)
+
     config = MLPConfig(seed=args.seed, max_epochs=args.epochs)
+    if args.all_groups:
+        results = run_feature_group_benchmarks(
+            data_path=args.data,
+            row_count=args.rows,
+            output_base_dir=args.output_dir,
+            config=config,
+        )
+        print(f"Completed multi-group MLP benchmark across {list(results.keys())}")
+        return 0
+
+    batch = load_higgs_sample(args.data, n_rows=args.rows, feature_group=args.feature_group)
     result = train_mlp(batch.X, batch.y, config=config)
     metadata, predictions = write_run_artifacts(result, run_dir=args.output_dir, run_id=Path(args.output_dir).name, feature_group=args.feature_group, feature_names=list(batch.X.columns), data_source=args.data, row_count=len(batch.X), config=config)
     print(f"Wrote measured MLP artifacts: {metadata} and {predictions}")
