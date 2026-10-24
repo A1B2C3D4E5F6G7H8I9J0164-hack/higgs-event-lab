@@ -44,7 +44,12 @@ The target product is an understandable workbench that lets a user inspect docum
 
 ## Data source
 
-Use the [UCI HIGGS dataset](https://archive.ics.uci.edu/dataset/280/higgs) and cite the dataset and original paper in any academic report. The course brief describes 21 low-level and 7 expert-derived features (28 inputs total) and recommends beginning with a documented subset. Store downloaded data under `data/raw/` locally, not in the public repository.
+Use the [UCI HIGGS dataset](https://archive.ics.uci.edu/dataset/280/higgs) and cite the dataset and original paper in any academic report. The course brief describes 21 low-level and 7 expert-derived features (28 inputs total) and recommends beginning with a documented subset.
+
+To comply with GitHub's 100 MB file limit and keep the repository clone fast, dataset files are hosted via external cloud mirrors (Google Drive / Hugging Face):
+- **Raw Dataset (2.6 GB):** See [`data/raw/README.md`](data/raw/README.md) for download links and placement into `data/raw/HIGGS.csv.gz`.
+- **Processed 250k Subset (~52 MB):** See [`data/processed/README.md`](data/processed/README.md) for direct download links to `data/processed/higgs_sample_250k.csv.gz`.
+
 
 ## Current status
 
