@@ -1,7 +1,3 @@
-Here is the content formatted with clean spacing, clear headings, and consistent markdown sections for readability:
-
----
-
 # CHANGELOG
 
 **Change Log**
@@ -23,6 +19,11 @@ Here is the content formatted with clean spacing, clear headings, and consistent
 ---
 
 ## [Unreleased]
+
+### Added
+
+* **2026-10-25:** `src/higgs_event_lab/protocol.py`, `tests/unit/test_protocol.py`, and `docs/13_EXPERIMENT_PROTOCOL_AND_ARTIFACTS.md` — Shared deterministic train/validation/test split protocol (`higgs-split-v1`) and artifact contract (`higgs-experiment-v1`) for fair benchmark comparison without dataset persistence (`MID-05`, PR #4). *(Krishna)*
+* **2026-10-25:** `src/higgs_event_lab/neural.py` and `tests/unit/test_neural.py` — Compact PyTorch MLP binary classifier with BatchNorm1d, Dropout, early stopping on validation ROC-AUC, best-weights restoration, and `higgs-experiment-v1` artifact export (`MID-04`, PR #5). *(Rachit)*
 
 * **2026-10-22:** `src/higgs_event_lab/features.py` — Schema definitions and deterministic feature group accessors (`low_level`, `high_level`, `all`) matching UCI schema and `docs/feature_dictionary.csv` (`MID-01`). *(Aditya)*
 * **2026-10-22:** `src/higgs_event_lab/data.py` — Chunked streaming loader (`iter_higgs_chunks`), schema/type/value validators (`validate_raw_chunk`), and reproducible sampling workflow with later-chunk comparison (`extract_sample`) (`MID-01`). *(Aditya)*
