@@ -24,6 +24,13 @@ from higgs_event_lab.features import (
     FeatureGroup,
     get_feature_columns,
 )
+from higgs_event_lab.classical import (
+    LogisticRegressionConfig,
+    build_pipeline as build_classical_pipeline,
+    run_feature_group_benchmarks as run_classical_feature_group_benchmarks,
+    train_logistic_regression,
+    write_run_artifacts as write_classical_run_artifacts,
+)
 from higgs_event_lab.neural import (
     MLPConfig,
     build_mlp,
@@ -63,9 +70,15 @@ __all__ = [
     "iter_higgs_chunks",
     "load_higgs_sample",
     "validate_raw_chunk",
+    "LogisticRegressionConfig",
+    "build_classical_pipeline",
+    "train_logistic_regression",
+    "write_classical_run_artifacts",
+    "run_classical_feature_group_benchmarks",
     "MLPConfig",
     "build_mlp",
     "train_mlp",
     "write_run_artifacts",
     "run_feature_group_benchmarks",
 ]
+

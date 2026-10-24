@@ -96,10 +96,11 @@ These are expectations from the physics meaning of each variable. They must be *
 | `*_pt`, `m_*`, `missing_energy_magnitude` | Positive, right-skewed (long tail) | Scaling helps Logistic Regression and the MLP; tree models (XGBoost) are insensitive. Consider a log transform, but fit any scaler on training data only |
 | `*_eta` | Roughly symmetric around 0 | Standard scaling is reasonable |
 | `*_phi` | Periodic angle (-π to π) | Treating it as an ordinary number ignores that -π and π are the same direction; document the choice |
-| `*_btag` | Takes only a few discrete values, not a continuous range **[Aditya to confirm]** | Do not interpret as continuous; check zero-heavy distribution |
-| Any feature | No missing values expected | Add an explicit missing-value check to the loader |
+| `*_btag` | Takes only a few discrete values (0.0 untagged in majority, with discrete levels like 1.08, 2.17) **[Confirmed in EDA: MID-02]** | Do not interpret as continuous; check zero-heavy distribution |
+| Any feature | No missing or non-finite values **[Confirmed in EDA: MID-02]** | Data is clean; zero null or NaN entries across all 28 features |
 
-**Class balance:** the dataset is believed to be close to balanced between signal and background. **[Aditya to measure the exact fraction on the actual sample and record it.]** Do not copy a figure from a web page into the report; report the measured value.
+**Class balance:** Measured empirically on the 250,000-row sample: 131,942 signal (52.78%) and 118,058 background (47.22%) events (imbalance ratio: 1.118). **[Confirmed in EDA: MID-02]**
+
 
 ---
 
