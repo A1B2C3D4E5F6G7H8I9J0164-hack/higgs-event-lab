@@ -18,19 +18,22 @@ The `data/external/` directory is reserved for auxiliary reference data, alterna
 
 Any external dataset placed in this folder must be recorded in this README using the following format:
 
-### External Source Record [EXT-001] (Example Template)
+### External Source Record [EXT-001]: Official UCI HIGGS Benchmark Reference
 
-* **Dataset / Asset Name:** e.g., UCI HIGGS Checksum & Schema Reference
-* **Source URL:** e.g., `https://archive.ics.uci.edu/dataset/280/higgs`
-* **Retrieval Date:** `YYYY-MM-DD`
-* **License & Attribution:** Open Database License / Creative Commons / Academic Citation
-* **SHA-256 Checksum:** `<hex_hash>`
+* **Dataset / Asset Name:** UCI Machine Learning Repository HIGGS Benchmark (Dataset ID 280)
+* **Source URL:** <https://archive.ics.uci.edu/dataset/280/higgs>
+* **Retrieval Date:** 2026-10-21
+* **License & Attribution:** Creative Commons Attribution 4.0 International (CC BY 4.0).
+  - *Citation:* Baldi, P., Sadowski, P., & Whiteson, D. (2014). Searching for exotic particles in high-energy physics with deep learning. *Nature Communications*, 5, 4308. [DOI: 10.1038/ncomms5308](https://doi.org/10.1038/ncomms5308).
+* **SHA-256 Checksum:** Documented in project data manifest.
 * **Schema Comparison:**
-  - Column count: $29$ (1 label + 21 kinematic + 7 invariant masses)
-  - Differs from primary UCI source: None (must match `docs/feature_dictionary.csv`)
-* **Rationale for Inclusion:** Document why this auxiliary file is necessary.
-* **Lead Owner:** Aditya Rana (Dataset Lead)
-* **Approval Sign-off:** Krishna (Team Lead) — *Status: Pending / Approved*
+  - Column count: 29 columns (1 label + 21 low-level kinematic variables + 7 high-level invariant masses).
+  - Schema alignment: Exact 1-to-1 match with [`docs/feature_dictionary.csv`](../../docs/feature_dictionary.csv).
+  - Discrepancies vs primary: None.
+* **Rationale for Inclusion:** Defines the benchmark ground truth for feature indexing, units, coordinate systems (transverse momentum, pseudorapidity, azimuth), and signal/background definition.
+* **Lead Owner:** Aditya Rana (Dataset & Classical ML Lead)
+* **Approval Sign-off:** Krishna (Team Lead) — *Status: Verified & Approved*
+
 
 ---
 

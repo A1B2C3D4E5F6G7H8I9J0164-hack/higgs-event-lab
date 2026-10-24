@@ -235,3 +235,14 @@ def test_load_higgs_sample_concatenation(tiny_csv: Path):
     assert sample.X.shape == (12, 21)
     assert sample.y.shape == (12,)
     assert TARGET_COLUMN not in sample.X.columns
+
+
+def test_stage_interim_clean_data(tiny_csv: Path, tmp_path: Path):
+    from higgs_event_lab.data import stage_interim_clean_data
+    out_dir = tmp_path / "interim"
+    manifest = stage_interim_clean_data(tiny_csv, output_dir=out_dir, max_rows=10, chunk_size=5)
+    assert manifest["total_rows_clean"] == 10
+    assert manifest["total_dropped_rows"] == 0
+    assert (out_dir / "cleaning_manifest.json").exists()
+    assert (out_dir / "interim_chunk_0000.csv.gz").exists()
+

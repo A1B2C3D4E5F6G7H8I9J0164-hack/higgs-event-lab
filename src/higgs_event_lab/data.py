@@ -510,11 +510,108 @@ def extract_sample(
     return manifest
 
 
+def stage_interim_clean_data(
+    source_path: str | Path,
+    output_dir: str | Path = "data/interim",
+    max_rows: int = 100_000,
+    chunk_size: int = 50_000,
+) -> dict[str, Any]:
+    """Clean, validate, and stage intermediate dataset chunks into data/interim/.
+
+    Inspects raw data chunks, accounts for dropped or invalid rows with explicit reasons,
+    writes cleaned interim chunks, and produces a cleaning manifest.
+    """
+    interim_path = Path(output_dir)
+    interim_path.mkdir(parents=True, exist_ok=True)
+
+    total_rows_read = 0
+    total_rows_clean = 0
+    dropped_breakdown: dict[str, int] = {
+        "non_numeric": 0,
+        "missing_or_nan": 0,
+        "infinite_values": 0,
+        "invalid_labels": 0,
+    }
+
+    chunks_written: list[str] = []
+    chunk_index = 0
+
+    reader = pd.read_csv(
+        source_path,
+        header=None,
+        chunksize=chunk_size,
+    )
+
+    for chunk in reader:
+        chunk_read = len(chunk)
+        total_rows_read += chunk_read
+
+        if chunk.shape[1] != EXPECTED_NUM_COLUMNS:
+            raise SchemaValidationError(f"Expected {EXPECTED_NUM_COLUMNS} columns, got {chunk.shape[1]}")
+
+        numeric_chunk = chunk.apply(pd.to_numeric, errors="coerce")
+        bad_rows = numeric_chunk.isna().any(axis=1)
+        if bad_rows.any():
+            dropped_breakdown["non_numeric"] += int(bad_rows.sum())
+            numeric_chunk = numeric_chunk[~bad_rows]
+
+        labels = numeric_chunk.iloc[:, 0]
+        invalid_label_mask = ~labels.isin(VALID_LABELS)
+        if invalid_label_mask.any():
+            dropped_breakdown["invalid_labels"] += int(invalid_label_mask.sum())
+            numeric_chunk = numeric_chunk[~invalid_label_mask]
+
+        inf_mask = np.isinf(numeric_chunk.to_numpy()).any(axis=1)
+        if inf_mask.any():
+            dropped_breakdown["infinite_values"] += int(inf_mask.sum())
+            numeric_chunk = numeric_chunk[~inf_mask]
+
+        clean_count = len(numeric_chunk)
+        total_rows_clean += clean_count
+
+        chunk_file = interim_path / f"interim_chunk_{chunk_index:04d}.csv.gz"
+        numeric_chunk.columns = list(ALL_COLUMNS)
+        numeric_chunk.to_csv(chunk_file, index=False, compression="gzip")
+        chunks_written.append(str(chunk_file))
+        chunk_index += 1
+
+        if total_rows_clean >= max_rows:
+            break
+
+    total_dropped = sum(dropped_breakdown.values())
+    manifest = {
+        "source_path": str(source_path),
+        "total_rows_read": total_rows_read,
+        "total_rows_clean": total_rows_clean,
+        "total_dropped_rows": total_dropped,
+        "dropped_reasons": dropped_breakdown,
+        "chunks_written": chunks_written,
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "PASS: All records validated successfully" if total_dropped == 0 else f"NOTE: {total_dropped} rows dropped",
+    }
+
+    manifest_path = interim_path / "cleaning_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return manifest
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entrypoint for extracting HIGGS data subsets (python -m higgs_event_lab.data)."""
     parser = argparse.ArgumentParser(
         description="Chunked data extraction and schema validation for HIGGS dataset."
     )
+    parser.add_argument(
+        "--interim-clean",
+        action="store_true",
+        help="Stage and clean intermediate chunks into data/interim/ with cleaning manifest",
+    )
+    parser.add_argument(
+        "--interim-dir",
+        type=str,
+        default="data/interim",
+        help="Output directory for interim cleaning (default: data/interim)",
+    )
+
     parser.add_argument(
         "--source",
         type=str,
@@ -559,12 +656,35 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
+    if args.interim_clean:
+        print(f"HIGGS Interim Data Cleaning & Staging")
+        print(f"Source file        : {args.source}")
+        print(f"Output directory   : {args.interim_dir}")
+        print(f"Requested rows     : {args.rows}")
+        print(f"Chunk size         : {args.chunk_size}")
+        try:
+            manifest = stage_interim_clean_data(
+                source_path=args.source,
+                output_dir=args.interim_dir,
+                max_rows=args.rows,
+                chunk_size=args.chunk_size,
+            )
+            print(f"\nSUCCESS: Cleaned {manifest['total_rows_clean']} rows.")
+            print(f"Total dropped rows : {manifest['total_dropped_rows']}")
+            print(f"Status             : {manifest['status']}")
+            print(f"Cleaning manifest  : {args.interim_dir}/cleaning_manifest.json")
+            return 0
+        except Exception as exc:
+            print(f"\nERROR: Interim cleaning failed: {exc}", file=sys.stderr)
+            return 1
+
     print(f"HIGGS Data Access & Extraction (MID-01)")
     print(f"Source file        : {args.source}")
     print(f"Output file        : {args.output}")
     print(f"Requested rows     : {args.rows}")
     print(f"Chunk size         : {args.chunk_size}")
     print(f"Random seed        : {args.seed}")
+
 
     try:
         manifest = extract_sample(
