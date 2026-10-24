@@ -49,7 +49,7 @@ Sweep scope: every file in the uploaded scaffold (60 entries), read in full and 
 | BUG-011 | **P1** | Protocol gap | No document fixes split proportions, the random seed, the number of repeated seeds or the target signal efficiency for the operating-point analysis | Searched all docs | Krishna | **Open**: `docs/10` carries `[PROPOSED]` defaults (70/15/15, 3 seeds); Krishna to approve or change in an ADR |
 | BUG-012 | P3 | Versioning | `CITATION.cff` said version 0.1.0 while `CHANGELOG.md` said "Unreleased" only | Original files | Saumya | **Fixed**: both now say `0.1.0-dev` |
 | BUG-013 | P3 | Docs consistency | `docs/02` and `REPOSITORY_FILE_LIST.txt` did not list the new documents, tests and notebook | n/a | Saumya | **Fixed** (kept in sync by `test_every_file_in_repository_file_list_exists`) |
-| BUG-014 | P2 | Data assumptions | Several preprocessing assumptions (b-tag takes few discrete values, heavy-tailed pT/mass features, no missing values, class balance) are expected from physics but unmeasured | `docs/09` section 4 | Aditya | **Open**: confirm in EDA (MID-02) and update the guide with measured facts |
+| BUG-014 | P2 | Data assumptions | Several preprocessing assumptions (b-tag takes few discrete values, heavy-tailed pT/mass features, no missing values, class balance) are expected from physics but unmeasured | `docs/09` section 4 | Aditya | **Fixed** (MID-02): verified in EDA notebook; b-tag has discrete modes, zero missing/non-finite entries, and 52.8% signal fraction |
 
 ### Summary counts (2026-10-21)
 
@@ -57,9 +57,10 @@ Sweep scope: every file in the uploaded scaffold (60 entries), read in full and 
 |---|---|---|---|
 | P0 | 1 | 1 | 0 |
 | P1 | 5 | 1 | 4 (BUG-005, 006, 008, 011) |
-| P2 | 3 | 2 | 1 (BUG-014) |
+| P2 | 3 | 3 | 0 |
 | P3 | 5 | 5 | 0 |
-| **All** | **14** | **9** | **5** |
+| **All** | **14** | **10** | **4** |
+
 
 (BUG-004 is counted as Fixed with one follow-up item for Krishna.)
 

@@ -13,10 +13,15 @@ venv/
 # Dataset and generated data
 data/raw/*
 !data/raw/README.md
+data/processed/*
+!data/processed/README.md
+data/interim/*
+!data/interim/README.md
 HIGGS.csv
 HIGGS.csv.gz
 *.csv.gz
 *.parquet
+
 
 # Model checkpoints and serialized artifacts
 *.pt

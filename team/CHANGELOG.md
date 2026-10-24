@@ -22,7 +22,10 @@
 
 ### Added
 
+* **2026-10-25:** `src/higgs_event_lab/classical.py`, `tests/unit/test_classical.py`, and `reports/03_classical_baseline_benchmarks.md` — Scikit-learn Logistic Regression baseline with leakage-free scaling via Pipeline, validation-only operating threshold selection, cross-feature group benchmarking (`low_level`, `high_level`, `all`), and `higgs-experiment-v1` artifact export (`MID-03`). *(Aditya)*
+* **2026-10-25:** `notebooks/01_midsem/01_eda_and_feature_groups.ipynb` — Comprehensive exploratory data analysis notebook analyzing schema semantics, data hygiene, empirical class balance, discrete b-tag distribution, kinematic features, and cross-feature correlations (`MID-02`). *(Aditya)*
 * **2026-10-25:** `src/higgs_event_lab/protocol.py`, `tests/unit/test_protocol.py`, and `docs/13_EXPERIMENT_PROTOCOL_AND_ARTIFACTS.md` — Shared deterministic train/validation/test split protocol (`higgs-split-v1`) and artifact contract (`higgs-experiment-v1`) for fair benchmark comparison without dataset persistence (`MID-05`, PR #4). *(Krishna)*
+
 * **2026-10-25:** `src/higgs_event_lab/neural.py` and `tests/unit/test_neural.py` — Compact PyTorch MLP binary classifier with BatchNorm1d, Dropout, early stopping on validation ROC-AUC, best-weights restoration, and `higgs-experiment-v1` artifact export (`MID-04`, PR #5). *(Rachit)*
 * **2026-10-25:** `notebooks/01_midsem/02_neural_network_baseline.ipynb` and `src/higgs_event_lab/neural.py` — Multi-group benchmark runner (`run_feature_group_benchmarks`) and interactive mid-semester notebook demonstrating MLP regularization, 21+7 cross-feature training, and artifact export (`MID-04`, PR #7). *(Rachit)*
 * **2026-10-25:** `src/higgs_event_lab/evaluation.py`, `splits.py`, `artifacts.py`, `deployment/Dockerfile`, `deployment/DEPLOYMENT_RUNBOOK.md`, and `reports/02_neural_network_benchmarks.md` — Shared evaluation & threshold selection module, split/artifact wrappers, production deployment container and runbook, and neural report section (`MID-05`, `END-06`). *(Krishna & Rachit)*
