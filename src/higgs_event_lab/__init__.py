@@ -11,6 +11,7 @@ from higgs_event_lab.features import (
     TARGET_COLUMN,
     get_feature_columns,
 )
+from higgs_event_lab.protocol import ARTIFACT_SCHEMA_VERSION, SPLIT_PROTOCOL_VERSION
 
 __all__ = [
     "ALL_COLUMNS",
@@ -20,4 +21,6 @@ __all__ = [
     "LOW_LEVEL_FEATURES",
     "TARGET_COLUMN",
     "get_feature_columns",
+    "ARTIFACT_SCHEMA_VERSION",
+    "SPLIT_PROTOCOL_VERSION",
 ]
