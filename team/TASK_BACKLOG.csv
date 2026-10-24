@@ -5,8 +5,8 @@ FND-03,foundation,Confirm exact mid-semester and end-semester rubric/deadlines,K
 FND-04,foundation,Verify UCI HIGGS schema and feature mapping,Aditya Rana,Krishna,P0,Document exact label/column order and 21+7 groups against official docs,Ready
 FND-05,foundation,Prepare scientific terminology and citations,Saumya Mishra,Krishna,P1,Beginner-readable physics/problem glossary with sources and limitations,Ready
 MID-01,midsem,Implement chunked data access and schema checks,Aditya Rana,Saumya QA,P0,Works on a small documented sample; no data committed; tests pass,Done
-MID-02,midsem,Create EDA and feature-group inspection,Aditya Rana,Saumya docs,P1,Counts/distributions/feature descriptions are generated from actual sample,In Review
-MID-03,midsem,Implement Logistic Regression baseline by feature group,Aditya Rana,Rachit review,P0,Consistent split and metrics; result metadata saved,In Review
+MID-02,midsem,Create EDA and feature-group inspection,Aditya Rana,Saumya docs,P1,Counts/distributions/feature descriptions are generated from actual sample,Done
+MID-03,midsem,Implement Logistic Regression baseline by feature group,Aditya Rana,Rachit review,P0,Consistent split and metrics; result metadata saved,Done
 MID-04,midsem,Implement compact MLP baseline,Rachit Gupta,Aditya review,P0,Compact MLP with batch norm/dropout; reproducible config and predictions,Done
 MID-05,midsem,Define and test shared experiment artifact schema,Krishna,Aditya; Rachit; Ronit,P0,One documented schema accepted before dashboard implementation,Done
 MID-06,midsem,Build minimal results dashboard shell,Ronit Singh,Krishna,P1,Loads real saved artifact; empty/error states work; no hard-coded scores,Done

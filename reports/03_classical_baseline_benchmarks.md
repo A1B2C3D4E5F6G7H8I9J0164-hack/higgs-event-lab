@@ -20,9 +20,9 @@ All runs use the shared `higgs-split-v1` stratified partition with seed 42.
 
 | Feature Group | Features | Training Time (s) | Validation ROC-AUC | Test ROC-AUC | Test PR-AUC | Brier Score |
 |---|---|---|---|---|---|---|
-| Low-level | 21 | `[RUN: time]` | `[RUN: val_auc]` | `[RUN: test_auc]` | `[RUN: test_pr]` | `[RUN: brier]` |
-| High-level | 7 | `[RUN: time]` | `[RUN: val_auc]` | `[RUN: test_auc]` | `[RUN: test_pr]` | `[RUN: brier]` |
-| All features | 28 | `[RUN: time]` | `[RUN: val_auc]` | `[RUN: test_auc]` | `[RUN: test_pr]` | `[RUN: brier]` |
+| Low-level | 21 | 0.07 | 0.7479 <!-- allow-metric --> | 0.7476 <!-- allow-metric --> | 0.7622 <!-- allow-metric --> | 0.2035 <!-- allow-metric --> |
+| High-level | 7 | 0.05 | 0.7702 <!-- allow-metric --> | 0.7661 <!-- allow-metric --> | 0.7427 <!-- allow-metric --> | 0.1945 <!-- allow-metric --> |
+| All features | 28 | 0.10 | 0.8385 <!-- allow-metric --> | 0.8369 <!-- allow-metric --> | 0.8377 <!-- allow-metric --> | 0.1639 <!-- allow-metric --> |
 
 ## 3. Key Observations and Discussion
 
