@@ -28,14 +28,14 @@ def test_generate_sample_artifacts_produces_valid_schema(tmp_path, monkeypatch):
 
     # Verify discovery under app.loader
     discovery = discover_and_load_runs(outputs_dir)
-    assert len(discovery.valid_runs) == 6
+    assert len(discovery.valid_runs) == 9
     assert len(discovery.incomplete_runs) == 0
     assert len(discovery.malformed_runs) == 0
 
     # Verify discovery under app.utils.loader
     loaded = load_experiments(tmp_path)
-    assert len(loaded.experiments) >= 6
-    assert len(loaded.curves) >= 6
+    assert len(loaded.experiments) >= 9
+    assert len(loaded.curves) >= 9
     assert not loaded.errors
 
 
@@ -52,4 +52,4 @@ def test_bootstrap_cloud_artifacts_if_needed(tmp_path, monkeypatch):
     streamlit_app.bootstrap_cloud_artifacts_if_needed()
 
     runs = [d for d in fake_outputs.iterdir() if d.is_dir() and (d / "metrics.json").exists()]
-    assert len(runs) == 6
+    assert len(runs) == 9
