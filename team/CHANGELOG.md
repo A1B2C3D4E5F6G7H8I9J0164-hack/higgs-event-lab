@@ -22,6 +22,10 @@
 
 ### Added
 
+* **2026-10-26:** `docs/14_RESULTS_RECONCILIATION.md`: side-by-side record of the 250k and 1M results, the inconsistency found in the final review, the tests that would resolve it, and the decisions needed. *(Saumya Mishra)*
+* **2026-10-26:** `team/BUG_TRACKER.md`: BUG-015 to BUG-026 added from the final-push review. *(Saumya Mishra)*
+* **2026-10-26:** `docs/12_QA_TEST_PLAN.md`: final-push test log (98 non-PyTorch tests passed, 1 environment failure, PyTorch and real-file checks listed as NOT RUN). *(Saumya Mishra)*
+
 * **2026-10-26:** `streamlit_app.py`, `.streamlit/config.toml`, `app/main.py`, `app/views/overview.py`, and `deployment/DEPLOYMENT_RUNBOOK.md` — Streamlit Community Cloud hosting integration with auto-bootstrap fallback for clean cloud deployments, custom scientific dark theme, and complete mid-semester evaluation readiness. *(Ronit & Krishna)*
 
 * **2026-10-26:** `docs/`, `reports/01_report_draft_methodology_limitations.md`, `team/BUG_TRACKER.md`, and `team/TASK_BACKLOG.csv` — Completed mid-semester methodology and limitations synthesis with genuine empirical benchmark figures, added comprehensive Mermaid architecture, decay topology, feature hierarchy, and testing pyramid diagrams across documentation, closed all 14 bug tracker items, and marked `MID-07` as Done. *(Saumya)*
@@ -53,6 +57,9 @@
 
 ### Changed
 
+* **2026-10-26:** `docs/07_REFERENCES.md`: rewritten with stable numbering R1 to R19; restores the physics and dataset entries and adds XGBoost, scikit-learn, PyTorch, Streamlit and evaluation-method references. Entries not yet checked against publisher pages are marked †. *(Saumya Mishra)*
+* **2026-10-26:** `docs/11_SETUP_GUIDE.md`: Streamlit prerequisite note; `app/main.py` vs `streamlit_app.py` explained; placeholder repository owner flagged (BUG-025). *(Saumya Mishra)*
+
 * **2026-10-21:** `CITATION.cff` — Real author names, release date, dataset, and paper references (`BUG-004`). Krishna's surname remains a placeholder. *(Saumya)*
 * **2026-10-21:** `docs/07_REFERENCES.md` — Added Higgs-mechanism, discovery, and Nobel references; entries numbered R1 to R8. *(Saumya)*
 * **2026-10-21:** `README.md`, `docs/02_REPOSITORY_STRUCTURE.md`, `REPOSITORY_FILE_LIST.txt` — Reading order and file tree updated for new documents. *(Saumya)*
@@ -64,6 +71,8 @@
 * **2026-10-21:** Stray `.DS_Store` file (macOS metadata) removed and git-ignored (`BUG-003`). *(Saumya)*
 
 ### Known Issues
+
+* **2026-10-26:** Headline result not yet settled: the 250k and 1M benchmarks disagree (BUG-015). Do not quote a headline ROC-AUC in the report until the decision is recorded in `docs/14`.
 
 * See `team/BUG_TRACKER.md` for the live list.
 * As of this date, no model, loader, dashboard, or deployment code exists; no behavior has been tested beyond documentation and repository hygiene.

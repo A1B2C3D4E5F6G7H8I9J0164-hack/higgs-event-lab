@@ -50,21 +50,30 @@ Sweep scope: every file in the uploaded scaffold (60 entries), read in full and 
 | BUG-012 | P3 | Versioning | `CITATION.cff` said version 0.1.0 while `CHANGELOG.md` said "Unreleased" only | Original files | Saumya | **Fixed**: both now say `0.1.0-dev` |
 | BUG-013 | P3 | Docs consistency | `docs/02` and `REPOSITORY_FILE_LIST.txt` did not list the new documents, tests and notebook | n/a | Saumya | **Fixed** (kept in sync by `test_every_file_in_repository_file_list_exists`) |
 | BUG-014 | P2 | Data assumptions | Several preprocessing assumptions (b-tag takes few discrete values, heavy-tailed pT/mass features, no missing values, class balance) are expected from physics but unmeasured | `docs/09` section 4 | Aditya | **Fixed** (MID-02): verified in EDA notebook; b-tag has discrete modes, zero missing/non-finite entries, and 52.8% signal fraction |
+| BUG-015 | **P0** | Results / headline | Headline MLP all-features test ROC-AUC is 0.9406 at 250k rows (`outputs/mlp_all`), but the 1M benchmark's wide MLP gives 0.8399 (`outputs/full_colab_results.json`). Report 01 and report 02 use different headline numbers. | `outputs/mlp_all/metrics.json`; `outputs/full_colab_results.json`; `reports/01`, `reports/02` | Krishna, Rachit | **Open.** Blocks the final report. See `docs/14_RESULTS_RECONCILIATION.md` | <!-- allow-metric -->
+| BUG-016 | P1 | Results / classical | Logistic Regression all-features test ROC-AUC is 0.8369 at 250k (C = 1.0, max_iter 1000) and 0.6834 at 1M (C = 1.0, max_iter 2000, labelled "tuned"). The regularisation is identical, so tuning does not explain the drop. The data or the code path must. | `outputs/logreg_all/metrics.json`; `outputs/full_colab_results.json`; `scripts/train_full_colab.py` | Aditya | **Open.** See `docs/14` section 3, observation 2, and tests T2, T3, T5 | <!-- allow-metric -->
+| BUG-017 | P1 | Results / leakage review | The 250k MLP all-features test accuracy is 0.865 alongside ROC-AUC 0.9406. Both are high for this benchmark and have not been reproduced from a clean run. Leakage is not ruled out. | `outputs/mlp_all/metrics.json` | Rachit, Krishna | **Open.** Needs a clean rerun with the same seed and a split-overlap check | <!-- allow-metric -->
+| BUG-018 | P2 | Results / reporting | `outputs/full_colab_results.json` gives the same `training_seconds` (412.03) for all three models. This is a copy error in the reporting code, so the training times are not per model. | `outputs/full_colab_results.json`; `scripts/train_full_colab.py` | Aditya, Rachit | **Open** |
+| BUG-019 | P3 | Artifacts | The 250k `metrics.json` files list feature names as `feat_0` to `feat_27` rather than the real column names. Dashboard feature tables will show generic names. | `outputs/*/metrics.json` (`features.names`) | Rachit, Aditya | **Open** |
+| BUG-020 | P1 | Reproducibility | The processed samples (`data/processed/higgs_sample_250k.csv.gz`, `higgs_sample_1m.csv.gz`) and `outputs/model_weights/` are git-ignored and absent from the repository. No one can regenerate the results from the repo alone. | `.gitignore`; `outputs/README.md` | Krishna | **Open.** Decide what to commit (manifests and hashes) and document regeneration steps |
+| BUG-021 | P2 | Dashboard / entry points | `app/main.py` and `streamlit_app.py` both exist, and `app/loader.py` and `app/utils/loader.py` overlap. | `app/` | Ronit | **Open.** Consolidate to one entry point and one loader |
+| BUG-022 | P2 | Tests / environment | `tests/unit/test_app_views.py` requires Streamlit. It fails in an environment where only the core test tools are installed. | `tests/unit/test_app_views.py`; `docs/11` section 8 | Ronit, Saumya | **Partly addressed:** setup guide now warns. Add Streamlit to the test prerequisites and CI |
+| BUG-023 | P2 | Documentation / reports | The Saumya report draft (`HiggsLens_Project_Report`) states that XGBoost is not implemented and omits the 1M benchmark. Both are now in the repo. | `docs/` and report draft | Saumya | **Open.** Report rewrite waits for BUG-015 |
+| BUG-024 | P2 | Governance | `docs/decisions/DRAFT-ADR-0002` is still "not formally approved", but MID-05 is marked Done in the task tracker. | `docs/decisions/DRAFT-ADR-0002-experiment-artifact-schema.md`; `team/TASK_BACKLOG.csv` | Krishna | **Open.** Approve or revise the ADR |
+| BUG-025 | P2 | Deployment | The Streamlit Cloud instructions named a different GitHub owner account for the repository. The owner must match the team's repository before deployment. Repository owner also left as `<OWNER>` in the clone command. | `docs/11_SETUP_GUIDE.md` | Krishna | **Open.** Confirm owner and replace the placeholder |
+| BUG-026 | P2 | Data privacy | `data/processed/higgs_sample_250k.csv.gz.manifest.json` records the local machine path (a personal user folder). The path is not needed for reproduction. | manifest file | Aditya | **Open.** Strip the path from the manifest, or keep the manifest out of version control |
 
-### Summary counts (2026-10-26)
+### Summary counts (2026-10-26, after the final results push)
 
 | Severity | Total | Fixed | Open |
 |---|---|---|---|
-| P0 | 1 | 1 | 0 |
-| P1 | 5 | 5 | 0 |
-| P2 | 3 | 3 | 0 |
-| P3 | 5 | 5 | 0 |
-| **All** | **14** | **14** | **0** |
+| P0 | 2 | 1 | 1 (BUG-015) |
+| P1 | 8 | 5 | 3 (BUG-016, 017, 020) |
+| P2 | 10 | 3 | 7 (BUG-018, 021, 022, 023, 024, 025, 026) |
+| P3 | 6 | 5 | 1 (BUG-019) |
+| **All** | **26** | **14** | **12** |
 
-
-(BUG-004 is counted as Fixed with one follow-up item for Krishna.)
-
----
+BUG-022 is partly addressed (the setup guide now warns about Streamlit) and is counted as open until the test prerequisites are fixed.
 
 ## 5. Watch list: risks to test as soon as code exists
 
