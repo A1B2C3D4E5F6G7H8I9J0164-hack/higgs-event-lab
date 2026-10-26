@@ -54,7 +54,7 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
         st.markdown(
             """
             - **Primary Research Question:** Can machine learning classifiers effectively separate simulated exotic Higgs decay signatures from standard top-pair background, and what is the exact marginal value of physicist-engineered kinematic features?
-            - **High-Level Invariant Mass Dominance:** The 7 composite invariant mass features ($m_{jj}, \dots, m_{wwbb}$) significantly outperform the 21 raw detector observables for both models:
+            - **High-Level Invariant Mass Dominance:** The 7 composite invariant mass features ($m_{jj}, \\dots, m_{wwbb}$) significantly outperform the 21 raw detector observables for both models:
               - **Compact MLP:** High-level alone achieves **0.9043 ROC-AUC** vs **0.8000** for low-level features (+10.4% gain).
               - **Logistic Regression:** High-level alone achieves **0.7661 ROC-AUC** vs **0.7476** for low-level features (+1.9% gain).
             - **Top Mid-Sem Baseline:** Combining all 28 features in a 3-layer compact PyTorch MLP (256-128-64 with BatchNorm & Dropout) yields **0.9406 ROC-AUC**, **0.9372 PR-AUC**, and **96.2% background rejection** at a frozen 50% signal efficiency threshold with strong calibration (Brier score 0.0945).

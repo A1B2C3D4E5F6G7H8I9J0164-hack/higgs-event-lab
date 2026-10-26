@@ -43,7 +43,7 @@ from higgs_event_lab.features import (
 )
 
 SEED = 42
-SAMPLE_PATH = PROJECT_ROOT / "data" / "processed" / "higgs_sample_250k.csv.gz"
+SAMPLE_PATH = Path(os.environ.get("HIGGS_SAMPLE_PATH", PROJECT_ROOT / "data" / "processed" / "higgs_sample_250k.csv.gz"))
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 CURVES_DIR = OUTPUTS_DIR / "curves"
 

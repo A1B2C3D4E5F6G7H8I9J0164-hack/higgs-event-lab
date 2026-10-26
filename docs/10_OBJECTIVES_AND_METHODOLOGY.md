@@ -53,7 +53,7 @@ Proving the Higgs boson exists, simulating the Higgs field, claiming real-data d
 | `high_level` (7) | E4 | E5 | E6 |
 | `all` (28) | E7 | E8 | E9 |
 
-Mid-semester scope (per the milestones): Logistic Regression and MLP first, XGBoost added for end-semester (backlog `END-01`). Missing cells must be listed as "not run" in the report, never left blank or filled.
+Mid-semester scope: Logistic Regression, XGBoost, and compact MLP baselines. Missing cells must be listed as "not run" in the report, never left blank or filled.
 
 ### 4.2 Pipeline (the same for every experiment)
 
@@ -187,4 +187,3 @@ Every run stores: dataset source, retrieval date, file checksum, sampled row cou
 | Stage | What this methodology must deliver | Source |
 |---|---|---|
 | Mid-semester | Documented source/row count, feature-group experiments as runtime allows, fair evaluation, ROC-AUC and average precision, calibration and training time where implemented, limitations, reproducible demo | `docs/05` |
-| End-semester | XGBoost, validation-selected threshold analysis, repeated seeds, dashboard on real artifacts, full report | `docs/05`, `team/TASK_BACKLOG.csv` |

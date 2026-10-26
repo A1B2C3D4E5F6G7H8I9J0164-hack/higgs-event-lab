@@ -37,7 +37,6 @@ Acceptance: documented source/row count, low/high/all feature experiments as sup
 - Record calibration and compute trade-offs; quantify uncertainty for the primary comparison if runtime permits.
 - Ensure the final test set was not used for model/threshold selection.
 
-## Stage 4 — Product completion and end-semester submission
 
 - The dashboard reads actual experiment artifacts and shows source, sample count, split and model metadata.
 - User can compare model/features, inspect ROC/PR/calibration, and view the validation-selected operating point evaluated on test.

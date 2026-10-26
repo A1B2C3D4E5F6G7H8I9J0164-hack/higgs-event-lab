@@ -307,7 +307,7 @@ def main() -> None:
             },
             "provenance": {
                 "created_at": datetime.now(timezone.utc).isoformat(),
-                "author": "ronithi27",
+                "author": "CosmicMagnetar",
             },
         }
         experiments_json.append(exp_entry)

@@ -1,10 +1,25 @@
 # Notebook policy
 
-## Planned notebooks
+## Notebook run order
 
-- `00_physics/`: optional beginner-level Higgs physics and dataset interpretation notebook.
-- `01_midsem/`: compact MVP, target about 250,000 events when available.
-- `02_endsem/`: expanded benchmark, target up to 1,000,000 events when runtime allows.
+Run the notebooks in this order on a fresh machine.
+
+1. `00_physics/00_higgs_physics_and_dataset_intro.ipynb`
+   Beginner physics and dataset context. Contains no model results.
+2. `01_midsem/01_eda_and_feature_groups.ipynb`
+   Exploratory data analysis on a 50,000 event sample.
+3. `01_midsem/02_neural_network_baseline.ipynb`
+   Compact MLP architecture and feature-group comparison.
+
+Each notebook downloads the original UCI HIGGS dataset automatically when
+`data/raw/HIGGS.csv.gz` is missing. The download is large (about 2.6 GB), so
+the first run takes time. The notebooks also build
+`data/processed/higgs_sample_250k.csv.gz` when it is missing.
+
+## Data sources
+
+- Official UCI archive: https://archive.ics.uci.edu/dataset/280/higgs
+- Download zip: https://archive.ics.uci.edu/static/public/280/higgs.zip
 
 ## Notebook structure
 

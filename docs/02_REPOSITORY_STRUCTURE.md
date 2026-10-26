@@ -41,8 +41,7 @@ higgs-event-lab/
 ├── notebooks/
 │   ├── README.md
 │   ├── 00_physics/      (README.md, 00_higgs_physics_and_dataset_intro.ipynb)
-│   ├── 01_midsem/
-│   └── 02_endsem/
+│   └── 01_midsem/
 ├── src/higgs_event_lab/README.md
 ├── tests/
 │   ├── README.md
@@ -87,9 +86,6 @@ Saumya for teaching text; domain owner for code
 notebooks/01_midsem/
 Small, deadline-oriented prototype workflow
 Krishna coordinates, Aditya/Rachit own model cells
-notebooks/02_endsem/
-Full reproducible evaluation workflow
-Krishna coordinates, module owners own their experiment components
 src/higgs_event_lab/
 Reusable importable code: data, features, models, evaluation, artifacts
 Aditya data/classical; Rachit MLP; Krishna shared evaluation contract

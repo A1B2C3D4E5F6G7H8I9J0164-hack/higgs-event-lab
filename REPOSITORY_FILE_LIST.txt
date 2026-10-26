@@ -28,7 +28,6 @@ docs/07_REFERENCES.md
 docs/decisions/ADR-0001-data-source-and-project-boundary.md
 notebooks/00_physics/README.md
 notebooks/01_midsem/README.md
-notebooks/02_endsem/README.md
 notebooks/README.md
 outputs/README.md
 reports/README.md

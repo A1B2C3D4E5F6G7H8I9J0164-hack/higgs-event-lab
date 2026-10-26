@@ -149,3 +149,25 @@ The mid-semester MVP milestone is fully achieved:
 - Streamlit scientific dashboard operating read-only on real serialized artifacts.
 - 104 of 104 automated tests passing.
 - Presentation slide deck and viva examination defense pack ready.
+
+---
+
+## 10. Notebook Run Order and Data Download
+
+The notebooks download the original UCI HIGGS data automatically when
+`data/raw/HIGGS.csv.gz` is missing. The first run downloads about 2.6 GB.
+
+Run the notebooks in this order:
+
+1. `notebooks/00_physics/00_higgs_physics_and_dataset_intro.ipynb`
+2. `notebooks/01_midsem/01_eda_and_feature_groups.ipynb`
+3. `notebooks/01_midsem/02_neural_network_baseline.ipynb`
+4. `notebooks/03_full/00_full_higgs_colab.ipynb` (Colab/Kaggle full data)
+
+Data sources:
+
+- UCI dataset page: https://archive.ics.uci.edu/dataset/280/higgs
+- Download zip: https://archive.ics.uci.edu/static/public/280/higgs.zip
+
+The processed 250,000 event sample is created automatically at
+`data/processed/higgs_sample_250k.csv.gz` when it is missing.
