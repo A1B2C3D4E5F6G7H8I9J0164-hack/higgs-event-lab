@@ -1,6 +1,6 @@
 # Reusable Python package
 
-This is the planned home for reusable, tested code. The scaffold does not implement models yet.
+This is the home for reusable, tested package code for the Higgs Event Lab benchmark suite.
 
 Modules status:
 - `features.py`: **[implemented, MID-01]** verified UCI schema, feature group mappings (`low_level`, `high_level`, `all`), label exclusion safeguards. *(Aditya)*
@@ -10,6 +10,6 @@ Modules status:
 - `artifacts.py`: **[implemented, MID-05]** versioned artifact schema and export helpers shared with the dashboard. *(Krishna)*
 - `evaluation.py`: **[implemented, MID-05]** standardized ROC-AUC, PR-AUC, Brier score, calibration curves, and validation threshold selection. *(Krishna)*
 - `neural.py`: **[implemented, MID-04]** compact PyTorch MLP with batch norm, dropout, early stopping, and multi-group benchmark runner. *(Rachit)*
-- `classical.py`: **[pending: Aditya, MID-03]** Logistic Regression and XGBoost baseline wrappers.
+- `classical.py`: **[implemented, MID-03]** Logistic Regression baseline wrapper with StandardScaler pipeline, threshold tuning, and multi-group benchmarks. *(Aditya)*
 
 Aditya owns data/features/classical modules; Rachit owns neural.py; Krishna owns shared split/evaluation/artifact interfaces and deployment. Keep module boundaries small and tests close to the behavior they validate.
