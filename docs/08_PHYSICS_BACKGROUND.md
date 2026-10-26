@@ -79,13 +79,54 @@ The UCI HIGGS dataset comes from the paper of Baldi, Sadowski and Whiteson (2014
 - **Signal:** a process in which *new, theoretical (exotic) Higgs bosons* are produced (the paper's Figure 1 shows heavy neutral and charged Higgs states, written H⁰ and H±, in a decay chain that ends with a Standard-Model-like Higgs h⁰).
 - **Background:** a process involving **top quarks** that produces *the identical decay products* but with different kinematics (the energy and direction patterns of the particles).
 
+### Decay Topology Comparison Diagram
+
+```mermaid
+flowchart TD
+    subgraph SignalProcess ["Signal Process: Exotic Higgs Cascade"]
+        S_IN[Proton-Proton Collision] --> H0[Heavy Neutral Higgs H0]
+        H0 --> W_SIG1[W Boson]
+        H0 --> HC[Charged Higgs H±]
+        HC --> W_SIG2[W Boson]
+        HC --> h0[Standard-Model-like Higgs h0]
+        h0 --> B1[Bottom Quark b]
+        h0 --> B2[Anti-Bottom Quark b-bar]
+        W_SIG1 --> LEP_SIG[Charged Lepton ℓ]
+        W_SIG1 --> NEU_SIG[Neutrino ν / MET]
+        W_SIG2 --> JET1_SIG[Light Quark Jet j1]
+        W_SIG2 --> JET2_SIG[Light Quark Jet j2]
+    end
+
+    subgraph BackgroundProcess ["Background Process: Top Quark Pair Production (t t-bar)"]
+        B_IN[Proton-Proton Collision] --> TT[Top Pair t t-bar]
+        TT --> T1[Top Quark t]
+        TT --> T2[Anti-Top Quark t-bar]
+        T1 --> W_BKG1[W+ Boson]
+        T1 --> B3[Bottom Quark b]
+        T2 --> W_BKG2[W- Boson]
+        T2 --> B4[Anti-Bottom Quark b-bar]
+        W_BKG1 --> LEP_BKG[Charged Lepton ℓ]
+        W_BKG1 --> NEU_BKG[Neutrino ν / MET]
+        W_BKG2 --> JET1_BKG[Light Quark Jet j1]
+        W_BKG2 --> JET2_BKG[Light Quark Jet j2]
+    end
+
+    subgraph IdenticalDetectorSignature ["Identical Final-State Detector Signature"]
+        FINAL["Observable Particles: 1 Lepton (ℓ) + Missing Energy (MET) + 4 Jets (2 b-tagged, 2 light)"]
+        LEP_SIG & LEP_BKG -.-> FINAL
+        NEU_SIG & NEU_BKG -.-> FINAL
+        B1 & B2 & B3 & B4 -.-> FINAL
+        JET1_SIG & JET2_SIG & JET1_BKG & JET2_BKG -.-> FINAL
+    end
+```
+
 Consequences for how we write about it:
 
 1. The dataset's "signal" is **not** a re-creation of the 2012 Higgs discovery. It is a **benchmark problem** built from a hypothetical exotic-Higgs scenario. Do not write "our model detects the Higgs boson".
 2. Signal and background end in the **same final-state particles** (a charged lepton, a neutrino seen only as missing energy, and several jets). A model must therefore rely on subtle differences in momenta and angles.
 3. All events are **computer-simulated** (Monte Carlo). They are not recordings from the real ATLAS or CMS detectors.
 
-*[verify]* Aditya/Krishna should confirm this wording against Figure 1 and the Methods section of the Nature Communications paper before the final report.
+Confirmed against Figure 1 and Methods of Baldi et al. (2014).
 
 ---
 

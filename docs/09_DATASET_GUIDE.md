@@ -77,6 +77,31 @@ The exact jet combinations used for each mass are defined in the original paper,
 
 ### 3.3 Feature groups used in the experiments
 
+```mermaid
+flowchart TD
+    ALL[28 HIGGS Features: 'all'] --> LOW[21 Low-Level Kinematic Features: 'low_level']
+    ALL --> HIGH[7 High-Level Invariant Masses: 'high_level']
+
+    subgraph LowLevelKinematics [21 Low-Level Detector Observables]
+        LOW --> LEP[Lepton Observables: pt, eta, phi]
+        LOW --> MET[Missing Transverse Energy: magnitude, phi]
+        LOW --> J1[Jet 1: pt, eta, phi, b-tag]
+        LOW --> J2[Jet 2: pt, eta, phi, b-tag]
+        LOW --> J3[Jet 3: pt, eta, phi, b-tag]
+        LOW --> J4[Jet 4: pt, eta, phi, b-tag]
+    end
+
+    subgraph HighLevelInvariants [7 Reconstructed Composite Invariant Masses]
+        HIGH --> MJJ[m_jj: dijet mass]
+        HIGH --> MJJJ[m_jjj: trijet mass]
+        HIGH --> MLV[m_lv: W-candidate mass]
+        HIGH --> MJLV[m_jlv: top-candidate mass]
+        HIGH --> MBB[m_bb: Higgs-candidate mass]
+        HIGH --> MWBB[m_wbb: W plus 2 b-jets mass]
+        HIGH --> MWWBB[m_wwbb: complete decay system mass]
+    end
+```
+
 | Group | Columns used | Count |
 |---|---|---|
 | `low_level` | `lepton_pt` ... `jet_4_btag` | 21 |

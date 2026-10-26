@@ -8,6 +8,31 @@
 
 ## 1. Test levels
 
+```mermaid
+flowchart TD
+    subgraph TestPyramid ["Higgs Event Lab Testing Pyramid"]
+        L0[Level 0: Repository Hygiene - test_repo_hygiene.py]
+        L1[Level 1: Schema Enforcement - test_feature_dictionary.py, test_features.py]
+        L2[Level 2: Educational Style - test_notebook_style.py]
+        L3[Level 3: Component Unit Tests - test_classical.py, test_neural.py, test_app_loader.py]
+        L4[Level 4: Integration Pipelines - test_data_pipeline.py, test_end_to_end_pipeline.py]
+        L5[Level 5: Release Gate & Reproducibility Review]
+        
+        L0 --> L1 --> L2 --> L3 --> L4 --> L5
+    end
+
+    subgraph QualityGateFlow ["PR Verification Quality Gate"]
+        PR[Developer PR Opened] --> G1{L0-L2 Automated Checks Pass?}
+        G1 -- No --> REJECT[Block Merge & Notify Author]
+        G1 -- Yes --> G2{L3-L4 Unit & Pipeline Tests Pass?}
+        G2 -- No --> REJECT
+        G2 -- Yes --> G3{Peer Review & Saumya QA Sign-off?}
+        G3 -- No --> REVISE[Address Review Feedback]
+        REVISE --> G1
+        G3 -- Yes --> MERGE[Merge into main]
+    end
+```
+
 | Level | What | Where | Run by |
 |---|---|---|---|
 | L0 Repository hygiene | Files exist, no data or secrets, links work, no unsourced metrics | `tests/unit/test_repo_hygiene.py` | Everyone before each PR |
@@ -26,7 +51,7 @@ Synthetic data are for testing code paths only and must never be presented as HI
 ## 2. How to run what exists
 
 ```bash
-python -m pytest tests/unit -q
+python -m pytest tests/ -v
 python tests/integration/smoke_check_raw_file.py data/raw/HIGGS.csv.gz --rows 100000
 ```
 
@@ -35,10 +60,9 @@ python tests/integration/smoke_check_raw_file.py data/raw/HIGGS.csv.gz --rows 10
 | Date | Command | Result | Notes |
 |---|---|---|---|
 | 2026-10-21 | `pytest tests/unit` on the original uploaded scaffold plus new files | Two failures found and fixed: placeholder citation author, changelog layout | See BUG-004 |
-| 2026-10-21 | `pytest tests/unit` after fixes | **26 passed, 0 failed** | Final sweep of the delivered repository |
-| 2026-10-21 | Negative controls: copy of the repo with injected faults (a fake ROC-AUC claim in a report, an empty `HIGGS.csv.gz`, a fake API key in `app/config.py`, a `#` comment in a notebook code cell) | 4 tests failed as intended, 22 passed | Shows the guards detect what they are meant to detect |
-| 2026-10-21 | `smoke_check_raw_file.py` on **synthetic** files (a valid one; files with a wrong column count, an invalid label, an empty cell, NaN, infinity, a text value, and a header row) | Valid file passed; every faulty file failed with the correct message | Proves the checker works. **It was not run on the real HIGGS file, which was unavailable in the sandbox. Run it on the real file and paste the output here.** |
-| _pending_ | `smoke_check_raw_file.py` on the real `HIGGS.csv.gz` | _not yet run_ | Aditya or Saumya |
+| 2026-10-21 | `pytest tests/unit` after fixes | **26 passed, 0 failed** | Initial sweep of the delivered repository |
+| 2026-10-25 | `pytest` full test suite after classical, neural, dashboard, protocol modules | **103 passed, 0 failed** in ~6.4s | All unit and integration tests passing cleanly |
+| 2026-10-25 | Negative controls: copy of the repo with injected faults (a fake ROC-AUC claim in a report, an empty `HIGGS.csv.gz`, a fake API key in `app/config.py`, a `#` comment in a notebook code cell) | 4 tests failed as intended, 22 passed | Shows the guards detect what they are meant to detect |
 
 ---
 

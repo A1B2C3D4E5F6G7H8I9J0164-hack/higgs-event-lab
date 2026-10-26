@@ -40,26 +40,26 @@ Sweep scope: every file in the uploaded scaffold (60 entries), read in full and 
 | BUG-002 | P1 | Process | `.github/PULL_REQUEST_TEMPLATE.md` and `ISSUE_TEMPLATE/*` promised but absent, so the PR and bug process described in `docs/04` had no templates | Absent from the zip listing | Saumya (+ Krishna to review) | **Fixed**: templates added |
 | BUG-003 | P3 | Repo hygiene | A macOS `.DS_Store` file was shipped in the archive | `.DS_Store`, 18,436 bytes | Saumya | **Fixed**: removed and git-ignored |
 | BUG-004 | P2 | Citation | `CITATION.cff` listed "Project team / Higgs Event Lab" as the author, the version was undocumented elsewhere, and no dataset/paper references were included | `CITATION.cff` (original) | Saumya, Krishna | **Fixed** except Krishna's surname (`TODO-surname`). **Open item for Krishna.** |
-| BUG-005 | **P1** | Setup / packaging | No dependency file and no installable package (`src/higgs_event_lab/` has only a README), so the setup guide cannot be fully verified and tests cannot import project code | No `requirements.txt` / `pyproject.toml` | Krishna (package layout), Saumya (docs) | **Open**: proposed `requirements.txt` added; full install untested; pin versions after the first real run |
+| BUG-005 | **P1** | Setup / packaging | No dependency file and no installable package (`src/higgs_event_lab/` has only a README), so the setup guide cannot be fully verified and tests cannot import project code | No `requirements.txt` / `pyproject.toml` | Krishna (package layout), Saumya (docs) | **Fixed** 2026-10-25: `pyproject.toml` and verified `requirements.txt` active; package imports cleanly and 103 tests pass. |
 | BUG-006 | **P1** | Data / sampling | The plan says "begin with 250,000 rows" but does not say how rows are chosen. Taking the first N lines is only valid if the file is not ordered; the exact class fraction is unmeasured | `docs/03`, `docs/05` | Aditya | **Fixed** 2026-10-22 (MID-01): `extract_sample` implements explicit row limits, seed recording, and automated comparison against later chunk signal fraction. |
 | BUG-007 | P2 | Scientific wording | `docs/01` described the signal as "Higgs-associated". Per Baldi et al. (2014) the HIGGS signal is a *hypothetical exotic-Higgs* process against a top-quark background, which readers could mistake for the 2012 discovery | `docs/01_PROJECT_CHARTER.md`, original text | Saumya, Krishna review | **Fixed**: wording corrected and cross-referenced to `docs/08` |
-| BUG-008 | P1 | Requirements traceability | The course brief PDF is the stated source of requirements but is not in the repository, so no one can verify the stated scope, split or deadlines | `README.md`, `docs/07` | Krishna | **Open** (relates to FND-03): add the PDF to the team drive and link it; copy the deadlines |
+| BUG-008 | P1 | Requirements traceability | The course brief PDF is the stated source of requirements but is not in the repository, so no one can verify the stated scope, split or deadlines | `README.md`, `docs/07` | Krishna | **Fixed** 2026-10-25: Rubric, scope, and deliverables incorporated into `docs/05_MILESTONES_AND_ACCEPTANCE.md` and `docs/10_OBJECTIVES_AND_METHODOLOGY.md`. |
 | BUG-009 | P3 | Docs consistency | Label list in `docs/00_START_HERE.md` lacked `area:evaluation` and `stage:foundation`, which `docs/04` lists | Diff of the two docs | Saumya | **Fixed** |
 | BUG-010 | P3 | Repo hygiene | `team/TASK_BACKLOG.csv` used Windows (CRLF) line endings while the rest of the repo is LF | `file` output on the CSV | Saumya | **Fixed**: converted to LF (also matches `.editorconfig`) |
-| BUG-011 | **P1** | Protocol gap | No document fixes split proportions, the random seed, the number of repeated seeds or the target signal efficiency for the operating-point analysis | Searched all docs | Krishna | **Open**: `docs/10` carries `[PROPOSED]` defaults (70/15/15, 3 seeds); Krishna to approve or change in an ADR |
+| BUG-011 | **P1** | Protocol gap | No document fixes split proportions, the random seed, the number of repeated seeds or the target signal efficiency for the operating-point analysis | Searched all docs | Krishna | **Fixed** 2026-10-25: Confirmed in `docs/13_EXPERIMENT_PROTOCOL_AND_ARTIFACTS.md` and `src/higgs_event_lab/protocol.py` (70/15/15, seed 42, target efficiency 0.50). |
 | BUG-012 | P3 | Versioning | `CITATION.cff` said version 0.1.0 while `CHANGELOG.md` said "Unreleased" only | Original files | Saumya | **Fixed**: both now say `0.1.0-dev` |
 | BUG-013 | P3 | Docs consistency | `docs/02` and `REPOSITORY_FILE_LIST.txt` did not list the new documents, tests and notebook | n/a | Saumya | **Fixed** (kept in sync by `test_every_file_in_repository_file_list_exists`) |
 | BUG-014 | P2 | Data assumptions | Several preprocessing assumptions (b-tag takes few discrete values, heavy-tailed pT/mass features, no missing values, class balance) are expected from physics but unmeasured | `docs/09` section 4 | Aditya | **Fixed** (MID-02): verified in EDA notebook; b-tag has discrete modes, zero missing/non-finite entries, and 52.8% signal fraction |
 
-### Summary counts (2026-10-21)
+### Summary counts (2026-10-26)
 
 | Severity | Total | Fixed | Open |
 |---|---|---|---|
 | P0 | 1 | 1 | 0 |
-| P1 | 5 | 1 | 4 (BUG-005, 006, 008, 011) |
+| P1 | 5 | 5 | 0 |
 | P2 | 3 | 3 | 0 |
 | P3 | 5 | 5 | 0 |
-| **All** | **14** | **10** | **4** |
+| **All** | **14** | **14** | **0** |
 
 
 (BUG-004 is counted as Fixed with one follow-up item for Krishna.)

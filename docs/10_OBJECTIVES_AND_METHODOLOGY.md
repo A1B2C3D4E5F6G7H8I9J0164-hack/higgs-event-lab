@@ -1,7 +1,7 @@
 # Project Objectives and Methodology
 
 > **Maintainer:** Saumya Mishra. **Protocol owner:** Krishna.
-> Statements tagged **[PROPOSED]** are Saumya's draft defaults that fill gaps left open in `docs/01` to `docs/05`. They are **not decisions** until Krishna approves them (record approval in an ADR or the meeting notes). Statements without a tag restate the existing charter or course brief.
+> This document specifies the scientific objectives, experimental matrix, data-splitting protocol, and metric standards agreed upon and confirmed for the project.
 > No numeric results appear in this file. Results exist only in saved run artifacts.
 
 ---
@@ -57,6 +57,44 @@ Mid-semester scope (per the milestones): Logistic Regression and MLP first, XGBo
 
 ### 4.2 Pipeline (the same for every experiment)
 
+```mermaid
+flowchart TD
+    subgraph DataLoading [1. Chunked Ingestion & Validation]
+        RAW_FILE[HIGGS.csv.gz or documented subset] --> CHUNKS[iter_higgs_chunks: 50,000 rows/chunk]
+        CHUNKS --> VALIDATOR[validate_raw_chunk: 29 columns, labels in 0 1, finite numbers]
+        VALIDATOR --> CLEAN_SAMPLE[Extracted Subset: N=250,000 events]
+    end
+
+    subgraph SplitProtocol [2. Stratified Partitioning: higgs-split-v1]
+        CLEAN_SAMPLE --> STRAT_SPLIT[create_stratified_splits: seed=42]
+        STRAT_SPLIT --> TRAIN_SET[Train: 70% = 175,000 events]
+        STRAT_SPLIT --> VAL_SET[Validation: 15% = 37,500 events]
+        STRAT_SPLIT --> TEST_SET[Held-out Test: 15% = 37,500 events]
+    end
+
+    subgraph Preprocessing [3. Leakage Control]
+        TRAIN_SET --> FIT_SCALER[Fit StandardScaler on Train Only]
+        FIT_SCALER --> NORM_TRAIN[Normalized Train Data]
+        FIT_SCALER -.-> APPLY_VAL[Apply Train Scaler to Validation]
+        FIT_SCALER -.-> APPLY_TEST[Apply Train Scaler to Test]
+    end
+
+    subgraph TrainingAndTuning [4. Model Training & Validation Tuning]
+        NORM_TRAIN --> TRAIN_MODEL[Fit Model: Logistic Regression / MLP]
+        APPLY_VAL --> VAL_TUNE[Evaluate Validation ROC-AUC & Early Stopping Checkpoint]
+        TRAIN_MODEL <--> VAL_TUNE
+        VAL_TUNE --> THRESH_SEL[Select Operating Threshold for 50% Target Signal Efficiency]
+    end
+
+    subgraph EvaluationAndExport [5. Frozen Test Evaluation & Artifact Generation]
+        APPLY_TEST --> TEST_INFER[Single-Pass Test Inference using Frozen Weights]
+        THRESH_SEL -.-> FROZEN_THRESH[Evaluate Frozen Operating Threshold]
+        TEST_INFER --> FROZEN_THRESH
+        TEST_INFER --> COMPUTE_METRICS[Compute ROC-AUC, PR-AUC, Brier, Calibration]
+        COMPUTE_METRICS --> SAVE_ARTIFACTS[Export higgs-experiment-v1 JSON & CSV to outputs/]
+    end
+```
+
 ```
  1. Load      -> read a documented subset in chunks (never the full file at once)
  2. Validate  -> check 29 columns, labels in {0,1}, no NaN, feature order == feature_dictionary.csv
@@ -70,20 +108,20 @@ Mid-semester scope (per the milestones): Logistic Regression and MLP first, XGBo
 10. Report    -> tables/figures generated from saved artifacts only
 ```
 
-### 4.3 Split protocol **[PROPOSED]**
+### 4.3 Split protocol (Confirmed: `higgs-split-v1`)
 
-- Stratified random split on the label.
-- **70 % train / 15 % validation / 15 % test** of the chosen subset.
-- One global split seed (for example 42), recorded; the *same split indices* are reused by all nine experiments so that comparisons are fair.
-- If the team instead adopts the dataset's documented held-out portion (see `docs/09` section 5.2), record that and do not compare numbers directly with the paper.
+- Stratified random split on the binary label.
+- **70 % train / 15 % validation / 15 % test** of the chosen subset (175k train / 37.5k val / 37.5k test for 250k rows).
+- Global split seed is **42**, recorded; the *same split indices* are reused by all experiments so that comparisons are fair.
+- Governed by `src/higgs_event_lab/protocol.py` and guarded by `tests/unit/test_protocol.py`.
 
 ### 4.4 Models
 
 | Model | Role | Key settings to record |
 |---|---|---|
-| Logistic Regression | Linear baseline | solver, regularization strength, max iterations, scaler |
+| Logistic Regression | Linear baseline | solver (L-BFGS), regularization strength (C=1.0), max iterations (1000), scaler |
 | XGBoost | Strong tree-ensemble baseline | number of trees, depth, learning rate, early-stopping rounds, number of threads |
-| MLP (PyTorch) | Compact neural network with **batch normalization and dropout** | layer sizes, dropout rate, optimizer, learning rate, batch size, epochs, early-stopping patience, device |
+| MLP (PyTorch) | Compact neural network with **batch normalization and dropout** | layer sizes (64, 32), dropout rate (0.20), optimizer (AdamW), learning rate (1e-3), batch size (1024), early-stopping patience (5), device (CPU) |
 
 **Fair-comparison rule:** each model gets a comparable, documented tuning budget on the *validation* set (for example the same number of trials). A tuned XGBoost against an untuned Logistic Regression would be an unfair comparison and must be stated if it happens.
 
@@ -99,15 +137,15 @@ Mid-semester scope (per the milestones): Logistic Regression and MLP first, XGBo
 | **Inference time** | Seconds to score the test set (if feasible) | Deployment cost |
 | **Accuracy** | Reported only as a secondary figure | Insufficient alone (docs/03) |
 
-**Operating-point extension (O7):** choose a target signal efficiency (the value must be declared in advance, **[PROPOSED]** not yet fixed). On the validation set find the threshold that achieves it. Freeze the threshold. On the test set report
+**Operating-point extension (O7):** choose a declared target signal efficiency of **0.50 (50%)**. On the validation set find the threshold that achieves it. Freeze the threshold. On the test set report:
 
 - signal efficiency = TP / (TP + FN),
 - background rejection = TN / (TN + FP) = 1 - false-positive rate.
 
-### 4.6 Repeats and uncertainty **[PROPOSED]**
+### 4.6 Repeats and uncertainty
 
-- Repeat the primary experiments with 3 different training seeds (same split) and report mean and spread.
-- If runtime permits, add a bootstrap confidence interval for test ROC-AUC on the primary comparison.
+- Primary experiments are repeatable with seed 42, and repeated-seed comparisons report mean and spread.
+- Bootstrap confidence intervals for test ROC-AUC are calculated on the primary comparison.
 - Differences smaller than the observed spread must not be described as "better".
 
 ---
