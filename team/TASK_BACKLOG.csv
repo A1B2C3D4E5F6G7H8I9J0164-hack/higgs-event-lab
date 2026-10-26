@@ -1,9 +1,9 @@
 id,stage,task,primary_owner,support_or_reviewer,priority,acceptance_criteria,status
-FND-01,foundation,Create the new GitHub repository and commit this scaffold,Krishna,Saumya,P0,Repo exists under chosen owner; initial tree committed; no data or secrets tracked,Ready
-FND-02,foundation,Invite team and establish issue board and PR workflow,Krishna,All members,P0,Four collaborators can clone and open a PR; labels and board exist,Ready
-FND-03,foundation,Confirm exact mid-semester and end-semester rubric/deadlines,Krishna,Saumya,P0,Dates and required deliverables copied into milestones without guessing,Ready
-FND-04,foundation,Verify UCI HIGGS schema and feature mapping,Aditya Rana,Krishna,P0,Document exact label/column order and 21+7 groups against official docs,Ready
-FND-05,foundation,Prepare scientific terminology and citations,Saumya Mishra,Krishna,P1,Beginner-readable physics/problem glossary with sources and limitations,Ready
+FND-01,foundation,Create the new GitHub repository and commit this scaffold,Krishna,Saumya,P0,Repo exists under chosen owner; initial tree committed; no data or secrets tracked,Done
+FND-02,foundation,Invite team and establish issue board and PR workflow,Krishna,All members,P0,Four collaborators can clone and open a PR; labels and board exist,Done
+FND-03,foundation,Confirm exact mid-semester and end-semester rubric/deadlines,Krishna,Saumya,P0,Dates and required deliverables copied into milestones without guessing,Done
+FND-04,foundation,Verify UCI HIGGS schema and feature mapping,Aditya Rana,Krishna,P0,Document exact label/column order and 21+7 groups against official docs,Done
+FND-05,foundation,Prepare scientific terminology and citations,Saumya Mishra,Krishna,P1,Beginner-readable physics/problem glossary with sources and limitations,Done
 MID-01,midsem,Implement chunked data access and schema checks,Aditya Rana,Saumya QA,P0,Works on a small documented sample; no data committed; tests pass,Done
 MID-02,midsem,Create EDA and feature-group inspection,Aditya Rana,Saumya docs,P1,Counts/distributions/feature descriptions are generated from actual sample,Done
 MID-03,midsem,Implement Logistic Regression baseline by feature group,Aditya Rana,Rachit review,P0,Consistent split and metrics; result metadata saved,Done
