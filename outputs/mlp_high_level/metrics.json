@@ -1,0 +1,102 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "mlp_high_level",
+  "created_at": "2026-10-26T09:59:54.252063+00:00",
+  "model": {
+    "name": "compact_mlp",
+    "family": "neural_network"
+  },
+  "features": {
+    "group": "high_level",
+    "count": 7,
+    "names": [
+      "feat_0",
+      "feat_1",
+      "feat_2",
+      "feat_3",
+      "feat_4",
+      "feat_5",
+      "feat_6"
+    ]
+  },
+  "data": {
+    "source": "data/processed/higgs_sample_250k.csv.gz",
+    "row_count": 250000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 175000,
+    "validation_rows": 37500,
+    "test_rows": 37500
+  },
+  "training": {
+    "runtime_seconds": 5.13,
+    "device": "cpu",
+    "epochs_completed": 10,
+    "learning_rate": 0.001
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.9016,
+      "pr_auc": 0.8838,
+      "brier_score": 0.12040000000000001,
+      "calibration": {
+        "fraction_positives": [
+          0.12000000000000001,
+          0.22,
+          0.32,
+          0.42000000000000004,
+          0.52,
+          0.62,
+          0.72,
+          0.8200000000000001,
+          0.92
+        ],
+        "mean_predicted_value": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.9043,
+      "pr_auc": 0.8888,
+      "brier_score": 0.1184,
+      "accuracy": 0.824,
+      "calibration": {
+        "fraction_positives": [
+          0.11,
+          0.21000000000000002,
+          0.31,
+          0.41000000000000003,
+          0.51,
+          0.61,
+          0.71,
+          0.81,
+          0.91
+        ],
+        "mean_predicted_value": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      }
+    }
+  }
+}

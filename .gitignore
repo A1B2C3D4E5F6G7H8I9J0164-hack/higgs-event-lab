@@ -26,7 +26,7 @@ HIGGS.csv.gz
 *.parquet
 
 
-# Model checkpoints and serialized artifacts
+# Model checkpoints and serialized artifacts (kept locally, never committed)
 *.pt
 *.pth
 *.ckpt
@@ -36,8 +36,14 @@ HIGGS.csv.gz
 *.npz
 *.ubj
 
-# Generated outputs
-outputs/*
+outputs/model_weights/
+
+# Published experiment results (committed so reports reproduce the same numbers)
+!outputs/full_colab_results.json
+!outputs/README.md
+!outputs/*_test_predictions.csv
+
+# Generated local artifacts (runtime cache)
 artifacts/*
 
 # Operating system and editor files

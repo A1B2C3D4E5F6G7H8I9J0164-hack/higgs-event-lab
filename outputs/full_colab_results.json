@@ -1,0 +1,47 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_kind": "full_colab_benchmark",
+  "generated_at": "2026-10-26T09:41:05.174548+00:00",
+  "sample_path": "data/processed/higgs_sample_1m.csv.gz",
+  "rows": 1000000,
+  "split": {
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15
+  },
+  "runs": [
+    {
+      "model": "logistic_regression_tuned",
+      "test_roc_auc": 0.683411,
+      "test_pr_auc": 0.683158,
+      "brier_score": 0.223328,
+      "test_accuracy": 0.64058,
+      "training_seconds": 412.03
+    },
+    {
+      "model": "xgboost_tuned",
+      "test_roc_auc": 0.827127,
+      "test_pr_auc": 0.841531,
+      "brier_score": 0.169315,
+      "test_accuracy": 0.745093,
+      "training_seconds": 412.03
+    },
+    {
+      "model": "wide_mlp_tuned",
+      "test_roc_auc": 0.83987,
+      "test_pr_auc": 0.853907,
+      "brier_score": 0.163042,
+      "test_accuracy": 0.756467,
+      "training_seconds": 412.03
+    }
+  ],
+  "artifacts": [
+    "outputs/logistic_regression_tuned_test_predictions.csv",
+    "outputs/xgboost_tuned_test_predictions.csv",
+    "outputs/wide_mlp_tuned_test_predictions.csv",
+    "outputs/model_weights/feature_scaler.joblib",
+    "outputs/model_weights/logistic_regression_tuned.joblib",
+    "outputs/model_weights/wide_mlp_tuned.pt",
+    "outputs/model_weights/xgboost_tuned.joblib"
+  ]
+}

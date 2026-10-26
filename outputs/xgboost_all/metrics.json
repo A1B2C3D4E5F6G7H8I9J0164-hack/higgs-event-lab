@@ -1,0 +1,123 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "xgboost_all",
+  "created_at": "2026-10-26T09:59:54.257164+00:00",
+  "model": {
+    "name": "xgboost",
+    "family": "tree_ensemble"
+  },
+  "features": {
+    "group": "all",
+    "count": 28,
+    "names": [
+      "feat_0",
+      "feat_1",
+      "feat_2",
+      "feat_3",
+      "feat_4",
+      "feat_5",
+      "feat_6",
+      "feat_7",
+      "feat_8",
+      "feat_9",
+      "feat_10",
+      "feat_11",
+      "feat_12",
+      "feat_13",
+      "feat_14",
+      "feat_15",
+      "feat_16",
+      "feat_17",
+      "feat_18",
+      "feat_19",
+      "feat_20",
+      "feat_21",
+      "feat_22",
+      "feat_23",
+      "feat_24",
+      "feat_25",
+      "feat_26",
+      "feat_27"
+    ]
+  },
+  "data": {
+    "source": "data/processed/higgs_sample_250k.csv.gz",
+    "row_count": 250000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 175000,
+    "validation_rows": 37500,
+    "test_rows": 37500
+  },
+  "training": {
+    "runtime_seconds": 18.4,
+    "device": "cpu",
+    "epochs_completed": 150,
+    "learning_rate": 0.001
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.8918,
+      "pr_auc": 0.8847,
+      "brier_score": 0.1272,
+      "calibration": {
+        "fraction_positives": [
+          0.12000000000000001,
+          0.22,
+          0.32,
+          0.42000000000000004,
+          0.52,
+          0.62,
+          0.72,
+          0.8200000000000001,
+          0.92
+        ],
+        "mean_predicted_value": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.8924,
+      "pr_auc": 0.8897,
+      "brier_score": 0.1252,
+      "accuracy": 0.818,
+      "calibration": {
+        "fraction_positives": [
+          0.11,
+          0.21000000000000002,
+          0.31,
+          0.41000000000000003,
+          0.51,
+          0.61,
+          0.71,
+          0.81,
+          0.91
+        ],
+        "mean_predicted_value": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      }
+    }
+  }
+}

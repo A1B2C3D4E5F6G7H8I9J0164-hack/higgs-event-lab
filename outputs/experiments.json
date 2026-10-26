@@ -1,0 +1,227 @@
+[
+  {
+    "run_id": "mlp_all",
+    "model_name": "compact_mlp",
+    "feature_group": "all",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.9406,
+      "pr_auc": 0.9372,
+      "brier_score": 0.0945,
+      "accuracy": 0.865,
+      "training_time_sec": 10.52,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.582,
+      "test_background_rejection": 0.962,
+      "test_signal_efficiency": 0.501
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.251265+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "mlp_high_level",
+    "model_name": "compact_mlp",
+    "feature_group": "high_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.9043,
+      "pr_auc": 0.8888,
+      "brier_score": 0.1184,
+      "accuracy": 0.824,
+      "training_time_sec": 5.13,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.541,
+      "test_background_rejection": 0.925,
+      "test_signal_efficiency": 0.498
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.252206+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "mlp_low_level",
+    "model_name": "compact_mlp",
+    "feature_group": "low_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.8,
+      "pr_auc": 0.8097,
+      "brier_score": 0.1824,
+      "accuracy": 0.728,
+      "training_time_sec": 15.02,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.512,
+      "test_background_rejection": 0.841,
+      "test_signal_efficiency": 0.504
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.253198+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "logreg_all",
+    "model_name": "logistic_regression",
+    "feature_group": "all",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.8369,
+      "pr_auc": 0.8377,
+      "brier_score": 0.1639,
+      "accuracy": 0.755,
+      "training_time_sec": 0.1,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.528,
+      "test_background_rejection": 0.865,
+      "test_signal_efficiency": 0.502
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.254192+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "logreg_high_level",
+    "model_name": "logistic_regression",
+    "feature_group": "high_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.7661,
+      "pr_auc": 0.7427,
+      "brier_score": 0.1945,
+      "accuracy": 0.698,
+      "training_time_sec": 0.05,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.519,
+      "test_background_rejection": 0.812,
+      "test_signal_efficiency": 0.497
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.255244+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "logreg_low_level",
+    "model_name": "logistic_regression",
+    "feature_group": "low_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.7476,
+      "pr_auc": 0.7622,
+      "brier_score": 0.2035,
+      "accuracy": 0.681,
+      "training_time_sec": 0.07,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.51,
+      "test_background_rejection": 0.795,
+      "test_signal_efficiency": 0.501
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.256295+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "xgboost_all",
+    "model_name": "xgboost",
+    "feature_group": "all",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.8924,
+      "pr_auc": 0.8897,
+      "brier_score": 0.1252,
+      "accuracy": 0.818,
+      "training_time_sec": 18.4,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.558,
+      "test_background_rejection": 0.941,
+      "test_signal_efficiency": 0.501
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.257364+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "xgboost_high_level",
+    "model_name": "xgboost",
+    "feature_group": "high_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.8379,
+      "pr_auc": 0.8243,
+      "brier_score": 0.1588,
+      "accuracy": 0.776,
+      "training_time_sec": 7.85,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.531,
+      "test_background_rejection": 0.897,
+      "test_signal_efficiency": 0.503
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.258334+00:00",
+      "author": "CosmicMagnetar"
+    }
+  },
+  {
+    "run_id": "xgboost_low_level",
+    "model_name": "xgboost",
+    "feature_group": "low_level",
+    "seed": 42,
+    "sample_size": 250000,
+    "metrics": {
+      "roc_auc": 0.8152,
+      "pr_auc": 0.8229,
+      "brier_score": 0.1714,
+      "accuracy": 0.749,
+      "training_time_sec": 12.3,
+      "inference_latency_ms": 1.2
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "selected_threshold": 0.521,
+      "test_background_rejection": 0.858,
+      "test_signal_efficiency": 0.502
+    },
+    "provenance": {
+      "created_at": "2026-10-26T09:59:54.259340+00:00",
+      "author": "CosmicMagnetar"
+    }
+  }
+]
