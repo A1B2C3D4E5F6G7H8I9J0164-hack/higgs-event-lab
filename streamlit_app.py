@@ -1,8 +1,8 @@
-"""Streamlit Community Cloud Root Entrypoint for Higgs Event Lab.
+"""HiggsEvent — Streamlit Community Cloud Root Entrypoint.
 
 Main web entrypoint deployed on Streamlit Community Cloud for the mid-semester evaluation.
 Automatically bootstraps verified mid-semester benchmark artifacts when running in a fresh
-cloud container where outputs/ is excluded by .gitignore, and runs the HiggsLens scientific dashboard.
+cloud container where outputs/ is excluded by .gitignore, and runs the HiggsEvent scientific dashboard.
 """
 
 from __future__ import annotations

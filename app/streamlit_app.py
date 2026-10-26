@@ -1,4 +1,4 @@
-"""Higgs Event Lab — Streamlit Research Workbench.
+"""HiggsEvent — Streamlit Research Workbench.
 
 Main entrypoint for the project dashboard owned by Ronit Singh.
 Visualizes experiment provenance, verified feature schemas, and model benchmarks

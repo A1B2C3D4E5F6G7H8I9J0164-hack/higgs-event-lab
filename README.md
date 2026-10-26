@@ -1,4 +1,4 @@
-# Higgs Event Lab
+# HiggsEvent: Scientific Machine Learning Benchmark Laboratory
 
 **A collaborative research benchmark comparing machine-learning representations on the simulated UCI HIGGS dataset.**
 

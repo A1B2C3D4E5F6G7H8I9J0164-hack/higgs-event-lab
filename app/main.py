@@ -35,7 +35,7 @@ from app.views.validation import render_validation
 
 # Page Configuration
 st.set_page_config(
-    page_title="HiggsLens | Higgs Event Lab",
+    page_title="HiggsEvent | Scientific Workbench",
     page_icon="⚛️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -50,11 +50,11 @@ def main() -> None:
     st.sidebar.markdown(
         """
         <div style="padding-bottom: 0.5rem; margin-bottom: 0.8rem; border-bottom: 1px solid #1f293d;">
-            <h2 style="margin: 0; font-size: 1.35rem; color: #00e5ff !important; font-weight: 800; letter-spacing: -0.02em;">
-                ⚛️ HiggsLens
+            <h2 style="margin: 0; font-size: 1.4rem; color: #00e5ff !important; font-weight: 800; letter-spacing: -0.02em;">
+                ⚛️ HiggsEvent
             </h2>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.78rem; color: #94a3b8; font-family: monospace;">
-                Higgs Event Lab &bull; v0.1.0-dev
+                Scientific ML Workbench &bull; v0.1.0-midsem
             </p>
         </div>
         """,
