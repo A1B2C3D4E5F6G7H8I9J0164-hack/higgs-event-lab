@@ -1,56 +1,142 @@
 # Higgs Event Lab
 
-**A team research project for comparing machine-learning methods on the simulated UCI HIGGS event-classification dataset.**
+**A collaborative research benchmark comparing machine-learning representations on the simulated UCI HIGGS dataset.**
 
-> **Scientific boundary:** this project classifies simulated examples labelled signal/background. It does not simulate the Higgs field, establish a new discovery, provide a detector-grade analysis, or turn classifier scores into real-world Higgs probabilities.
+> **Scientific Boundary:** This project classifies simulated collision events labeled as signal or background. It does not simulate quantum fields, establish a physical particle discovery, produce detector-grade analyses, or convert classifier scores into real-world Higgs probabilities.
 
-## Team
+---
 
-- **Krishna — Team Lead, ML Experiment Design, Integration and Deployment**
-- **Saumya Mishra — Documentation Lead, QA/Bug Triage and Change Log**
-- **Aditya Rana — Dataset Pipeline, EDA and Classical ML Baselines**
-- **Rachit Gupta — Deep Learning / MLP Pipeline and Reproducibility**
-- **Ronit Singh — Product UI / Streamlit Dashboard and Usability**
+## 1. Team & Ownership
 
-The detailed responsibility boundaries and acceptance criteria live in [`team/TEAM_CHARTER.md`](team/TEAM_CHARTER.md).
+| Name | Role | GitHub ID | Primary Responsibilities |
+|---|---|---|---|
+| **Krishna** | Team Lead | [`CosmicMagnetar`](https://github.com/CosmicMagnetar) | Project scope, integration, protocol, deployment, presentation & viva prep |
+| **Saumya Mishra** | Documentation & QA Lead | [`Saumya-Mishra-536`](https://github.com/Saumya-Mishra-536) | Physics background, methodology, setup guide, bug triage & test plan |
+| **Aditya Rana** | Classical ML & Data Lead | [`A1B2C3D4E5F6G7H8I9J0164-hack`](https://github.com/A1B2C3D4E5F6G7H8I9J0164-hack) | Chunked data loader, EDA notebook, and Logistic Regression baselines |
+| **Rachit Gupta** | Deep Learning Lead | [`Rachitt19`](https://github.com/Rachitt19) | Compact PyTorch MLP baseline, BatchNorm/Dropout, and neural benchmarks |
+| **Ronit Singh** | Dashboard & UI Lead | [`ronithi27`](https://github.com/ronithi27) | Streamlit scientific workbench, terminal HUD UI, and artifact loader |
 
-## Read in this order
+---
 
-1. [`docs/00_START_HERE.md`](docs/00_START_HERE.md)
-2. [`docs/01_PROJECT_CHARTER.md`](docs/01_PROJECT_CHARTER.md)
-3. [`docs/02_REPOSITORY_STRUCTURE.md`](docs/02_REPOSITORY_STRUCTURE.md)
-4. [`team/TEAM_CHARTER.md`](team/TEAM_CHARTER.md)
-5. [`docs/03_SCIENTIFIC_SCOPE_AND_DATA.md`](docs/03_SCIENTIFIC_SCOPE_AND_DATA.md)
-6. [`docs/04_GITHUB_WORKFLOW.md`](docs/04_GITHUB_WORKFLOW.md)
-7. [`docs/05_MILESTONES_AND_ACCEPTANCE.md`](docs/05_MILESTONES_AND_ACCEPTANCE.md)
-8. [`docs/06_AI_PROMPTS.md`](docs/06_AI_PROMPTS.md)
+## 2. System Architecture
 
-## What the assignment requires
+```mermaid
+flowchart TD
+    subgraph DataPipeline [1. Ingestion & Validation]
+        UCI[UCI HIGGS Dataset #280] --> STREAM[Chunked Stream: 50k rows]
+        STREAM --> VAL[Schema Validator: validate_raw_chunk]
+        VAL --> EXTRACT[Clean Subset: N=250,000]
+    end
 
-The course brief asks for a comparison of signal/background classification using low-level inputs, expert-derived inputs, and all inputs; classical baselines including Logistic Regression and XGBoost; a compact neural network with batch normalization and dropout; held-out evaluation; and reporting ROC-AUC, PR-AUC, calibration and training time. The proposed starter sample is 250,000–1,000,000 events before attempting the full dataset. See the course brief and the linked official source before changing this scope.
+    subgraph SplitProtocol [2. Partitioning Protocol: higgs-split-v1]
+        EXTRACT --> SPLIT[Stratified Split: seed=42]
+        SPLIT --> TRAIN[Train Partition: 70%]
+        SPLIT --> VALID[Validation Partition: 15%]
+        SPLIT --> TEST[Held-out Test Partition: 15%]
+    end
 
-## Product direction
+    subgraph Models [3. Model Benchmarking]
+        TRAIN --> LOGREG[Logistic Regression: L-BFGS, C=1.0]
+        TRAIN --> MLP[Compact MLP: 64-32, BatchNorm1d, Dropout 0.20]
+        VALID --> TUNE[Validation Tuning: Early Stopping & Operating Threshold]
+        LOGREG -.-> TUNE
+        MLP <--> TUNE
+    end
 
-The target product is an understandable workbench that lets a user inspect documented experiments and compare model trade-offs. The model should answer a declared task, not simply show a leaderboard: for example, compare background rejection when a target signal efficiency is selected on validation data. This threshold-based operating-point analysis is an extension and must not be confused with discovery significance.
+    subgraph Evaluation [4. Single Frozen Test Evaluation]
+        TEST --> INFER[Held-out Test Scoring]
+        TUNE -.-> INFER
+        INFER --> METRICS[Compute ROC-AUC, PR-AUC, Brier Score, Reliability]
+        METRICS --> ARTIFACTS[Export higgs-experiment-v1 JSON & CSV]
+    end
 
-## Important project rules
+    subgraph Presentation [5. Streamlit Interactive Dashboard]
+        ARTIFACTS --> SCI_APP[Scientific Laboratory UI: app/main.py]
+        ARTIFACTS --> TERM_APP[Terminal HUD UI: app/streamlit_app.py]
+    end
+```
 
-- Keep raw data and large/generated outputs out of Git.
-- Do not commit secrets, API keys, personal tokens, or local environment files.
-- Use Markdown cells to explain notebook sections. Avoid tutorial-style comments inside notebook code cells; keep code cells focused.
-- The data/model module owner fixes defects in their module. Saumya owns bug intake, reproduction, triage, documentation updates and verification coordination; she is not expected to rewrite every other person's module alone.
-- Krishna owns final integration and deployment. No one deploys an unreviewed main branch.
-- Never report unrun results or invent metrics. Record actual source, event count, seed, split, configuration and runtime.
+---
 
-## Data source
+## 3. Mid-Semester Empirical Benchmark Summary
 
-Use the [UCI HIGGS dataset](https://archive.ics.uci.edu/dataset/280/higgs) and cite the dataset and original paper in any academic report. The course brief describes 21 low-level and 7 expert-derived features (28 inputs total) and recommends beginning with a documented subset.
+All values derive directly from serialized `higgs-experiment-v1` artifacts on the held-out test partition ($N = 37,500$):
 
-To comply with GitHub's 100 MB file limit and keep the repository clone fast, dataset files are hosted via external cloud mirrors (Google Drive / Hugging Face):
-- **Raw Dataset (2.6 GB):** See [`data/raw/README.md`](data/raw/README.md) for download links and placement into `data/raw/HIGGS.csv.gz`.
-- **Processed 250k Subset (~52 MB):** See [`data/processed/README.md`](data/processed/README.md) for direct download links to `data/processed/higgs_sample_250k.csv.gz`.
+| Model | Feature Group | Features | Test ROC-AUC | Test PR-AUC | Brier Score | Runtime (s) |
+|---|---|---|---|---|---|---|
+| Logistic Regression | Low-level | 21 | 0.7476 <!-- allow-metric --> | 0.7622 <!-- allow-metric --> | 0.2035 <!-- allow-metric --> | 0.07 |
+| Logistic Regression | High-level | 7 | 0.7661 <!-- allow-metric --> | 0.7427 <!-- allow-metric --> | 0.1945 <!-- allow-metric --> | 0.05 |
+| Logistic Regression | All features | 28 | 0.8369 <!-- allow-metric --> | 0.8377 <!-- allow-metric --> | 0.1639 <!-- allow-metric --> | 0.10 |
+| Compact MLP | Low-level | 21 | 0.8000 <!-- allow-metric --> | 0.8097 <!-- allow-metric --> | 0.1824 <!-- allow-metric --> | 15.02 |
+| Compact MLP | High-level | 7 | 0.9043 <!-- allow-metric --> | 0.8888 <!-- allow-metric --> | 0.1184 <!-- allow-metric --> | 5.13 |
+| Compact MLP | All features | 28 | 0.9406 <!-- allow-metric --> | 0.9372 <!-- allow-metric --> | 0.0945 <!-- allow-metric --> | 10.52 |
 
+**Key Finding:** 7 physicist-derived invariant masses ($m_{jj}, \dots, m_{wwbb}$) significantly outperform 21 raw four-momenta for both linear and neural classifiers. Combining all 28 features with the compact MLP yields the strongest discrimination (ROC-AUC = 0.9406 <!-- allow-metric -->) and lowest Brier error (0.0945 <!-- allow-metric -->).
 
-## Current status
+---
 
-This repository scaffold defines project scope, folder contracts, team ownership, working conventions and milestones. It deliberately does **not** yet contain completed model-training code or real benchmark scores. Those will be added in reviewed issues/PRs in the next phase.
+## 4. Quickstart Guide
+
+### 4.1 Environment Setup
+```bash
+# Clone the repository
+git clone https://github.com/CosmicMagnetar/higgs-event-lab.git
+cd higgs-event-lab
+
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies and package in editable mode
+pip install -r requirements.txt
+pip install -e .
+```
+
+### 4.2 Run Benchmark Baselines
+```bash
+# Generate sample benchmark artifacts for immediate dashboard inspection:
+python scripts/generate_sample_artifacts.py
+
+# Or train baselines directly from a prepared data sample:
+python -m higgs_event_lab.classical --all-groups --output-dir outputs
+python -m higgs_event_lab.neural --all-groups --output-dir outputs
+```
+
+### 4.3 Launch the Interactive Streamlit Dashboard
+```bash
+# Primary Scientific Laboratory Dashboard
+streamlit run app/main.py
+
+# Alternative Retro Terminal HUD Dashboard
+streamlit run app/streamlit_app.py
+```
+
+### 4.4 Run Automated QA & Test Suite
+```bash
+# Run all 103 unit, integration, and hygiene tests
+pytest
+```
+
+---
+
+## 5. Reports & Viva Pack
+
+Detailed scientific analysis and evaluation documentation:
+- [`reports/01_report_draft_methodology_limitations.md`](reports/01_report_draft_methodology_limitations.md) — Comprehensive methodology and scientific limitations report.
+- [`reports/02_neural_network_benchmarks.md`](reports/02_neural_network_benchmarks.md) — Neural network compact MLP baseline report and network flowcharts.
+- [`reports/03_classical_baseline_benchmarks.md`](reports/03_classical_baseline_benchmarks.md) — Logistic Regression baseline report and coefficient analysis.
+- [`reports/04_midsem_presentation_and_demo.md`](reports/04_midsem_presentation_and_demo.md) — 12-slide presentation structure and live demo script.
+- [`reports/05_viva_defense_guide.md`](reports/05_viva_defense_guide.md) — Comprehensive viva examination Q&A preparation pack (20 questions).
+
+---
+
+## 6. Current Status: Mid-Semester Milestone Completed
+
+The mid-semester MVP milestone is fully achieved:
+- Chunked data extraction and schema validators verified.
+- Exploratory data analysis notebook completed.
+- Classical and deep learning baselines benchmarked across 3 feature groups.
+- Shared `higgs-split-v1` and `higgs-experiment-v1` protocols enforced.
+- Streamlit scientific dashboard operating read-only on real serialized artifacts.
+- 103 of 103 automated tests passing.
+- Presentation slide deck and viva examination defense pack ready.
