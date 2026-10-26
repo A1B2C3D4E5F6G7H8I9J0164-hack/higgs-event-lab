@@ -371,6 +371,8 @@ def discover_and_load_runs(base_dir: str | Path = "outputs") -> RunDiscoveryResu
 
     for item in sorted(path.iterdir()):
         if item.is_dir() and not item.name.startswith((".", "__")):
+            if item.name in {"curves", "runs"} and not (item / "metrics.json").is_file():
+                continue
             candidate_dirs.append(item)
 
     for run_dir in candidate_dirs:
