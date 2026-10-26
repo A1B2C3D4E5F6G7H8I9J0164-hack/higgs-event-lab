@@ -63,11 +63,11 @@ Select an operating decision threshold on validation data for a declared target 
 
 ### Non-Goals
 
-* ❌ **Experimental Validation:** Proving the existence of the Higgs boson (already experimentally verified).
-* ❌ **Full Simulation:** Simulating the full Higgs field or fundamental particle mass generation.
-* ❌ **Real-World Claims:** Claiming real-data discovery, production detector performance, or statistically calibrated physical probabilities.
-* ❌ **Premature Scale:** Training on all 11 million events before small-sample correctness is verified.
-* ❌ **Over-engineering:** Building a generic model-training framework before the baseline HIGGS benchmark is fully operational.
+* **Experimental Validation:** Proving the existence of the Higgs boson (already experimentally verified).
+* **Full Simulation:** Simulating the full Higgs field or fundamental particle mass generation.
+* **Real-World Claims:** Claiming real-data discovery, production detector performance, or statistically calibrated physical probabilities.
+* **Premature Scale:** Training on all 11 million events before small-sample correctness is verified.
+* **Over-engineering:** Building a generic model-training framework before the baseline HIGGS benchmark is fully operational.
 
 ---
 

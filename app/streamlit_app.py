@@ -302,7 +302,7 @@ hr, [data-testid="stDivider"] {
 }
 
 .terminal-prompt::before {
-    content: "❯ ";
+    content: "! ";
     color: var(--term-green);
 }
 
@@ -561,12 +561,12 @@ def main() -> None:
                     st.code(mf, language="text")
             else:
                 st.markdown(
-                    '<p style="color: #ffb300; font-size: 0.8rem;">⚠ No .manifest.json files found</p>',
+                    '<p style="color: #ffb300; font-size: 0.8rem;">! No .manifest.json files found</p>',
                     unsafe_allow_html=True,
                 )
 
         if loaded_data.errors:
-            st.markdown("### ⚠ Schema Validation Errors")
+            st.markdown("### ! Schema Validation Errors")
             for err in loaded_data.errors:
                 st.error(err)
         elif loaded_data.warnings:
@@ -578,7 +578,7 @@ def main() -> None:
                 '<div style="background: rgba(0,255,156,0.05); border: 1px solid rgba(0,255,156,0.2); '
                 'border-radius: 6px; padding: 14px; margin-top: 16px; font-size: 0.82rem;">'
                 '<span style="color: #00ff9c; text-shadow: 0 0 10px rgba(0,255,156,0.3);">'
-                "✓ All folder contracts and schema validations passed</span></div>",
+                "! All folder contracts and schema validations passed</span></div>",
                 unsafe_allow_html=True,
             )
 

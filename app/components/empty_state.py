@@ -30,7 +30,7 @@ def render_empty_state(status: PipelineStatus, loaded: LoadedExperiments) -> Non
     if loaded.errors:
         st.markdown(
             '<div style="color: #ff3d71; font-size: 0.72rem; text-transform: uppercase; '
-            'letter-spacing: 2px; margin-bottom: 8px;">⚠ SCHEMA ERRORS</div>',
+            'letter-spacing: 2px; margin-bottom: 8px;">! SCHEMA ERRORS</div>',
             unsafe_allow_html=True,
         )
         for err in loaded.errors:

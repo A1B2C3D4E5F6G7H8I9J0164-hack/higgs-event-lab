@@ -14,10 +14,16 @@ from app.loader import RunDiscoveryResult
 
 def render_overview(discovery: RunDiscoveryResult) -> None:
     """Render Overview view."""
-    st.markdown("## ⚛️ HiggsEvent: Project Overview & Artifact Registry")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">dashboard</span>'
+        '<h2 style="margin:0;">Project Overview &amp; Artifact Registry</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "**HiggsEvent** provides a transparent, interactive scientific laboratory for the "
-        "empirical evaluation of machine learning representations on the simulated UCI HIGGS dataset (Baldi et al., 2014). "
+        "empirical evaluation of machine-learning representations on the simulated UCI HIGGS dataset (Baldi et al., 2014). "
         "The project rigorously contrasts classical regularized linear baselines against compact deep neural networks "
         "across low-level kinematic observables (21) and expert-reconstructed composite invariant masses (7)."
     )
@@ -50,16 +56,16 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
         )
 
     # Executive Summary Card for Evaluators and Assessors
-    with st.expander("📋 Executive Summary & Key Mid-Semester Findings", expanded=True):
+    with st.expander("Executive Summary &amp; Key Mid-Semester Findings", expanded=True):
         st.markdown(
             """
-            - **Primary Research Question:** Can machine learning classifiers effectively separate simulated exotic Higgs decay signatures from standard top-pair background, and what is the exact marginal value of physicist-engineered kinematic features?
+            - **Primary Research Question:** Can machine-learning classifiers effectively separate simulated exotic Higgs decay signatures from standard top-pair background, and what is the exact marginal value of physicist-engineered kinematic features?
             - **High-Level Invariant Mass Dominance:** The 7 composite invariant mass features ($m_{jj}, \\dots, m_{wwbb}$) significantly outperform the 21 raw detector observables for both models:
               - **Compact MLP:** High-level alone achieves **0.9043 ROC-AUC** vs **0.8000** for low-level features (+10.4% gain).
               - **Logistic Regression:** High-level alone achieves **0.7661 ROC-AUC** vs **0.7476** for low-level features (+1.9% gain).
-            - **Top Mid-Sem Baseline:** Combining all 28 features in a 3-layer compact PyTorch MLP (256-128-64 with BatchNorm & Dropout) yields **0.9406 ROC-AUC**, **0.9372 PR-AUC**, and **96.2% background rejection** at a frozen 50% signal efficiency threshold with strong calibration (Brier score 0.0945).
+            - **Top Mid-Sem Baseline:** Combining all 28 features in a 3-layer compact PyTorch MLP (256-128-64 with BatchNorm &amp; Dropout) yields **0.9406 ROC-AUC**, **0.9372 PR-AUC**, and **96.2% background rejection** at a frozen 50% signal efficiency threshold with strong calibration (Brier score 0.0945).
             - **Computational Efficiency:** All 6 benchmark models train in under 32 seconds combined on standard CPU hardware without GPU prerequisites.
-            - **Strict Reproducibility & Scientific Boundary:** Evaluated exclusively on synthetic Monte Carlo collisions with zero claims of real detector operation or physical discovery; 104 automated tests enforce repository hygiene, leak prevention, and artifact integrity.
+            - **Strict Reproducibility &amp; Scientific Boundary:** Evaluated exclusively on synthetic Monte Carlo collisions with zero claims of real detector operation or physical discovery; 104 automated tests enforce repository hygiene, leak prevention, and artifact integrity.
             """
         )
 
@@ -88,7 +94,7 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
 
     # Show Diagnostic Warnings if there are incomplete or malformed runs
     if discovery.incomplete_runs:
-        with st.expander(f"⚠️ {len(discovery.incomplete_runs)} Incomplete Run(s) Detected", expanded=False):
+        with st.expander(f"{len(discovery.incomplete_runs)} Incomplete Run(s) Detected", expanded=False):
             st.markdown(
                 "An experiment folder is considered **incomplete** if it lacks either `metrics.json` "
                 "or `test_predictions.csv`."
@@ -100,7 +106,7 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
                 )
 
     if discovery.malformed_runs:
-        with st.expander(f"❌ {len(discovery.malformed_runs)} Malformed Run(s) Detected", expanded=False):
+        with st.expander(f"{len(discovery.malformed_runs)} Malformed Run(s) Detected", expanded=False):
             st.markdown(
                 "A run is **malformed** if its JSON schema violates `higgs-experiment-v1`, "
                 "or if predictions contain non-finite numbers or invalid labels."
@@ -140,9 +146,10 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
         col_boot1, col_boot2 = st.columns([1, 2])
         with col_boot1:
             if st.button(
-                "⚡ Bootstrap Demo Benchmarks",
+                "Bootstrap Demo Benchmarks",
                 key="empty_state_bootstrap_btn",
                 help="Populate outputs/ with genuine mid-semester benchmark artifacts for instant evaluation.",
+                width="stretch",
             ):
                 from scripts.generate_sample_artifacts import main as generate_artifacts
 
@@ -152,7 +159,7 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
         with col_boot2:
             st.caption(
                 "For hosting and demonstration, clicking above automatically loads pre-computed "
-                "mid-semester benchmark runs (compact MLP & Logistic Regression across all groups)."
+                "mid-semester benchmark runs (compact MLP &amp; Logistic Regression across all groups)."
             )
 
         st.markdown(

@@ -61,7 +61,7 @@ def render_feature_catalog() -> None:
         """
         <div style="background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.2);
                     border-radius: 6px; padding: 14px; margin-bottom: 20px; font-size: 0.8rem;">
-            <span style="color: #00e5ff;">🔒 SAFETY INVARIANT</span>
+            <span style="color: #00e5ff;">! SAFETY INVARIANT</span>
             <span style="color: #c9d1d9;"> — Column 0 (</span><code style="color: #ff3d71; background: none; border: none;">class_label</code><span style="color: #c9d1d9;">) is strictly excluded from model input matrix X and all fitted scalers.</span>
         </div>
         """,
@@ -122,7 +122,7 @@ def render_feature_catalog() -> None:
     )
 
     # Physics glossary
-    with st.expander("📖 Physics Terminology Reference"):
+    with st.expander("! Physics Terminology Reference"):
         st.markdown(
             """
             <div style="font-size: 0.78rem; color: #c9d1d9; line-height: 1.9;">

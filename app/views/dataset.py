@@ -26,6 +26,10 @@ from app.styles import (
     TEXT_PRIMARY,
     TEXT_SECONDARY,
 )
+from app.visualizations import (
+    plot_class_balance_donut,
+    plot_feature_group_heatmap,
+)
 from higgs_event_lab.features import (
     ALL_COLUMNS,
     ALL_FEATURES,
@@ -129,7 +133,13 @@ def _generate_synthetic_eda_sample(n_events: int = 1000, seed: int = 42) -> tupl
 
 def render_dataset() -> None:
     """Render Dataset Observatory view."""
-    st.markdown("## Dataset Observatory: Feature Groups, Distributions & Class Balance")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">dashboard</span>'
+        '<h2 style="margin:0;">Dataset Observatory</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "Explore the underlying structure of the 28 input collision features, "
         "their statistical separation between exotic Higgs signal and top-quark background, "
@@ -137,10 +147,10 @@ def render_dataset() -> None:
     )
 
     t1, t2, t3, t4 = st.tabs([
-        "1. Feature Dictionary",
-        "2. Distribution Explorer",
-        "3. Cross-Feature Correlations",
-        "4. Class Balance Observatory",
+        "Feature Dictionary",
+        "Distribution Explorer",
+        "Cross-Feature Correlations",
+        "Class Balance Observatory",
     ])
 
     with t1:
@@ -177,7 +187,7 @@ def render_dataset() -> None:
         selected_feat = st.selectbox(
             "Select Feature to Inspect:",
             options=list(ALL_FEATURES),
-            index=ALL_FEATURES.index("m_bb") if "m_bb" in ALL_FEATURES else 0,
+            index=list(ALL_FEATURES).index("m_bb") if "m_bb" in ALL_FEATURES else 0,
         )
 
         df_eda, y_eda = _generate_synthetic_eda_sample(n_events=2000, seed=42)
@@ -262,6 +272,20 @@ def render_dataset() -> None:
         else:
             st.info("Select at least 2 features to render the correlation matrix.")
 
+    st.markdown("---")
+
+    # Feature group performance heatmap
+    st.markdown("### Model Performance Heatmap by Feature Group")
+    st.markdown(
+        "ROC-AUC and PR-AUC heatmap across all loaded models and feature configurations."
+    )
+    # We need access to runs here; this will be empty if no runs loaded.
+    # Placeholder: the heatmap is rendered in the Experiments view instead.
+    st.info(
+        "The feature-group performance heatmap is displayed in the Experiment Comparison view "
+        "when valid artifact runs are loaded."
+    )
+
     with t4:
         st.markdown("### Class Balance Observatory")
         st.markdown(
@@ -277,10 +301,18 @@ def render_dataset() -> None:
         with b3:
             st.metric("Imbalance Ratio (Sig / Bkg)", "1.12 : 1", help="Nearly balanced binary classification")
 
+        # Class balance donut (demo using synthetic sample)
+        df_eda, y_eda = _generate_synthetic_eda_sample(n_events=2000, seed=42)
+        # Create a lightweight artifact-like object for the donut chart
+        class _DonutRun:
+            test_labels = y_eda
+        fig_donut = plot_class_balance_donut(_DonutRun())
+        st.pyplot(fig_donut)
+
         st.markdown(
             """
             <div class="scientific-panel-cyan">
-                <h4 style="color:#00e5ff; margin-top:0;">Why ROC-AUC & PR-AUC Over Simple Accuracy?</h4>
+                <h4 style="color:#00e5ff; margin-top:0;">Why ROC-AUC &amp; PR-AUC Over Simple Accuracy?</h4>
                 <p style="font-size:0.9rem; color:#cbd5e1; margin-bottom:0;">
                     Although class balance is roughly 53/47, in physical collider operations the true background rate
                     is millions of times higher before pre-selection cuts. A classifier with 80% accuracy that achieves it by

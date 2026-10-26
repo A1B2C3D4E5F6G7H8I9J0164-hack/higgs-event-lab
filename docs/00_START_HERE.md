@@ -32,11 +32,11 @@ This repository is the shared home for a five-person course project. It establis
 
 ### What Not to Do Yet
 
-* ❌ **No Data Tracking:** Do not upload the HIGGS dataset or large prediction files.
-* ❌ **No Fragmented Workflows:** Do not start five incompatible notebooks or separate apps.
-* ❌ **No Fabricated Metrics:** Do not add fake model scores to screenshots or README badges.
-* ❌ **No Premature Scale:** Do not attempt full-dataset training before the starter experiment is reliable.
-* ❌ **No Early Deployment:** Do not deploy until the test suite, data-source display, and limitation statements are complete.
+* **No Data Tracking:** Do not upload the HIGGS dataset or large prediction files.
+* **No Fragmented Workflows:** Do not start five incompatible notebooks or separate apps.
+* **No Fabricated Metrics:** Do not add fake model scores to screenshots or README badges.
+* **No Premature Scale:** Do not attempt full-dataset training before the starter experiment is reliable.
+* **No Early Deployment:** Do not deploy until the test suite, data-source display, and limitation statements are complete.
 
 ---
 

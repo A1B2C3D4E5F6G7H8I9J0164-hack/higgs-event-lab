@@ -12,13 +12,21 @@ import streamlit as st
 from app.loader import RunDiscoveryResult
 from app.visualizations import (
     plot_feature_group_comparison,
+    plot_feature_group_heatmap,
+    plot_model_performance_radar,
     plot_runtime_vs_auc,
 )
 
 
 def render_experiments(discovery: RunDiscoveryResult) -> None:
     """Render Experiment Comparison view."""
-    st.markdown("## Experiment Comparison: Model & Feature-Group Metrics")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">bar_chart</span>'
+        '<h2 style="margin:0;">Experiment Comparison</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "Evaluate comparative performance across models (Logistic Regression, compact MLP) "
         "and feature configurations (`low_level`, `high_level`, `all`). All evaluations derive "
@@ -35,10 +43,11 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
     runs = discovery.valid_runs
 
     # Tabbed views for Leaderboard and Visual Comparative Analytics
-    tab_table, tab_groups, tab_compute = st.tabs([
-        "1. Comparison Leaderboard",
-        "2. Feature-Group Comparison",
-        "3. Compute Efficiency Trade-Off",
+    tab_table, tab_groups, tab_compute, tab_radar = st.tabs([
+        "Comparison Leaderboard",
+        "Feature-Group Comparison",
+        "Compute Efficiency Trade-Off",
+        "Model Performance Radar",
     ])
 
     with tab_table:
@@ -115,3 +124,29 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
 
         fig_runtime = plot_runtime_vs_auc(runs)
         st.pyplot(fig_runtime)
+
+    with tab_radar:
+        st.markdown("### Model Performance Radar")
+        st.markdown(
+            "Multi-metric comparison across ROC-AUC, PR-AUC, calibration quality "
+            "(1 - Brier), and background rejection. Each axis is normalized to [0, 1]."
+        )
+
+        fig_radar = plot_model_performance_radar(runs)
+        st.pyplot(fig_radar)
+
+        st.markdown(
+            """
+            <div class="scientific-panel">
+                <h4 style="color:#00e5ff; margin-top:0;">How to Read the Radar</h4>
+                <ul style="font-size:0.9rem; color:#cbd5e1; margin-bottom:0;">
+                    <li>Each vertex represents one evaluation metric; larger area indicates stronger overall performance.</li>
+                    <li><strong>ROC-AUC</strong> measures ranking discrimination across all thresholds.</li>
+                    <li><strong>PR-AUC</strong> measures precision-recall trade-off, sensitive to class imbalance.</li>
+                    <li><strong>1 - Brier</strong> measures probabilistic calibration (higher = better calibrated).</li>
+                    <li><strong>Background Rejection</strong> measures background events rejected at the validation-frozen threshold.</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

@@ -155,7 +155,7 @@ def render_results_view(loaded: LoadedExperiments) -> None:
     )
     csv_bytes = filtered.to_csv(index=False).encode("utf-8")
     st.download_button(
-        label="⬇ EXPORT TABLE (CSV)",
+        label="EXPORT TABLE (CSV)",
         data=csv_bytes,
         file_name="higgs_experiment_comparison.csv",
         mime="text/csv",
@@ -198,7 +198,7 @@ def render_results_view(loaded: LoadedExperiments) -> None:
 
     if not runs_with_curves:
         st.markdown(
-            '<div style="color: #ffb300; font-size: 0.8rem;">⚠ No curve coordinate files found in outputs/curves/</div>',
+            '<div style="color: #ffb300; font-size: 0.8rem;">! No curve coordinate files found in outputs/curves/</div>',
             unsafe_allow_html=True,
         )
     else:
@@ -297,7 +297,7 @@ def render_results_view(loaded: LoadedExperiments) -> None:
     op_runs = [exp for exp in loaded.experiments if exp.operating_point is not None]
     if not op_runs:
         st.markdown(
-            '<div style="color: #ffb300; font-size: 0.8rem;">⚠ No operating-point data in outputs</div>',
+            '<div style="color: #ffb300; font-size: 0.8rem;">! No operating-point data in outputs</div>',
             unsafe_allow_html=True,
         )
     else:

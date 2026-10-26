@@ -11,14 +11,20 @@ import streamlit as st
 
 def render_methods() -> None:
     """Render Methods and Research view."""
-    st.markdown("## Methods, Experiment Protocol & Research Citations")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">article</span>'
+        '<h2 style="margin:0;">Methods, Experiment Protocol &amp; Research Citations</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "Scientific integrity requires that every benchmark comparison follows a deterministic, "
         "leakage-free experimental protocol, transparently states architectural configurations, "
         "and properly credits original foundational sources."
     )
 
-    t1, t2, t3 = st.tabs(["1. Experiment Protocol", "2. Citations & References", "3. Research Limitations"])
+    t1, t2, t3 = st.tabs(["Experiment Protocol", "Citations &amp; References", "Research Limitations"])
 
     with t1:
         st.markdown("### The `higgs-split-v1` Stratified Holdout Protocol")
@@ -87,7 +93,7 @@ def render_methods() -> None:
             )
 
     with t2:
-        st.markdown("### Academic Citations & Data Sources")
+        st.markdown("### Academic Citations &amp; Data Sources")
         st.markdown(
             "Any academic report, publication, or presentation derived from this lab must cite "
             "the original dataset and foundational physics literature:"
@@ -98,13 +104,13 @@ def render_methods() -> None:
             - **[Dataset]** Whiteson, D. (2014). *HIGGS* [Dataset]. UCI Machine Learning Repository.
               DOI: [10.24432/C5V312](https://doi.org/10.24432/C5V312).
               URL: [https://archive.ics.uci.edu/dataset/280/higgs](https://archive.ics.uci.edu/dataset/280/higgs)
-            - **[Foundational Paper]** Baldi, P., Sadowski, P., & Whiteson, D. (2014). Searching for exotic particles in high-energy physics with deep learning.
+            - **[Foundational Paper]** Baldi, P., Sadowski, P., &amp; Whiteson, D. (2014). Searching for exotic particles in high-energy physics with deep learning.
               *Nature Communications*, 5, 4308. DOI: [10.1038/ncomms5308](https://doi.org/10.1038/ncomms5308).
             - **[Observation of the Higgs Boson]** ATLAS Collaboration (2012). Observation of a new particle in the search for the Standard Model Higgs boson with the ATLAS detector at the LHC.
               *Physics Letters B*, 716(1), 1–29. DOI: [10.1016/j.physletb.2012.08.020](https://doi.org/10.1016/j.physletb.2012.08.020).
             - **[Observation of the Higgs Boson]** CMS Collaboration (2012). Observation of a new boson at a mass of 125 GeV with the CMS experiment at the LHC.
               *Physics Letters B*, 716(1), 30–61. DOI: [10.1016/j.physletb.2012.08.021](https://doi.org/10.1016/j.physletb.2012.08.021).
-            - **[Higgs Mechanism Theory]** Englert, F., & Brout, R. (1964). Broken symmetry and the mass of gauge vector mesons.
+            - **[Higgs Mechanism Theory]** Englert, F., &amp; Brout, R. (1964). Broken symmetry and the mass of gauge vector mesons.
               *Physical Review Letters*, 13(9), 321–323. DOI: [10.1103/PhysRevLett.13.321](https://doi.org/10.1103/PhysRevLett.13.321).
             - **[Higgs Mechanism Theory]** Higgs, P. W. (1964). Broken symmetries and the masses of gauge bosons.
               *Physical Review Letters*, 13(16), 508–509. DOI: [10.1103/PhysRevLett.13.508](https://doi.org/10.1103/PhysRevLett.13.508).
@@ -112,7 +118,7 @@ def render_methods() -> None:
         )
 
     with t3:
-        st.markdown("### Project Limitations & Non-Goals")
+        st.markdown("### Project Limitations &amp; Non-Goals")
         st.markdown(
             "Every scientific endeavor must clearly delineate its experimental limitations. "
             "The following constraints govern this workbench:"

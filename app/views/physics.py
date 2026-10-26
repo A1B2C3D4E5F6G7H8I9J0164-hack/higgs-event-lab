@@ -12,16 +12,22 @@ import streamlit as st
 
 def render_physics() -> None:
     """Render Physics Explorer view."""
-    st.markdown("## Physics Explorer: Electroweak Symmetry & Collision Kinematics")
     st.markdown(
-        "To understand the machine learning classification task, we must examine the physical "
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">science</span>'
+        '<h2 style="margin:0;">Electroweak Symmetry &amp; Collision Kinematics</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "To understand the machine-learning classification task, we must examine the physical "
         "processes producing the collision signatures in particle detectors."
     )
 
-    t1, t2, t3 = st.tabs(["1. The Higgs Mechanism", "2. Signal vs Background Kinematics", "3. Scientific Boundaries"])
+    t1, t2, t3 = st.tabs(["The Higgs Mechanism", "Signal vs Background Kinematics", "Scientific Boundaries"])
 
     with t1:
-        st.markdown("### Electroweak Symmetry Breaking & The Higgs Field")
+        st.markdown("### Electroweak Symmetry Breaking &amp; The Higgs Field")
         st.markdown(
             "The Standard Model of particle physics unifies the electromagnetic and weak forces into a "
             "single electroweak framework. Under gauge symmetry, gauge bosons ($W^\\pm, Z^0$) and fermions "
@@ -68,7 +74,7 @@ def render_physics() -> None:
     with t2:
         st.markdown("### The Benchmark Task: Exotic Higgs Signal vs Top-Pair Background")
         st.markdown(
-            "> **Crucial Scientific Distinction:** The UCI HIGGS benchmark dataset (Baldi, Sadowski, & Whiteson, 2014) "
+            "> **Crucial Scientific Distinction:** The UCI HIGGS benchmark dataset (Baldi, Sadowski, &amp; Whiteson, 2014) "
             "is **not** a re-creation of the 2012 SM Higgs discovery. It simulates a hypothetical search for "
             "heavy exotic Higgs bosons ($H^0, H^\\pm$) decaying through the SM-like Higgs ($h^0$) against a dominant "
             "Standard Model top-quark background."
@@ -125,12 +131,12 @@ def render_physics() -> None:
             "$$M^2 = \\left( \\sum_i E_i \\right)^2 - \\left| \\sum_i \\vec{p}_i \\right|^2$$"
             "Because invariant masses concentrate into sharp resonant peaks for true parent decays, "
             "they provide immense discriminatory power over continuous background distributions. "
-            "The central machine learning research question is whether deep neural networks can learn "
+            "The central machine-learning research question is whether deep neural networks can learn "
             "these nonlinear relativistic invariants directly from raw detector measurements."
         )
 
     with t3:
-        st.markdown("### Scientific Boundaries & Verification Standards")
+        st.markdown("### Scientific Boundaries &amp; Verification Standards")
         st.markdown(
             "In adherence to our team charter (`team/TEAM_CHARTER.md`) and project scope "
             "(`docs/03_SCIENTIFIC_SCOPE_AND_DATA.md`), all dashboard analyses observe the following boundaries:"
@@ -143,11 +149,11 @@ def render_physics() -> None:
                 <div class="scientific-panel">
                     <h4 style="color:#34d399;">What We DO</h4>
                     <ul style="font-size:0.9rem; color:#cbd5e1;">
-                        <li>&check; Classify simulated collision events as signal or background.</li>
-                        <li>&check; Compare regularized Logistic Regression and compact MLPs.</li>
-                        <li>&check; Compare low-level (21), high-level (7), and all (28) feature groups.</li>
-                        <li>&check; Report ROC-AUC, PR-AUC, calibration curves, and compute time.</li>
-                        <li>&check; Report background rejection at validation-frozen operating thresholds.</li>
+                        <li>Classify simulated collision events as signal or background.</li>
+                        <li>Compare regularized Logistic Regression and compact MLPs.</li>
+                        <li>Compare low-level (21), high-level (7), and all (28) feature groups.</li>
+                        <li>Report ROC-AUC, PR-AUC, calibration curves, and compute time.</li>
+                        <li>Report background rejection at validation-frozen operating thresholds.</li>
                     </ul>
                 </div>
                 """,
@@ -160,11 +166,11 @@ def render_physics() -> None:
                 <div class="scientific-panel">
                     <h4 style="color:#ef4444;">What We Do NOT Do</h4>
                     <ul style="font-size:0.9rem; color:#cbd5e1;">
-                        <li>&cross; Simulate quantum fields or the Higgs mechanism.</li>
-                        <li>&cross; Claim physical discovery of any elementary particle.</li>
-                        <li>&cross; Produce detector-grade experimental measurements.</li>
-                        <li>&cross; Convert classifier scores into real-world probabilities of being a Higgs.</li>
-                        <li>&cross; Calculate experimental statistical significance (e.g. 5-sigma discovery).</li>
+                        <li>Simulate quantum fields or the Higgs mechanism.</li>
+                        <li>Claim physical discovery of any elementary particle.</li>
+                        <li>Produce detector-grade experimental measurements.</li>
+                        <li>Convert classifier scores into real-world probabilities of being a Higgs.</li>
+                        <li>Calculate experimental statistical significance (e.g. 5-sigma discovery).</li>
                     </ul>
                 </div>
                 """,

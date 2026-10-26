@@ -130,7 +130,13 @@ def predict_scores(models: dict[str, Any], scaler: Any, X: pd.DataFrame) -> dict
 
 def render_simulation(discovery: RunDiscoveryResult) -> None:
     """Render the Model Simulation view."""
-    st.markdown("## Model Simulation: Run Trained Models on Your Data")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">psychology</span>'
+        '<h2 style="margin:0;">Model Simulation</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "Upload a CSV of collision events (28 feature columns) to get prediction "
         "probabilities from the saved logistic regression, XGBoost, and wide MLP models. "
@@ -155,7 +161,7 @@ def render_simulation(discovery: RunDiscoveryResult) -> None:
     st.success(f"{len(models)} model(s) loaded and ready: {', '.join(sorted(models))}")
 
     tab_upload, tab_single, tab_dist = st.tabs(
-        ["1. Batch CSV Upload", "2. Single-Event Prediction", "3. Score Distributions"]
+        ["Batch CSV Upload", "Single-Event Prediction", "Score Distributions"]
     )
 
     with tab_upload:
@@ -285,8 +291,6 @@ def _render_score_distributions(
     if not discovery.has_valid_runs:
         st.info("Load valid experiment artifacts to view distributions.")
         return
-
-    import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(7, 3.6))
     for idx, run in enumerate(discovery.valid_runs[:4]):

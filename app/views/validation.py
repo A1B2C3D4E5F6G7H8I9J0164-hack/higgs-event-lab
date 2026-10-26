@@ -14,14 +14,22 @@ from app.visualizations import (
     plot_calibration_curves,
     plot_confusion_matrix_heatmap,
     plot_mlp_training_history,
+    plot_precision_recall_vs_threshold,
     plot_pr_curves,
     plot_roc_curves,
+    plot_score_distributions,
 )
 
 
 def render_validation(discovery: RunDiscoveryResult) -> None:
     """Render Validation & Threshold Analysis view."""
-    st.markdown("## Validation & Threshold Analysis")
+    st.markdown(
+        '<div class="section-header">'
+        '<span class="material-icons icon-md" style="color:#00e5ff;">insights</span>'
+        '<h2 style="margin:0;">Validation &amp; Threshold Analysis</h2>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "Inspect test discrimination curves, probability calibration reliability, "
         "and explore operating cutoffs interactively on genuine held-out test predictions."
@@ -46,12 +54,13 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
 
     selected_runs = [run_options[rid] for rid in selected_run_ids if rid in run_options]
 
-    t1, t2, t3, t4, t5 = st.tabs([
-        "1. ROC Curves",
-        "2. Precision-Recall",
-        "3. Reliability Calibration",
-        "4. MLP Training History",
-        "5. Interactive Threshold Workbench",
+    t1, t2, t3, t4, t5, t6 = st.tabs([
+        "ROC Curves",
+        "Precision-Recall",
+        "Reliability Calibration",
+        "MLP Training History",
+        "Interactive Threshold Workbench",
+        "Score Distributions",
     ])
 
     with t1:
@@ -91,7 +100,7 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
             st.info("Select at least one run above to view calibration curves.")
 
     with t4:
-        st.markdown("### MLP Training History (Loss & Validation ROC-AUC)")
+        st.markdown("### MLP Training History (Loss &amp; Validation ROC-AUC)")
         st.markdown(
             "> **Integrity Policy:** Training loss and validation history curves are only displayed "
             "when genuine epoch histories were exported during model training. If unavailable, an "
@@ -183,7 +192,7 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
             st.pyplot(fig_cm)
 
         with c_right:
-            st.markdown("#### Detailed Counts & Operating Rates")
+            st.markdown("#### Detailed Counts &amp; Operating Rates")
             st.markdown(
                 f"""
                 - **True Positives ($TP$):** `{metrics['true_positives']:,}` (signal correctly identified)
@@ -197,6 +206,32 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
             )
             if metrics["precision_undefined"]:
                 st.caption(
-                    "⚠️ Notice: At threshold 1.00, zero events are selected as signal, "
+                    "Notice: At threshold 1.00, zero events are selected as signal, "
                     "making precision mathematically undefined (0/0). It is safely bounded to 0.0."
                 )
+
+    with t6:
+        st.markdown("### Score Distributions")
+        st.markdown(
+            "Compare how each model spreads predicted probabilities across the held-out test set, "
+            "separated by true class."
+        )
+        if selected_runs:
+            fig_scores = plot_score_distributions(selected_runs)
+            st.pyplot(fig_scores)
+        else:
+            st.info("Select at least one run above to view score distributions.")
+
+        st.markdown("### Precision &amp; Recall vs Decision Threshold")
+        st.markdown(
+            "How precision and recall (signal efficiency) vary as the decision threshold changes."
+        )
+        workbench_run_id_pr = st.selectbox(
+            "Select Run:",
+            options=list(run_options.keys()),
+            index=0,
+            key="pr_threshold_select",
+        )
+        pr_run = run_options[workbench_run_id_pr]
+        fig_pr_thresh = plot_precision_recall_vs_threshold(pr_run)
+        st.pyplot(fig_pr_thresh)

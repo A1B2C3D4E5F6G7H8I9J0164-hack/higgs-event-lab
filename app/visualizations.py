@@ -347,3 +347,180 @@ def plot_runtime_vs_auc(runs: list[ExperimentArtifact]) -> Figure:
 
     fig.tight_layout()
     return fig
+
+
+def plot_score_distributions(runs: list[ExperimentArtifact]) -> Figure:
+    """Overlay predicted score distributions for selected runs, split by class."""
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), dpi=150, facecolor=SURFACE_BASE)
+
+    titles = ["Signal Class (y=1) Score Distribution", "Background Class (y=0) Score Distribution"]
+    for ax_idx, (ax, title) in enumerate(zip(axes, titles)):
+        _configure_dark_ax(ax, title, "Predicted Signal Probability", "Event Density")
+        ax.set_xlim(0.0, 1.0)
+
+    for idx, run in enumerate(runs):
+        color = MPL_COLORS[idx % len(MPL_COLORS)]
+        scores = run.test_scores
+        labels = run.test_labels
+
+        # Signal class distribution
+        sig_scores = scores[labels == 1]
+        if len(sig_scores) > 0:
+            axes[0].hist(sig_scores, bins=30, density=True, alpha=0.5, color=color, label=run.run_id, edgecolor="none")
+
+        # Background class distribution
+        bkg_scores = scores[labels == 0]
+        if len(bkg_scores) > 0:
+            axes[1].hist(bkg_scores, bins=30, density=True, alpha=0.5, color=color, label=run.run_id, edgecolor="none")
+
+    for ax in axes:
+        handles, labels_ = ax.get_legend_handles_labels()
+        if handles:
+            ax.legend(facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=8)
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_feature_group_heatmap(runs: list[ExperimentArtifact]) -> Figure:
+    """Heatmap of ROC-AUC and PR-AUC across models and feature groups."""
+    group_order = ["low_level", "high_level", "all"]
+    models = sorted({r.model_name for r in runs})
+
+    roc_matrix = np.full((len(models), len(group_order)), np.nan)
+    pr_matrix = np.full((len(models), len(group_order)), np.nan)
+
+    for m_idx, model in enumerate(models):
+        m_runs = {r.feature_group: r for r in runs if r.model_name == model}
+        for g_idx, group in enumerate(group_order):
+            if group in m_runs and m_runs[group].test_roc_auc is not None:
+                roc_matrix[m_idx, g_idx] = m_runs[group].test_roc_auc
+                pr_matrix[m_idx, g_idx] = m_runs[group].test_pr_auc
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.2), dpi=150, facecolor=SURFACE_BASE)
+
+    for ax_idx, (matrix, title, cmap) in enumerate([
+        (roc_matrix, "Test ROC-AUC Heatmap", "Blues"),
+        (pr_matrix, "Test PR-AUC Heatmap", "Greens"),
+    ]):
+        ax = axes[ax_idx]
+        _configure_dark_ax(ax, title, "Feature Group", "Model")
+
+        im = ax.imshow(matrix, cmap=cmap, vmin=0.4, vmax=1.0, aspect="auto")
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+
+        ax.set_xticks(range(len(group_order)))
+        ax.set_xticklabels(["Low-level\n(21)", "High-level\n(7)", "All\n(28)"])
+        ax.set_yticks(range(len(models)))
+        ax.set_yticklabels(models)
+
+        # Annotate values
+        for i in range(len(models)):
+            for j in range(len(group_order)):
+                val = matrix[i, j]
+                if not np.isnan(val):
+                    ax.text(j, i, f"{val:.3f}", ha="center", va="center", color=TEXT_PRIMARY, fontsize=9, fontweight="bold")
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_model_performance_radar(runs: list[ExperimentArtifact]) -> Figure:
+    """Radar/spider chart comparing models across ROC-AUC, PR-AUC, and calibration."""
+    import math
+
+    metrics = ["ROC-AUC", "PR-AUC", "1 - Brier", "Background Rejection"]
+    n_metrics = len(metrics)
+
+    fig, ax = plt.subplots(figsize=(6.5, 5.5), dpi=150, facecolor=SURFACE_BASE, subplot_kw=dict(projection="polar"))
+
+    angles = [n / float(n_metrics) * 2 * math.pi for n in range(n_metrics)]
+    angles += angles[:1]
+
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(metrics, color=TEXT_SECONDARY, fontsize=9)
+    ax.set_ylim(0, 1)
+    ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
+    ax.set_yticklabels(["0.2", "0.4", "0.6", "0.8", "1.0"], color=TEXT_MUTED, fontsize=8)
+    ax.grid(color=SURFACE_BORDER, alpha=0.3)
+
+    for idx, run in enumerate(runs[:5]):
+        color = MPL_COLORS[idx % len(MPL_COLORS)]
+        roc = run.test_roc_auc if run.test_roc_auc is not None else 0.0
+        pr = run.test_pr_auc if run.test_pr_auc is not None else 0.0
+        brier = run.test_brier_score if run.test_brier_score is not None else 0.5
+        op = run.operating_point
+        bkg_rej = op.get("test_background_rejection", 0.0) if op else 0.0
+
+        values = [roc, pr, 1.0 - brier, bkg_rej]
+        values += values[:1]
+
+        ax.plot(angles, values, color=color, linewidth=2, label=f"{run.model_name} [{run.feature_group}]")
+        ax.fill(angles, values, color=color, alpha=0.15)
+
+    ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=8)
+    ax.set_title("Model Performance Radar", color=TEXT_PRIMARY, fontsize=12, fontweight="bold", pad=20)
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_class_balance_donut(run: ExperimentArtifact) -> Figure:
+    """Donut chart of signal vs background class balance in the held-out test set."""
+    labels = run.test_labels
+    n_signal = int(np.sum(labels == 1))
+    n_background = int(np.sum(labels == 0))
+
+    fig, ax = plt.subplots(figsize=(4.6, 4.2), dpi=150, facecolor=SURFACE_BASE)
+
+    sizes = [n_signal, n_background]
+    colors = [ACCENT_CYAN, ACCENT_BLUE]
+    wedges, texts, autotexts = ax.pie(
+        sizes,
+        labels=["Signal (y=1)", "Background (y=0)"],
+        colors=colors,
+        autopct="%1.1f%%",
+        startangle=90,
+        counterclock=False,
+        wedgeprops=dict(width=0.45, edgecolor=SURFACE_BASE),
+        textprops=dict(color=TEXT_SECONDARY, fontsize=9),
+    )
+
+    for autotext in autotexts:
+        autotext.set_color(TEXT_PRIMARY)
+        autotext.set_fontweight("bold")
+
+    ax.set_title("Held-Out Test Class Balance", color=TEXT_PRIMARY, fontsize=11, fontweight="bold", pad=12)
+
+    # Center text
+    ax.text(0, 0, f"{len(labels):,}\nevents", ha="center", va="center", color=TEXT_PRIMARY, fontsize=10, fontweight="bold")
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_precision_recall_vs_threshold(run: ExperimentArtifact) -> Figure:
+    """Precision and Recall as functions of decision threshold."""
+    from app.metrics import compute_pr_points
+
+    precision, recall, _ = compute_pr_points(run.test_labels, run.test_scores)
+    # precision_recall_curve returns precision and recall arrays aligned with thresholds
+    from sklearn.metrics import precision_recall_curve
+    prec, rec, thresholds = precision_recall_curve(run.test_labels, run.test_scores)
+
+    fig, ax = plt.subplots(figsize=(7.2, 4.4), dpi=150, facecolor=SURFACE_BASE)
+    _configure_dark_ax(ax, "Precision &amp; Recall vs Decision Threshold", "Threshold", "Score")
+
+    # thresholds has one fewer element than precision/recall
+    ax.plot(thresholds, prec[:-1], color=ACCENT_CYAN, linewidth=2, label="Precision", marker="o", markersize=3)
+    ax.plot(thresholds, rec[:-1], color=ACCENT_TEAL, linewidth=2, label="Recall (Signal Efficiency)", marker="s", markersize=3)
+
+    ax.set_xlim(0.0, 1.0)
+    ax.set_ylim(0.0, 1.05)
+
+    legend = ax.legend(facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=9)
+    for text in legend.get_texts():
+        text.set_color(TEXT_SECONDARY)
+
+    fig.tight_layout()
+    return fig

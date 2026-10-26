@@ -1,25 +1,28 @@
 """Scientific theme styling, color tokens, and custom CSS for HiggsLens dashboard.
 
 Implements a cohesive dark graphite and navy palette with restrained cyan and
-electric blue accents, crisp typography, and scientific data tables.
+electric blue accents, crisp typography, Material Icons, and scientific data tables.
+Material Icons are loaded from Google Fonts CDN and used via <span class="material-icons">...</span>.
 """
 
 from __future__ import annotations
 
 # Color Palette Tokens
-SURFACE_BASE = "#0a0e17"       # Deep dark navy-graphite background
-SURFACE_CARD = "#111827"       # Card / container background
-SURFACE_CARD_HOVER = "#172033" # Hover container state
-SURFACE_BORDER = "#1f293d"     # Subtle border tone
-TEXT_PRIMARY = "#f8fafc"       # High-contrast crisp white
-TEXT_SECONDARY = "#94a3b8"     # Muted slate secondary text
-TEXT_MUTED = "#64748b"         # Faded caption text
+SURFACE_BASE = "#0a0e17"        # Deep dark navy-graphite background
+SURFACE_CARD = "#111827"        # Card / container background
+SURFACE_CARD_HOVER = "#172033"  # Hover container state
+SURFACE_BORDER = "#1f293d"      # Subtle border tone
+TEXT_PRIMARY = "#f8fafc"        # High-contrast crisp white
+TEXT_SECONDARY = "#94a3b8"      # Muted slate secondary text
+TEXT_MUTED = "#64748b"          # Faded caption text
 
-ACCENT_CYAN = "#00e5ff"        # Primary scientific cyan accent
-ACCENT_BLUE = "#38bdf8"        # Sky / electric blue accent
-ACCENT_TEAL = "#14b8a6"        # Verification teal
-ACCENT_AMBER = "#f59e0b"       # Warning / incomplete amber
-ACCENT_RED = "#ef4444"         # Error / malformed red
+ACCENT_CYAN = "#00e5ff"         # Primary scientific cyan accent
+ACCENT_BLUE = "#38bdf8"         # Sky / electric blue accent
+ACCENT_TEAL = "#14b8a6"         # Verification teal
+ACCENT_AMBER = "#f59e0b"        # Warning / incomplete amber
+ACCENT_RED = "#ef4444"          # Error / malformed red
+ACCENT_GREEN = "#34d399"        # Success green
+ACCENT_VIOLET = "#a78bfa"       # Violet accent
 
 # Matplotlib Scientific Colors
 MPL_COLORS = [
@@ -31,6 +34,17 @@ MPL_COLORS = [
     "#fbbf24",  # Amber
     "#a78bfa",  # Violet
 ]
+
+MATERIAL_ICONS_CSS = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">'
+    '<style>'
+    '.material-icons { font-family: "Material Symbols Outlined"; font-weight: 400; font-size: 1.1rem; vertical-align: middle; }'
+    '.icon-sm { font-size: 0.95rem; }'
+    '.icon-md { font-size: 1.25rem; }'
+    '</style>'
+)
 
 CUSTOM_CSS = """
 <style>
@@ -103,6 +117,14 @@ h2 {
 h3 {
     font-size: 1.15rem !important;
     color: #cbd5e1 !important;
+}
+
+/* Section header with icon */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Styled containers */
@@ -184,12 +206,27 @@ div[data-testid="stSlider"] label {
     color: #cbd5e1 !important;
     font-weight: 600;
 }
+
+/* File uploader */
+div[data-testid="stFileUploader"] {
+    border: 1px dashed #1f293d;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Charts container */
+.chart-container {
+    background-color: #111827;
+    border: 1px solid #1f293d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
 </style>
 """
 
-
 def apply_theme() -> None:
-    """Inject custom CSS into Streamlit application."""
+    """Inject custom CSS and Material Icons into Streamlit application."""
     import streamlit as st
-
+    st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)

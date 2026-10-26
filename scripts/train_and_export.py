@@ -421,7 +421,7 @@ def main():
     experiments_path = OUTPUTS_DIR / "experiments.json"
     with open(experiments_path, "w", encoding="utf-8") as f:
         json.dump(all_records, f, indent=2)
-    print(f"\n✅ Saved {len(all_records)} experiment records → {experiments_path.relative_to(PROJECT_ROOT)}")
+    print(f"\n! Saved {len(all_records)} experiment records → {experiments_path.relative_to(PROJECT_ROOT)}")
 
     # Also export CSV
     csv_records = []
@@ -438,7 +438,7 @@ def main():
             row.update(r["operating_point"])
         csv_records.append(row)
     pd.DataFrame(csv_records).to_csv(OUTPUTS_DIR / "experiments.csv", index=False)
-    print(f"✅ Saved CSV summary → outputs/experiments.csv")
+    print(f"! Saved CSV summary → outputs/experiments.csv")
     print(f"\n{'='*60}")
     print("Done! Refresh the Streamlit dashboard to see real results.")
     print(f"{'='*60}")

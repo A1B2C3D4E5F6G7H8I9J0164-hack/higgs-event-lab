@@ -153,7 +153,7 @@ streamlit run streamlit_app.py
 
 `app/main.py` is the primary entry point. `streamlit_app.py` is the root entry point used by Streamlit Community Cloud. Both load the same application code. Consolidating them is tracked as BUG-021.
 
-When opened locally without prior model runs, the dashboard renders an honest empty state with a one-click **⚡ Bootstrap Demo Benchmarks** button, or loads existing artifacts from `outputs/`.
+When opened locally without prior model runs, the dashboard renders an honest empty state with a one-click **! Bootstrap Demo Benchmarks** button, or loads existing artifacts from `outputs/`.
 
 ### 8.2 Streamlit Community Cloud Hosting
 

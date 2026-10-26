@@ -7,6 +7,7 @@ Provides a polished, scientific, interactive interface for exploring:
 4. Experiment Comparison: model and feature-group metrics.
 5. Validation: ROC, precision-recall, calibration and threshold analysis.
 6. Methods and Research: experiment protocol, citations and limitations.
+7. Model Simulation: run trained models on new data.
 """
 
 from __future__ import annotations
@@ -37,7 +38,7 @@ from app.views.validation import render_validation
 # Page Configuration
 st.set_page_config(
     page_title="HiggsEvent | Scientific Workbench",
-    page_icon="⚛️",
+    page_icon="atom",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -51,9 +52,12 @@ def main() -> None:
     st.sidebar.markdown(
         """
         <div style="padding-bottom: 0.5rem; margin-bottom: 0.8rem; border-bottom: 1px solid #1f293d;">
-            <h2 style="margin: 0; font-size: 1.4rem; color: #00e5ff !important; font-weight: 800; letter-spacing: -0.02em;">
-                ⚛️ HiggsEvent
-            </h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons icon-md" style="color:#00e5ff;">science</span>
+                <h2 style="margin: 0; font-size: 1.4rem; color: #f8fafc !important; font-weight: 800; letter-spacing: -0.02em;">
+                    HiggsEvent
+                </h2>
+            </div>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.78rem; color: #94a3b8; font-family: monospace;">
                 Scientific ML Workbench &bull; v0.1.0-midsem
             </p>
@@ -69,7 +73,7 @@ def main() -> None:
         help="Path where experiment run folders are located (metrics.json + test_predictions.csv)",
     )
 
-    if st.sidebar.button("🔄 Rescan Artifacts"):
+    if st.sidebar.button("Rescan Artifacts", width="stretch"):
         st.cache_data.clear()
 
     # Discover and validate experiment runs
@@ -80,57 +84,69 @@ def main() -> None:
     if valid_count > 0:
         badge_html = f"""
         <div class="scientific-badge scientific-badge-green" style="width: 100%; text-align: center; margin-bottom: 1rem;">
-            &bull; {valid_count} Valid Run(s) Loaded
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">check_circle</span>
+            {valid_count} Valid Run(s) Loaded
         </div>
         """
     elif discovery.dir_exists and discovery.total_scanned > 0:
         badge_html = f"""
         <div class="scientific-badge scientific-badge-amber" style="width: 100%; text-align: center; margin-bottom: 1rem;">
-            &bull; 0 Valid ({discovery.total_scanned} Incomplete)
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">error</span>
+            0 Valid ({discovery.total_scanned} Incomplete)
         </div>
         """
     else:
         badge_html = """
         <div class="scientific-badge scientific-badge-cyan" style="width: 100%; text-align: center; margin-bottom: 1rem;">
-            &bull; Awaiting Experiment Runs
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">schedule</span>
+            Awaiting Experiment Runs
         </div>
         """
     st.sidebar.markdown(badge_html, unsafe_allow_html=True)
 
     if valid_count == 0:
-        if st.sidebar.button(
-            "⚡ Bootstrap Demo Runs",
-            help="Generate genuine mid-semester benchmark artifacts in outputs/ for instant evaluation.",
-        ):
+        if st.sidebar.button("Bootstrap Demo Runs", width="stretch", help="Generate genuine mid-semester benchmark artifacts in outputs/ for instant evaluation."):
             from scripts.generate_sample_artifacts import main as generate_artifacts
 
             generate_artifacts()
             st.cache_data.clear()
             st.rerun()
 
-    # Primary Navigation (6 Required Sections)
+    # Primary Navigation
     NAV_SECTIONS = [
-        "1. Overview",
-        "2. Physics Explorer",
-        "3. Dataset Observatory",
-        "4. Experiment Comparison",
-        "5. Validation",
-        "6. Methods and Research",
-        "7. Model Simulation",
+        ("Overview", "overview"),
+        ("Physics Explorer", "physics"),
+        ("Dataset Observatory", "datasets"),
+        ("Experiment Comparison", "bar_chart"),
+        ("Validation", "insights"),
+        ("Methods and Research", "article"),
+        ("Model Simulation", "psychology"),
     ]
 
-    selected_section = st.sidebar.radio(
+    # Build navigation with icons
+    nav_labels = []
+    for label, icon_name in NAV_SECTIONS:
+        nav_labels.append(f'<span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.4rem;">{icon_name}</span>{label}')
+
+    selected_index = st.sidebar.radio(
         "Navigation",
-        options=NAV_SECTIONS,
+        options=list(range(len(NAV_SECTIONS))),
+        format_func=lambda i: nav_labels[i],
         index=0,
+        label_visibility="collapsed",
     )
+
+    selected_section = NAV_SECTIONS[selected_index][0]
 
     st.sidebar.markdown("---")
     st.sidebar.markdown(
         """
         <div style="font-size: 0.76rem; color: #64748b; line-height: 1.4;">
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">person</span>
             <strong>Lead UI / Product:</strong> Ronit Singh<br/>
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">database</span>
             <strong>Dataset Benchmark:</strong> UCI HIGGS #280<br/>
+            <span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.3rem;">tune</span>
             <strong>Split:</strong> higgs-split-v1 (seed 42)
         </div>
         """,
@@ -138,19 +154,19 @@ def main() -> None:
     )
 
     # Section Routing
-    if selected_section == "1. Overview":
+    if selected_section == "Overview":
         render_overview(discovery)
-    elif selected_section == "2. Physics Explorer":
+    elif selected_section == "Physics Explorer":
         render_physics()
-    elif selected_section == "3. Dataset Observatory":
+    elif selected_section == "Dataset Observatory":
         render_dataset()
-    elif selected_section == "4. Experiment Comparison":
+    elif selected_section == "Experiment Comparison":
         render_experiments(discovery)
-    elif selected_section == "5. Validation":
+    elif selected_section == "Validation":
         render_validation(discovery)
-    elif selected_section == "6. Methods and Research":
+    elif selected_section == "Methods and Research":
         render_methods()
-    elif selected_section == "7. Model Simulation":
+    elif selected_section == "Model Simulation":
         render_simulation(discovery)
 
 

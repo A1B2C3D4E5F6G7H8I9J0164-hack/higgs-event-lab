@@ -20,7 +20,7 @@ def render_project_overview() -> None:
                     border-radius: 6px; padding: 18px; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace;">
             <div style="color: #ff3d71; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px;
                         margin-bottom: 10px; font-weight: 600;">
-                ⚠ SCOPE GUARDRAILS
+                    ! SCOPE GUARDRAILS
             </div>
             <div style="color: #c9d1d9; font-size: 0.8rem; line-height: 1.7;">
                 This project classifies simulated collision events labelled as
@@ -94,10 +94,10 @@ def render_project_overview() -> None:
                     // LEAKAGE CONTROLS
                 </div>
                 <div style="color: #c9d1d9; font-size: 0.8rem; line-height: 1.9;">
-                    <span style="color: #00ff9c;">✓</span> Target column strictly excluded from X and scalers<br>
-                    <span style="color: #00ff9c;">✓</span> Split-before-fit on all preprocessors<br>
-                    <span style="color: #00ff9c;">✓</span> Frozen held-out test set across all models<br>
-                    <span style="color: #00ff9c;">✓</span> Operating thresholds chosen on validation, frozen for test
+                    <span style="color: #00ff9c;">*</span> Target column strictly excluded from X and scalers<br>
+                    <span style="color: #00ff9c;">*</span> Split-before-fit on all preprocessors<br>
+                    <span style="color: #00ff9c;">*</span> Frozen held-out test set across all models<br>
+                    <span style="color: #00ff9c;">*</span> Operating thresholds chosen on validation, frozen for test
                 </div>
             </div>
             """,
