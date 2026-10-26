@@ -63,6 +63,8 @@ python tests/integration/smoke_check_raw_file.py data/raw/HIGGS.csv.gz --rows 10
 | 2026-10-21 | `pytest tests/unit` after fixes | **26 passed, 0 failed** | Initial sweep of the delivered repository |
 | 2026-10-25 | `pytest` full test suite after classical, neural, dashboard, protocol modules | **103 passed, 0 failed** in ~6.4s | All unit and integration tests passing cleanly |
 | 2026-10-25 | Negative controls: copy of the repo with injected faults (a fake ROC-AUC claim in a report, an empty `HIGGS.csv.gz`, a fake API key in `app/config.py`, a `#` comment in a notebook code cell) | 4 tests failed as intended, 22 passed | Shows the guards detect what they are meant to detect |
+| 2026-10-26 | Final-push review: `pytest` on 14 non-PyTorch test files (hygiene, notebook style, feature dictionary, protocol, features, data loader, evaluation, download, classical, dashboard loader/metrics/views, data pipeline integration) | **98 passed, 1 failed.** The failure is `test_app_views.py::test_bootstrap_cloud_artifacts_if_needed`, caused by `ModuleNotFoundError: streamlit` in the review environment (dependency missing, not a code fault). | BUG-022. Install `requirements.txt` and rerun. **NOT RUN here:** `test_neural.py` (3 tests) and `test_end_to_end_pipeline.py` (2 tests) need PyTorch; `smoke_check_raw_file.py` on the real HIGGS file. Run them on the team machine and paste output here. |
+| 2026-10-26 | Results consistency check (not a test): compared `outputs/*/metrics.json`, `outputs/experiments.json` and `outputs/full_colab_results.json` | **Inconsistent.** 250k MLP all-features ROC-AUC 0.9406 vs 1M wide MLP 0.8399; every model family is lower at 1M | BUG-015, BUG-016, BUG-017, BUG-018. See `docs/14_RESULTS_RECONCILIATION.md` | <!-- allow-metric -->
 
 ---
 
