@@ -9,14 +9,6 @@ Prepared dataset subsets are cached here locally. Manifest files are tracked by 
 | Mid-semester subset | 250,000 | ~52 MB compressed | `higgs_sample_250k.csv.gz` | Generated via pipeline |
 | Full benchmark subset | 1,000,000 | ~200 MB compressed | `higgs_sample_1m.csv.gz` | Generated via Colab notebook |
 
-## External Download Links
-
-For fast local reproduction without extracting from the 2.6 GB raw file:
-
-- **Team Cloud Mirror (Google Drive / Hugging Face):**
-  - Google Drive mirror: `[Add your Google Drive link here]`
-  - Hugging Face Datasets mirror: `[Add your Hugging Face repo link here]`
-
 ## Placement Instructions
 
 Place the processed sample into this folder:

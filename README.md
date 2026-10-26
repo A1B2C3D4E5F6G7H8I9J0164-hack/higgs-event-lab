@@ -1,227 +1,309 @@
-# HiggsEvent: Scientific Machine Learning Benchmark Laboratory
+# HiggsEvent: Particle Event Classification Benchmark
 
-**A collaborative research benchmark comparing machine-learning representations on the simulated UCI HIGGS dataset (Baldi et al., 2014).**
+**Classify simulated particle collision events as Higgs signal or background using Logistic Regression, XGBoost, and compact neural networks — with a live interactive Streamlit dashboard.**
 
-> **Scientific Boundary:** This project classifies simulated collision events labeled as signal or background. It does **not** simulate quantum fields, establish a physical particle discovery, produce detector-grade analyses, or convert classifier scores into real-world Higgs probabilities. All results are empirical benchmarks on Monte Carlo simulation data.
+> **Scientific Boundary:** All collision events analysed here are Monte Carlo simulations from the UCI HIGGS dataset (Baldi et al., 2014). Model outputs are classification scores on synthetic benchmark events. This project does **not** claim physical particle detection, quantum field simulation, or any real detector analysis.
+
+[![Tests](https://img.shields.io/badge/tests-105%20passing-brightgreen)](tests/)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
+[![Streamlit](https://img.shields.io/badge/dashboard-HiggsEvent-ff4b4b)](streamlit_app.py)
 
 ---
 
-## 1. Team & Ownership
+## Team & Ownership
 
-| Name | Role | GitHub ID | Primary Responsibilities |
+| Name | Role | GitHub | Primary Tasks |
 |---|---|---|---|
-| **Krishna** | Team Lead | [`CosmicMagnetar`](https://github.com/CosmicMagnetar`) | Project scope, integration, split/evaluation protocol, deployment, presentation & viva prep |
-| **Saumya Mishra** | Documentation & QA Lead | [`Saumya-Mishra-536`](https://github.com/Saumya-Mishra-536`) | Physics background, methodology, setup guide, bug triage, test plan, report review |
-| **Aditya Rana** | Classical ML & Data Lead | [`A1B2C3D4E5F6G7H8I9J0164-hack`](https://github.com/A1B2C3D4E5F6G7H8I9J0164-hack`) | Chunked data loader, schema validation, EDA notebook, Logistic Regression baselines |
-| **Rachit Gupta** | Deep Learning Lead | [`Rachitt19`](https://github.com/Rachitt19`) | Compact PyTorch MLP baseline, BatchNorm/Dropout, neural benchmarks, artifact export |
-| **Ronit Singh** | Dashboard & UI Lead | [`ronithi27`](https://github.com/ronithi27`) | Streamlit scientific workbench, terminal HUD UI, artifact loader, Model Simulation view |
+| **Krishna** | Team Lead | [`CosmicMagnetar`](https://github.com/CosmicMagnetar) | Split protocol, integration, cloud deployment, presentation |
+| **Saumya** | Docs & QA Lead | [`Saumya-Mishra-536`](https://github.com/Saumya-Mishra-536) | Physics background, setup guide, test plan, report review |
+| **Aditya Rana** | Data & Classical ML | [`A1B2C3D4E5F6G7H8I9J0164-hack`](https://github.com/A1B2C3D4E5F6G7H8I9J0164-hack) | Data loader, EDA, Logistic Regression, XGBoost baselines |
+| **Rachit** | Deep Learning | [`Rachitt19`](https://github.com/Rachitt19) | Compact MLP (PyTorch), BatchNorm/Dropout, neural benchmarks |
+| **Ronit** | Dashboard & UI | [`ronithi27`](https://github.com/ronithi27) | Streamlit app, artifact loader, visualisations, cloud entrypoint |
 
 ---
 
-## 2. System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph DataPipeline [1. Ingestion & Validation]
-        UCI[UCI HIGGS Dataset #280] --> STREAM[Chunked Stream: 50k rows]
-        STREAM --> VAL[Schema Validator: validate_raw_chunk]
-        VAL --> EXTRACT[Clean Subset: N=250,000 or 1,000,000]
+    subgraph Input ["1 — Data Ingestion"]
+        A[("UCI HIGGS Archive\n11 M rows, 2.6 GB")] -->|auto-download in notebooks| B["data/raw/HIGGS.csv.gz"]
+        B -->|chunked reader 50k rows| C["Schema Validator\nvalidate_raw_chunk()"]
+        C -->|clean subset| D["data/processed/\nhiggs_sample_250k.csv.gz\nhiggs_sample_1m.csv.gz"]
     end
 
-    subgraph SplitProtocol [2. Partitioning Protocol: higgs-split-v1]
-        EXTRACT --> SPLIT[Stratified Split: seed=42]
-        SPLIT --> TRAIN[Train Partition: 70%]
-        SPLIT --> VALID[Validation Partition: 15%]
-        SPLIT --> TEST[Held-out Test Partition: 15%]
+    subgraph Split ["2 — higgs-split-v1 Protocol"]
+        D -->|seed=42, stratified| E["Train 70%\n(175k / 700k)"]
+        D --> F["Validation 15%\n(37.5k / 150k)"]
+        D --> G["Held-out Test 15%\n(37.5k / 150k)"]
     end
 
-    subgraph Models [3. Model Benchmarking]
-        TRAIN --> LOGREG[Logistic Regression: L-BFGS, C=1.0, max_iter=2000]
-        TRAIN --> XGB[XGBoost: 600 trees, depth 7, lr=0.06]
-        TRAIN --> MLP[Wide MLP: 256-128-64, BatchNorm1d, Dropout 0.30, AdamW]
-        VALID --> TUNE[Validation Tuning: Early Stopping & Operating Threshold]
+    subgraph Models ["3 — Benchmark Models"]
+        E --> H["Logistic Regression\nL-BFGS · C=1.0\nStandardScaler inside Pipeline"]
+        E --> I["XGBoost\n600 trees · depth 7\nlr=0.06 · subsample=0.9"]
+        E --> J["Wide MLP\n256-128-64 · BatchNorm1d\nDropout 0.30 · AdamW"]
+        F -->|early stopping\noperating threshold| K["Validation Tuning"]
+        K --> H & I & J
     end
 
-    subgraph Evaluation [4. Single Frozen Test Evaluation]
-        TEST --> INFER[Held-out Test Scoring]
-        TUNE -.-> INFER
-        INFER --> METRICS[Compute ROC-AUC, PR-AUC, Brier Score, Reliability]
-        METRICS --> ARTIFACTS[Export higgs-experiment-v1 JSON & CSV]
+    subgraph Eval ["4 — Single Frozen Test Evaluation"]
+        G --> L["Held-out Scoring"]
+        H & I & J --> L
+        L --> M["ROC-AUC · PR-AUC\nBrier Score · Accuracy\nOperating Point @50% Sig. Eff."]
+        M --> N[["higgs-experiment-v1\nmetrics.json + test_predictions.csv"]]
     end
 
-    subgraph Presentation [5. Streamlit Interactive Dashboard]
-        ARTIFACTS --> SCI_APP[Scientific Laboratory UI: app/main.py]
-        ARTIFACTS --> SIM_APP[Model Simulation: upload & score new events]
+    subgraph App ["5 — Interactive Dashboard"]
+        N -->|auto-discovered| O["Streamlit App\nstreamlit_app.py"]
+        O --> P["Leaderboard · ROC/PR Curves\nReliability Diagrams · Feature Groups"]
     end
 ```
 
 ---
 
-## 3. Benchmark Results
+## Feature Groups
 
-### Full-Dataset Benchmark (1,000,000 events)
+The HIGGS dataset has **28 features** split into two groups:
 
-Trained on the UCI HIGGS sample via `notebooks/03_full/00_full_higgs_colab.ipynb` using one frozen stratified split (seed 42, 15% validation, 15% test). All metrics computed on the held-out test partition ($N = 150{,}000$). Source: `outputs/full_colab_results.json`.
-
-| Model | Test ROC-AUC | Test PR-AUC | Brier Score | Test Accuracy | Training Environment |
-|---|---|---|---|---|---|
-| Wide MLP (tuned) | 0.8399 | 0.8539 | 0.1630 | 0.7565 | Colab / Kaggle GPU (T4) |
-| XGBoost (tuned) | 0.8271 | 0.8415 | 0.1693 | 0.7451 | Colab / Kaggle GPU (T4) |
-| Logistic Regression (tuned) | 0.6834 | 0.6832 | 0.2233 | 0.6406 | Colab / Kaggle GPU (T4) |
-
-**Best model:** Wide compact MLP (256-128-64, BatchNorm + Dropout, AdamW) achieves the highest discrimination (ROC-AUC 0.8399) and best calibration (Brier 0.1630). Saved model weights live in `outputs/model_weights/` (git-ignored; regenerate via the Colab notebook).
-
-### Mid-Semester Benchmark (250,000 events)
-
-Smaller-sample results from `notebooks/01_midsem/` for reference. Values come from serialized `higgs-experiment-v1` artifacts:
-
-| Model | Feature Group | Features | Test ROC-AUC | Test PR-AUC | Brier Score |
-|---|---|---|---|---|---|
-| Logistic Regression | Low-level | 21 | 0.7476 | 0.7622 | 0.2035 |
-| Logistic Regression | High-level | 7 | 0.7661 | 0.7427 | 0.1945 |
-| Logistic Regression | All features | 28 | 0.8369 | 0.8377 | 0.1639 |
-| Compact MLP | Low-level | 21 | 0.8000 | 0.8097 | 0.1824 |
-| Compact MLP | High-level | 7 | 0.9043 | 0.8888 | 0.1184 |
-| Compact MLP | All features | 28 | 0.9406 | 0.9372 | 0.0945 |
-
-**Key finding:** Expert-derived high-level invariant masses strongly outperform raw low-level kinematics for both linear and neural classifiers. The wide tuned MLP on 1M events generalizes well (ROC-AUC 0.8399) on the larger sample.
+| Group | Count | Description |
+|---|---|---|
+| `low_level` | 21 | Raw kinematic detector measurements (momenta, pseudorapidity, azimuthal angles) |
+| `high_level` | 7 | Physicist-derived composite invariant masses (m_jj, m_jjj, m_lv, m_jlv, m_bb, m_wbb, m_wwbb) |
+| `all` | 28 | Combined — both groups concatenated |
 
 ---
 
-## 4. Quickstart Guide
+## Benchmark Results
 
-### 4.1 Environment Setup
+### Previously recorded 1M reference run — `notebooks/03_full/`
+
+Trained on a Colab/Kaggle runtime. One frozen stratified split seed=42. Held-out test N=150,000.
+Source: `outputs/full_colab_results.json`
+
+| Model | Feature Group | Test ROC-AUC | Test PR-AUC | Brier Score | Accuracy | Train Time |
+|---|---|---|---|---|---|---|
+| **Wide MLP** | all (28) | **0.8399** | **0.8539** | **0.1630** | **75.6%** | ~8 min GPU |
+| XGBoost | all (28) | 0.8271 | 0.8415 | 0.1693 | 74.5% | ~12 min GPU |
+| Logistic Regression | all (28) | 0.6834 | 0.6832 | 0.2233 | 64.1% | <1 min CPU |
+
+### Previously recorded 250k reference run — `notebooks/01_midsem/`
+
+| Model | Feature Group | Test ROC-AUC | Test PR-AUC | Brier Score |
+|---|---|---|---|---|
+| MLP (compact) | all (28) | 0.9406 | 0.9372 | 0.0945 |
+| MLP (compact) | high_level (7) | 0.9043 | 0.8888 | 0.1184 |
+| MLP (compact) | low_level (21) | 0.8000 | 0.8097 | 0.1824 |
+| XGBoost | all (28) | 0.8924 | 0.8897 | 0.1252 |
+| XGBoost | high_level (7) | 0.8379 | 0.8243 | 0.1588 |
+| XGBoost | low_level (21) | 0.8152 | 0.8229 | 0.1714 |
+| Logistic Regression | all (28) | 0.8369 | 0.8377 | 0.1639 |
+| Logistic Regression | high_level (7) | 0.7661 | 0.7427 | 0.1945 |
+| Logistic Regression | low_level (21) | 0.7476 | 0.7622 | 0.2035 |
+
+> **Key finding:** High-level invariant mass features dominate for linear models. The MLP narrows the gap on raw kinematics via nonlinear representations — but adding all 28 features always helps.
+
+The notebooks now train on the complete approximately 11-million-row file. Rerun them to replace these historical subset references with full-data measurements; do not use the table above as the full-data result.
+
+---
+
+## Quick Start
+
+### 1. Clone & Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/CosmicMagnetar/higgs-event-lab.git
 cd higgs-event-lab
-
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies and package in editable mode
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .
 ```
 
-### 4.2 Download Data and Prepare a Sample
+### 2. Download the Dataset (auto-handled by notebooks)
 
-The notebooks download the original UCI HIGGS archive automatically when `data/raw/HIGGS.csv.gz` is missing. The first run downloads about 2.6 GB.
+The notebooks download the **complete UCI HIGGS dataset** on first run. The archive contains approximately **11 million events**, not a pre-trimmed sample. The 250k and 1M files are generated later from this complete raw file for memory-safe benchmark runs.
+
+Official links:
+
+- Dataset page: <https://archive.ics.uci.edu/dataset/280/higgs>
+- Complete archive: <https://archive.ics.uci.edu/static/public/280/higgs.zip>
+
+To download the complete dataset manually:
 
 ```bash
-# Option A: Run the full-data Colab/Kaggle notebook
-# Open notebooks/03_full/00_full_higgs_colab.ipynb in Colab or Kaggle
+# Option A — Official UCI zip (recommended)
+curl -L https://archive.ics.uci.edu/static/public/280/higgs.zip -o /tmp/higgs.zip
+unzip /tmp/higgs.zip "*.csv.gz" -d data/raw/
 
-# Option B: Extract a 250k subset locally
-python -m higgs_event_lab.data \
+# Option B — Using the project download script
+python scripts/download_data.py --output data/raw/HIGGS.csv.gz
+```
+
+> **Expected complete file:** `data/raw/HIGGS.csv.gz` — ~2.6 GB compressed, headerless, 29 columns, about 11,000,000 rows. This is the whole dataset used by the project.
+
+### 3. Build the Processed Sample
+
+```bash
+# 250k mid-semester sample (fast, ~10s)
+PYTHONPATH=src python -m higgs_event_lab.data \
     --source data/raw/HIGGS.csv.gz \
     --output data/processed/higgs_sample_250k.csv.gz \
     --rows 250000
+
+# 1M full sample (slower, ~45s)
+PYTHONPATH=src python -m higgs_event_lab.data \
+    --source data/raw/HIGGS.csv.gz \
+    --output data/processed/higgs_sample_1m.csv.gz \
+    --rows 1000000
 ```
 
-### 4.3 Train Benchmark Baselines
+### 4. Train Models
 
 ```bash
-# Train Logistic Regression across all 3 feature groups
-python -m higgs_event_lab.classical \
+# Train Logistic Regression + XGBoost across all feature groups
+PYTHONPATH=src python -m higgs_event_lab.classical \
+    --data data/processed/higgs_sample_250k.csv.gz \
+    --model-type both \
+    --all-groups \
+    --output-dir outputs/
+
+# Train compact MLP across all feature groups
+PYTHONPATH=src python -m higgs_event_lab.neural \
     --data data/processed/higgs_sample_250k.csv.gz \
     --all-groups \
-    --output-dir outputs
-
-# Train Compact MLP neural networks across all 3 feature groups
-python -m higgs_event_lab.neural \
-    --data data/processed/higgs_sample_250k.csv.gz \
-    --all-groups \
-    --output-dir outputs
+    --output-dir outputs/
 ```
 
-### 4.4 Launch the Interactive Streamlit Dashboard
+### 5. Launch the Dashboard
 
 ```bash
-# Primary Scientific Laboratory Dashboard (recommended)
-streamlit run app/main.py
-
-# Alternative Retro Terminal HUD Dashboard
-streamlit run app/streamlit_app.py
+streamlit run streamlit_app.py
 ```
 
-The app launches at `http://localhost:8501`. Use the sidebar to select artifact directories, rescan runs, and navigate between sections including **Model Simulation**, where you can upload a CSV and score events with the trained models.
+---
 
-### 4.5 Cloud Hosting (Streamlit Community Cloud)
+## Notebooks — What to Run & In What Order
 
-The project is configured for one-click deployment on [Streamlit Community Cloud](https://share.streamlit.io/):
-1. Connect repository `CosmicMagnetar/higgs-event-lab` on branch `main`.
-2. Main file path: `streamlit_app.py`.
-3. The app auto-initializes benchmark artifacts on first boot.
+```
+notebooks/
+├── 00_physics/
+│   └── 00_higgs_physics_and_dataset_intro.ipynb   ← Read-only, no data needed
+├── 01_midsem/
+│   ├── 01_eda_and_feature_groups.ipynb             ← Run FIRST (downloads data + builds 250k sample)
+│   ├── 02_neural_network_baseline.ipynb            ← Run SECOND (MLP training, artifact export)
+│   └── 03_classical_baseline.ipynb                 ← Run THIRD  (LogReg + XGBoost, artifact export)
+└── 03_full/
+    └── 00_full_higgs_colab.ipynb                   ← Run on Colab/Kaggle (full 1M benchmark)
+```
 
-### 4.6 Run Automated QA & Test Suite
+| # | Notebook | Data Required | Where to Run | Time |
+|---|---|---|---|---|
+| 0 | `00_physics/00_higgs_physics_and_dataset_intro.ipynb` | None | Local | 1 min |
+| 1 | `01_midsem/01_eda_and_feature_groups.ipynb` | Auto-downloaded (~2.6 GB) | Local | 15–30 min (first run) |
+| 2 | `01_midsem/02_neural_network_baseline.ipynb` | `higgs_sample_250k.csv.gz` | Local | ~5 min |
+| 3 | `01_midsem/03_classical_baseline.ipynb` | `higgs_sample_250k.csv.gz` | Local | ~3 min |
+| 4 | `03_full/00_full_higgs_colab.ipynb` | Auto-downloaded | **Colab/Kaggle (GPU)** | 20–40 min |
+
+> **Each notebook auto-downloads and auto-builds its data requirements** — just run from top to bottom and they work on a fresh machine.
+
+---
+
+## Project Structure
+
+```
+higgs-event-lab/
+├── app/                        # Streamlit dashboard
+│   ├── main.py                 # App entry point (sidebar navigation)
+│   ├── loader.py               # higgs-experiment-v1 artifact loader
+│   ├── visualizations.py       # ROC, PR, calibration, runtime plots
+│   ├── components/             # UI components (overview, results, catalog, empty state)
+│   ├── views/                  # Page-level view renderers
+│   └── utils/                  # Schema validation, experiment loader
+├── data/
+│   ├── raw/                    # HIGGS.csv.gz (git-ignored, auto-downloaded by notebooks)
+│   ├── processed/              # Sampled subsets (git-ignored, generated by pipeline)
+│   ├── interim/                # Temporary processing artefacts
+│   └── external/               # External reference files
+├── docs/                       # Project documentation (15 numbered docs)
+│   ├── 00_START_HERE.md
+│   ├── 08_PHYSICS_BACKGROUND.md
+│   ├── 09_DATASET_GUIDE.md
+│   ├── 10_OBJECTIVES_AND_METHODOLOGY.md
+│   ├── 11_SETUP_GUIDE.md
+│   └── ...
+├── notebooks/
+│   ├── 00_physics/             # Physics intro (no execution required)
+│   ├── 01_midsem/              # Mid-semester MVP (EDA + models)
+│   └── 03_full/                # Full-dataset Colab/Kaggle benchmark
+├── outputs/                    # Experiment artifacts (auto-generated or bootstrapped)
+│   ├── logreg_*/               # LogReg runs per feature group
+│   ├── xgboost_*/              # XGBoost runs per feature group
+│   ├── mlp_*/                  # MLP runs per feature group
+│   ├── experiments.json        # Aggregated experiment manifest
+│   └── full_colab_results.json # Full 1M benchmark summary
+├── reports/                    # Written reports and viva preparation
+├── scripts/
+│   ├── download_data.py        # CLI data downloader
+│   ├── generate_sample_artifacts.py  # Bootstrap demo artifacts for dashboard
+│   └── train_and_export.py     # Full training pipeline script
+├── src/higgs_event_lab/        # Core library (importable as a package)
+│   ├── data.py                 # Chunked loader, sample extractor, schema validator
+│   ├── features.py             # Feature group definitions (low_level, high_level, all)
+│   ├── classical.py            # Logistic Regression + XGBoost training & artifact export
+│   ├── neural.py               # Compact PyTorch MLP training & artifact export
+│   ├── evaluation.py           # ROC-AUC, PR-AUC, Brier score, operating threshold
+│   └── protocol.py             # higgs-experiment-v1 artifact schema
+├── streamlit_app.py            # Cloud entrypoint (auto-bootstraps demo artifacts)
+├── requirements.txt
+└── tests/                      # 105 automated tests (unit + integration)
+```
+
+---
+
+## Running Tests
 
 ```bash
-# Run all unit, integration, and hygiene tests
-pytest
+# All 105 tests
+.venv/bin/python -m pytest tests/ -q
 
-# Run dashboard-specific tests
-pytest tests/unit/test_app_loader.py tests/unit/test_app_metrics.py -v
+# Fast unit tests only
+.venv/bin/python -m pytest tests/unit/ -q
+
+# With verbose output
+.venv/bin/python -m pytest tests/ -v
 ```
 
 ---
 
-## 5. Repository Layout
+## Hosting on Streamlit Community Cloud
 
-| Folder | Purpose |
-|---|---|
-| `app/` | Streamlit dashboard application (views, components, loader, styles, visualizations) |
-| `data/raw/` | Original UCI HIGGS download (git-ignored, local only) |
-| `data/processed/` | Prepared subsets (250k, 1M; git-ignored except manifests) |
-| `data/interim/` | Staged intermediate transformations (git-ignored) |
-| `data/external/` | Auxiliary reference data (git-ignored) |
-| `notebooks/` | Jupyter notebooks: physics intro, mid-sem EDA/MLP, full Colab benchmark |
-| `outputs/` | Experiment artifacts: metrics.json, predictions, curves, results summary |
-| `scripts/` | Data download, sample generation, full benchmark training |
-| `src/higgs_event_lab/` | Reusable Python package: data, features, protocol, splits, evaluation, neural, classical, artifacts |
-| `tests/` | Unit and integration tests with synthetic data |
-| `docs/` | Project charter, data guide, setup guide, physics background, QA plan, ADRs |
-| `reports/` | Methodology, neural benchmarks, classical benchmarks, presentation, viva guide |
-| `deployment/` | Dockerfile, local deploy script, runbook |
-| `team/` | Charter, backlog, changelog, meeting template |
+1. Fork or push this repo to your GitHub account
+2. Go to [share.streamlit.io](https://share.streamlit.io) → New App
+3. Set **Repository:** `CosmicMagnetar/higgs-event-lab`
+4. Set **Main file path:** `streamlit_app.py`
+5. Deploy — the app auto-bootstraps 9 demo benchmark artifacts on first load
+
+The cloud entrypoint (`streamlit_app.py`) auto-discovers `outputs/` and bootstraps realistic demo artifacts when it is empty so that visitors always see the full dashboard.
 
 ---
 
-## 6. Reports & Viva Pack
+## Citation
 
-- [`reports/01_report_draft_methodology_limitations.md`](reports/01_report_draft_methodology_limitations.md) — Methodology, full-dataset benchmark results, validity threats and mitigations.
-- [`reports/02_neural_network_benchmarks.md`](reports/02_neural_network_benchmarks.md) — Compact MLP architecture, regularization, cross-feature protocol.
-- [`reports/03_classical_baseline_benchmarks.md`](reports/03_classical_baseline_benchmarks.md) — Logistic Regression pipeline, leakage-free scaling, cross-group benchmarks.
-- [`reports/04_midsem_presentation_and_demo.md`](reports/04_midsem_presentation_and_demo.md) — 12-slide presentation structure and live demo script.
-- [`reports/05_viva_defense_guide.md`](reports/05_viva_defense_guide.md) — Viva examination Q&A preparation pack (20 questions).
+> Baldi, P., Sadowski, P., & Whiteson, D. (2014). Searching for exotic particles in high-energy physics with deep learning. *Nature Communications*, 5, 4308. [DOI: 10.1038/ncomms5308](https://doi.org/10.1038/ncomms5308)
 
----
-
-## 7. Notebook Run Order
-
-Run the notebooks in this order:
-
-1. `notebooks/00_physics/00_higgs_physics_and_dataset_intro.ipynb` — Beginner physics and dataset context.
-2. `notebooks/01_midsem/01_eda_and_feature_groups.ipynb` — EDA on a 50k event sample.
-3. `notebooks/01_midsem/02_neural_network_baseline.ipynb` — Compact MLP architecture and feature-group comparison.
-4. `notebooks/03_full/00_full_higgs_colab.ipynb` — Full 1M benchmark on Colab/Kaggle (downloads data, trains models, exports artifacts).
-
-Data sources:
-- UCI dataset page: https://archive.ics.uci.edu/dataset/280/higgs
-- Download zip: https://archive.ics.uci.edu/static/public/280/higgs.zip
+```bibtex
+@article{baldi2014higgs,
+  title   = {Searching for exotic particles in high-energy physics with deep learning},
+  author  = {Baldi, Pierre and Sadowski, Peter and Whiteson, Daniel},
+  journal = {Nature Communications},
+  volume  = {5},
+  pages   = {4308},
+  year    = {2014},
+  doi     = {10.1038/ncomms5308}
+}
+```
 
 ---
 
-## 8. Current Status: Mid-Semester Milestone Completed
+## License
 
-- Chunked data extraction and schema validators verified.
-- Exploratory data analysis notebook completed.
-- Classical (Logistic Regression, XGBoost) and deep learning (Wide MLP) baselines benchmarked.
-- Shared `higgs-split-v1` and `higgs-experiment-v1` protocols enforced.
-- Streamlit scientific dashboard with Model Simulation view operating on real serialized artifacts.
-- 104 of 104 automated tests passing.
-- Presentation slide deck and viva examination defense pack ready.
-
----
+[MIT](LICENSE) — open for academic and educational use.

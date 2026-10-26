@@ -1,12 +1,12 @@
 """Tuned full-scale benchmark run for Colab or Kaggle.
 
-The notebook cells download the full UCI archive and prepare a processed
-subset; this script then trains the three mid-semester baselines with stronger
-settings, evaluates once on the shared held-out split, and writes a single
-summary plus per-model test predictions for the report and dashboard.
+The notebook cells download the complete UCI archive; this script then trains
+the three baselines with stronger settings on all available HIGGS rows,
+evaluates once on the shared held-out split, and writes a single summary plus
+per-model test predictions for the report and dashboard.
 
 Usage:
-    HIGGS_SAMPLE_PATH=data/processed/higgs_sample_1m.csv.gz \
+    HIGGS_SAMPLE_PATH=data/raw/HIGGS.csv.gz \
         python scripts/train_full_colab.py --output-dir outputs
 """
 
@@ -35,17 +35,17 @@ from higgs_event_lab.features import ALL_COLUMNS, ALL_FEATURES, TARGET_COLUMN  #
 from higgs_event_lab.neural import MLPConfig, train_mlp  # noqa: E402
 from higgs_event_lab.protocol import SplitConfig, create_stratified_splits  # noqa: E402
 
-PRIMARY_SAMPLE = ROOT_DIR / "data" / "processed" / "higgs_sample_1m.csv.gz"
-FALLBACK_SAMPLE = ROOT_DIR / "data" / "processed" / "higgs_sample_250k.csv.gz"
+PRIMARY_SAMPLE = ROOT_DIR / "data" / "raw" / "HIGGS.csv.gz"
+FALLBACK_SAMPLE = ROOT_DIR / "data" / "processed" / "higgs_sample_1m.csv.gz"
 
 
 def resolve_sample_path(requested: str | None) -> Path:
-    """Prefer an explicit path, then the large processed sample, then the 250k one."""
+    """Prefer an explicit path, then the complete raw file, then derived samples."""
     for candidate in (requested, os.environ.get("HIGGS_SAMPLE_PATH"), str(PRIMARY_SAMPLE), str(FALLBACK_SAMPLE)):
         if candidate and Path(candidate).exists():
             return Path(candidate)
     raise FileNotFoundError(
-        "No processed HIGGS sample found. Run the notebook download and subset cells first."
+        "No HIGGS dataset found. Run the notebook download cell first."
     )
 
 
@@ -231,7 +231,7 @@ def train_and_score_all(sample_path: Path, output_dir: Path = OUTPUTS_DIR) -> tu
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Train tuned mid-semester baselines for the Colab run.")
-    parser.add_argument("--sample", default=None, help="Processed sample CSV; falls back to the 1m then 250k sample.")
+    parser.add_argument("--sample", default=None, help="HIGGS CSV/GZ path; defaults to the complete raw file.")
     parser.add_argument("--output-dir", default=str(OUTPUTS_DIR), help="Directory for summary, predictions and weights.")
     args = parser.parse_args(argv)
 

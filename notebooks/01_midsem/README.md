@@ -1,6 +1,6 @@
 # Mid-Semester MVP Notebooks
 
-This folder contains the compact, deadline-oriented mid-semester notebooks. Target 250,000 rows when source access and compute allow; disclose the actual row count. Notebook explanations must be Markdown text cells, not tutorial comments inside code cells.
+This folder contains the mid-semester notebooks. They now read the complete approximately 11-million-row raw HIGGS file directly; the smaller processed samples remain available for optional quick checks. Notebook explanations must be Markdown text cells, not tutorial comments inside code cells.
 
 ## Current Notebooks
 
@@ -8,10 +8,11 @@ This folder contains the compact, deadline-oriented mid-semester notebooks. Targ
 |---|---|
 | `01_eda_and_feature_groups.ipynb` | Exploratory data analysis: schema validation, class balance, missing-value checks, discrete feature verification, kinematic distributions, invariant-mass distributions, correlation structure across feature groups. |
 | `02_neural_network_baseline.ipynb` | Compact MLP architecture (BatchNorm, Dropout), feature-group comparison (`low_level`, `high_level`, `all`), reproducible stratified splitting, artifact export for the dashboard. |
+| `03_classical_baseline.ipynb` | Full-data Logistic Regression and XGBoost baselines across all three feature groups, with ROC curves and artifact export. |
 
 ## Pipeline Summary
 
-1. Load a validated sample using `higgs_event_lab.data.load_higgs_sample` (chunked, memory-safe).
+1. Load the complete raw file using `higgs_event_lab.data.load_higgs_sample` (chunked, validated loading).
 2. Verify schema: 29 columns, binary labels in `{0, 1}`, no NaN or infinite values.
 3. Check class balance (signal fraction) and compare against a later chunk to guard against sampling bias.
 4. Inspect low-level vs. high-level feature distributions for signal vs. background.

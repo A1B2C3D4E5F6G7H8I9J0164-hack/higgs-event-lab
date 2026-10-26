@@ -1,6 +1,6 @@
-# Raw Data
+# Raw Data — Complete 11-Million-Row Dataset
 
-Download the official UCI HIGGS dataset locally into this folder. The raw data are **not committed to Git** due to GitHub's 100 MB file size limit and repository hygiene rules. Only this README is tracked.
+Download the complete official UCI HIGGS dataset locally into this folder. The raw data are **not committed to Git** due to GitHub's 100 MB file size limit and repository hygiene rules. Only this README is tracked.
 
 ---
 
@@ -10,8 +10,6 @@ Download the official UCI HIGGS dataset locally into this folder. The raw data a
 |---|---|---|---|
 | **Official UCI Repository** | <https://archive.ics.uci.edu/dataset/280/higgs> | `HIGGS.csv.gz` | ~2.6 GB |
 | **Direct Download Zip** | <https://archive.ics.uci.edu/static/public/280/higgs.zip> | `higgs.zip` | ~2.6 GB |
-| **Team Cloud Mirror** | `[Add your Google Drive link here]` | — | — |
-| **Team Cloud Mirror** | `[Add your Hugging Face repo link here]` | — | — |
 
 ---
 
@@ -44,6 +42,8 @@ Record the checksum, source URL, retrieval date, and archive name in a data card
 | **Source Integrity** | Do not silently replace the source with an unverified mirror. |
 | **Format** | Keep the file gzip-compressed (`HIGGS.csv.gz`) and headerless (29 columns per row, no header row). |
 | **Size** | The raw archive contains approximately 11 million rows (simulated collision events). |
+
+The processed 250k and 1M files are generated from this complete raw file; they are not alternative source datasets.
 
 ## Dataset Citation
 

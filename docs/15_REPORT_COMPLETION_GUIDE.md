@@ -7,14 +7,14 @@ the measured values from the generated artifacts into the report source.
 ## Recommended run order
 
 1. **Colab or Kaggle:** open `notebooks/03_full/00_full_higgs_colab.ipynb`.
-   Enable internet, run the setup cell, download the official UCI archive, and
-   create the one-million-row sample. Keep the raw archive and model weights in
-   the runtime or cloud storage; do not commit them.
+   Enable internet, run the setup cell, download the complete official UCI
+   archive, and train directly from `data/raw/HIGGS.csv.gz`. Keep the raw
+   archive and model weights in the runtime or cloud storage; do not commit them.
 2. **EDA:** in the repository root run:
 
    ```bash
-   python scripts/run_eda.py --data data/processed/higgs_sample_250k.csv.gz \
-       --rows 250000 --output-dir outputs/eda
+    python scripts/run_eda.py --data data/raw/HIGGS.csv.gz \
+        --rows 11000000 --output-dir outputs/eda
    ```
 
    If using Colab, run the equivalent notebook cell with the absolute
@@ -36,16 +36,18 @@ the measured values from the generated artifacts into the report source.
 
 | Notebook | Run it? | Report use |
 |---|---|---|
-| `notebooks/03_full/00_full_higgs_colab.ipynb` | **Yes — required** | Downloads data, creates the 1M/250k samples, generates EDA evidence, audits the split and trains the 1M benchmark. |
-| `notebooks/01_midsem/01_eda_and_feature_groups.ipynb` | Optional | Use only if you want an interactive EDA walkthrough. The full Colab notebook now creates the saved EDA files itself. |
-| `notebooks/01_midsem/02_neural_network_baseline.ipynb` | Optional / recommended for Protocol A | Use when you need fresh 250k MLP feature-group results or visible epoch history for the 250k report section. |
+| `notebooks/03_full/00_full_higgs_colab.ipynb` | **Yes — required** | Downloads the complete dataset, generates full-data EDA evidence, audits the full split and trains the 11M benchmark. |
+| `notebooks/01_midsem/01_eda_and_feature_groups.ipynb` | **Recommended** | Interactive EDA walkthrough over all rows. |
+| `notebooks/01_midsem/02_neural_network_baseline.ipynb` | **Yes** | Trains the MLP on all rows across low-level, high-level and all features; exports metrics, predictions and learning curves. |
+| `notebooks/01_midsem/03_classical_baseline.ipynb` | **Yes** | Trains Logistic Regression and XGBoost on all rows and all three feature groups; exports metrics, predictions and ROC comparison. |
 | `notebooks/00_physics/00_higgs_physics_and_dataset_intro.ipynb` | Optional | Background explanation for the viva/report; it does not produce model metrics. |
 
 The full Colab notebook includes fallbacks for `run_eda.py` and
 `reconcile_results.py`. Therefore it still produces the EDA and reconciliation
 artifacts when the cloned GitHub repository does not yet contain those helper
 scripts. You only need to run the other notebooks if you want their specific
-interactive outputs.
+interactive outputs; for the final report, run notebooks 1–3 to regenerate the
+Protocol A artifacts before running the full Colab benchmark.
 
 ## Yellow-item replacement map
 
@@ -90,9 +92,9 @@ Then run these cells:
 
 ```python
 !python tests/integration/smoke_check_raw_file.py data/raw/HIGGS.csv.gz --rows 100000
-!python scripts/run_eda.py --data data/processed/higgs_sample_250k.csv.gz --rows 250000 --output-dir outputs/eda
-!python scripts/reconcile_results.py --sample data/processed/higgs_sample_250k.csv.gz --raw data/raw/HIGGS.csv.gz --output outputs/reconciliation_report.json
-!python scripts/train_full_colab.py --sample data/processed/higgs_sample_1m.csv.gz --output-dir outputs
+!python scripts/run_eda.py --data data/raw/HIGGS.csv.gz --rows 11000000 --output-dir outputs/eda
+!python scripts/reconcile_results.py --sample data/raw/HIGGS.csv.gz --raw data/raw/HIGGS.csv.gz --output outputs/reconciliation_report.json
+!python scripts/train_full_colab.py --sample data/raw/HIGGS.csv.gz --output-dir outputs
 ```
 
 On Kaggle, set **Internet** to on, use `/kaggle/working/higgs-event-lab` as

@@ -10,6 +10,9 @@ venv/
 .env
 .env.*
 
+# AI editor and tool config files (not part of project)
+.opencode/
+opencode.jsonc
 # Dataset and generated data
 data/raw/*
 !data/raw/README.md

@@ -96,7 +96,7 @@ def audit(sample_path: Path, prediction_glob: str, raw_path: Path | None = None)
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--sample", default="data/processed/higgs_sample_250k.csv.gz")
+    parser.add_argument("--sample", default="data/raw/HIGGS.csv.gz")
     parser.add_argument("--raw", default=None, help="Optional raw HIGGS.csv.gz for exact row count and full SHA-256")
     parser.add_argument("--prediction-glob", default="outputs/*_*/test_predictions.csv")
     parser.add_argument("--output", default="outputs/reconciliation_report.json")
