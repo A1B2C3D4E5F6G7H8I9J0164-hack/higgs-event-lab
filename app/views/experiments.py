@@ -18,6 +18,14 @@ from app.visualizations import (
 )
 
 
+def _model_label(name: str) -> str:
+    return {
+        "compact_mlp": "Compact MLP",
+        "logistic_regression": "Logistic Regression",
+        "xgboost": "XGBoost",
+    }.get(name, name.replace("_", " ").title())
+
+
 def render_experiments(discovery: RunDiscoveryResult) -> None:
     """Render Experiment Comparison view."""
     st.markdown(
@@ -40,7 +48,27 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
         )
         return
 
-    runs = discovery.valid_runs
+    all_runs = discovery.valid_runs
+    model_options = sorted({_model_label(run.model_name) for run in all_runs})
+    selected_models = st.multiselect("Models", model_options, default=model_options)
+    selected_groups = st.multiselect(
+        "Feature groups",
+        ["low_level", "high_level", "all"],
+        default=["low_level", "high_level", "all"],
+    )
+    runs = [
+        run for run in all_runs
+        if _model_label(run.model_name) in selected_models and run.feature_group in selected_groups
+    ]
+    if not runs:
+        st.info("Select at least one model and feature group to compare.")
+        return
+    winner = max(runs, key=lambda run: run.test_roc_auc or float("-inf"))
+    metric_cols = st.columns(4)
+    metric_cols[0].metric("Selected runs", len(runs))
+    metric_cols[1].metric("Best model", _model_label(winner.model_name))
+    metric_cols[2].metric("Best ROC-AUC", f"{winner.test_roc_auc:.4f}")
+    metric_cols[3].metric("Best group", winner.feature_group)
 
     # Tabbed views for Leaderboard and Visual Comparative Analytics
     tab_table, tab_groups, tab_compute, tab_radar = st.tabs([
@@ -57,7 +85,7 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
         for r in runs:
             records.append({
                 "Run ID": r.run_id,
-                "Model": r.model_name,
+                    "Model": _model_label(r.model_name),
                 "Family": r.model_family,
                 "Group": r.feature_group,
                 "Features": r.feature_count,
@@ -65,9 +93,10 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
                 "Runtime (s)": round(r.training_seconds, 2) if r.training_seconds is not None else None,
                 "Val ROC-AUC": round(r.validation_metrics.get("roc_auc", 0.0), 4) if "roc_auc" in r.validation_metrics else None,
                 "Test ROC-AUC": round(r.test_roc_auc, 4) if r.test_roc_auc is not None else None,
-                "Test PR-AUC": round(r.test_pr_auc, 4) if r.test_pr_auc is not None else None,
-                "Brier Score": round(r.test_brier_score, 4) if r.test_brier_score is not None else None,
-            })
+                    "Test PR-AUC": round(r.test_pr_auc, 4) if r.test_pr_auc is not None else None,
+                    "Brier Score": round(r.test_brier_score, 4) if r.test_brier_score is not None else None,
+                    "Accuracy": r.test_metrics.get("accuracy"),
+                })
 
         df_leaderboard = pd.DataFrame(records)
 

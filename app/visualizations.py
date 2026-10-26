@@ -188,6 +188,11 @@ def plot_feature_group_comparison(runs: list[ExperimentArtifact]) -> Figure:
 
     group_order = ["low_level", "high_level", "all"]
     models = sorted({r.model_name for r in runs})
+    model_colors = {
+        "logistic_regression": ACCENT_AMBER,
+        "xgboost": ACCENT_BLUE,
+        "compact_mlp": ACCENT_CYAN,
+    }
 
     width = 0.35
     x = np.arange(len(group_order))
@@ -197,7 +202,7 @@ def plot_feature_group_comparison(runs: list[ExperimentArtifact]) -> Figure:
         roc_vals = [m_runs[g].test_roc_auc if g in m_runs and m_runs[g].test_roc_auc is not None else 0.0 for g in group_order]
         pr_vals = [m_runs[g].test_pr_auc if g in m_runs and m_runs[g].test_pr_auc is not None else 0.0 for g in group_order]
 
-        color = ACCENT_CYAN if m_idx == 0 else ACCENT_BLUE
+        color = model_colors.get(model, MPL_COLORS[m_idx % len(MPL_COLORS)])
         offset = (m_idx - (len(models) - 1) / 2) * width
 
         bars1 = ax1.bar(x + offset, roc_vals, width, label=model, color=color, alpha=0.85, edgecolor=SURFACE_BORDER)
@@ -214,14 +219,16 @@ def plot_feature_group_comparison(runs: list[ExperimentArtifact]) -> Figure:
 
     ax1.set_xticks(x)
     ax1.set_xticklabels(["Low-level (21)", "High-level (7)", "All (28)"])
-    ax1.set_ylim(0.4, 0.9)
+    maximum_roc = max((r.test_roc_auc or 0.0 for r in runs), default=0.9)
+    maximum_pr = max((r.test_pr_auc or 0.0 for r in runs), default=0.9)
+    ax1.set_ylim(max(0.4, min(0.75, maximum_roc - 0.35)), min(1.0, maximum_roc + 0.08))
     leg1 = ax1.legend(facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=9)
     for text in leg1.get_texts():
         text.set_color(TEXT_SECONDARY)
 
     ax2.set_xticks(x)
     ax2.set_xticklabels(["Low-level (21)", "High-level (7)", "All (28)"])
-    ax2.set_ylim(0.4, 0.9)
+    ax2.set_ylim(max(0.4, min(0.75, maximum_pr - 0.35)), min(1.0, maximum_pr + 0.08))
     leg2 = ax2.legend(facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=9)
     for text in leg2.get_texts():
         text.set_color(TEXT_SECONDARY)

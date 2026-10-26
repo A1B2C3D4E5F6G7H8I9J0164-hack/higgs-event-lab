@@ -46,10 +46,11 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
     run_options = {r.run_id: r for r in runs}
 
     # Run Selector for Curve Overlay
+    preferred_defaults = [r.run_id for r in runs if r.feature_group == "all"][:3]
     selected_run_ids = st.multiselect(
         "Select Runs to Compare on Validation Curves:",
         options=list(run_options.keys()),
-        default=list(run_options.keys())[:3],
+        default=preferred_defaults or list(run_options.keys())[:3],
     )
 
     selected_runs = [run_options[rid] for rid in selected_run_ids if rid in run_options]
@@ -124,7 +125,7 @@ def render_validation(discovery: RunDiscoveryResult) -> None:
                     st.pyplot(fig_hist)
             else:
                 st.warning(
-                    f"**Training History Unavailable for `{selected_mlp.run_id}`:** "
+                    f"**Training history unavailable for `{selected_mlp.run_id}`:** "
                     "The `training.history` field was not exported in `metrics.json` for this run. "
                     "In adherence to project rules, no synthetic epoch history will be fabricated."
                 )

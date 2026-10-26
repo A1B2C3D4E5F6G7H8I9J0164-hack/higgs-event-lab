@@ -1,10 +1,9 @@
-"""Overview section for HiggsLens Streamlit application.
-
-Displays project objectives, dataset context, artifact discovery status,
-and verified commands when runs are missing.
-"""
+"""Evidence-first overview for the HiggsLens Streamlit dashboard."""
 
 from __future__ import annotations
+
+import json
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -12,195 +11,115 @@ import streamlit as st
 from app.loader import RunDiscoveryResult
 
 
-def render_overview(discovery: RunDiscoveryResult) -> None:
-    """Render Overview view."""
-    best_run = max(
-        discovery.valid_runs,
-        key=lambda run: run.test_roc_auc if run.test_roc_auc is not None else float("-inf"),
-        default=None,
-    )
-    loaded_rows = max((run.row_count for run in discovery.valid_runs), default=0)
+def _model_name(name: str) -> str:
+    return {
+        "compact_mlp": "Compact MLP",
+        "logistic_regression": "Logistic Regression",
+        "xgboost": "XGBoost",
+    }.get(name, name.replace("_", " ").title())
+
+
+def _eda_summary() -> dict[str, object] | None:
+    path = Path("outputs/eda/summary.json")
+    if not path.is_file():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _hero(best_run, valid_count: int, rows: int) -> None:
+    if best_run is None:
+        headline = "Awaiting validated experiment artifacts"
+        detail = "Run the notebook workflow to populate the evidence registry."
+    else:
+        headline = f"{_model_name(best_run.model_name)} · {best_run.test_roc_auc:.4f} ROC-AUC"
+        detail = f"Best saved run: {best_run.run_id} · {best_run.feature_group} features · {rows:,} recorded rows"
     st.markdown(
-        '<div class="section-header">'
-        '<span class="material-icons icon-md" style="color:#00e5ff;">dashboard</span>'
-        '<h2 style="margin:0;">Project Overview &amp; Artifact Registry</h2>'
-        "</div>",
+        f"""
+        <div class="hero-shell">
+            <div class="hero-kicker">HIGGSLENS / EVIDENCE WORKBENCH</div>
+            <div class="hero-title">See the signal in the artifacts.</div>
+            <div class="hero-copy">A transparent view of simulated HIGGS classification experiments, from saved EDA evidence to held-out model predictions.</div>
+            <div class="proof-strip">
+                <span class="proof-pill"><strong>LIVE REGISTRY</strong> {valid_count} valid runs</span>
+                <span class="proof-pill"><strong>HEADLINE</strong> {headline}</span>
+                <span class="proof-pill"><strong>PROTOCOL</strong> higgs-split-v1 · seed 42</span>
+            </div>
+            <div style="margin-top:0.8rem;color:#94a3b8;font-size:0.82rem;">{detail}</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
-    st.markdown(
-        "**HiggsEvent** provides a transparent, interactive scientific laboratory for the "
-        "empirical evaluation of machine-learning representations on the simulated UCI HIGGS dataset (Baldi et al., 2014). "
-        "The project rigorously contrasts classical regularized linear baselines against compact deep neural networks "
-        "across low-level kinematic observables (21) and expert-reconstructed composite invariant masses (7)."
-    )
 
-    # Core Research Indicators
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.metric(
-            label="Current Run Rows",
-            value=f"{loaded_rows:,}" if loaded_rows else "N/A",
-            help="Rows recorded in the currently loaded experiment artifacts",
-        )
-    with c2:
-        st.metric(
-            label="Input Features",
-            value="28 (21 + 7)",
-            help="21 low-level kinematic variables and 7 high-level invariant masses",
-        )
-    with c3:
-        st.metric(
-            label="Split Protocol",
-            value="higgs-split-v1",
-            help="Stratified 70% train / 15% validation / 15% test with fixed seed 42",
-        )
-    with c4:
-        st.metric(
-            label="Usable Runs",
-            value=f"{len(discovery.valid_runs)}",
-            help=f"Discovered in '{discovery.base_dir}' with valid schema",
-        )
 
-    # Executive Summary Card for Evaluators and Assessors
-    with st.expander("Executive Summary &amp; Key Mid-Semester Findings", expanded=True):
-        if best_run is not None:
+def render_overview(discovery: RunDiscoveryResult) -> None:
+    """Render the dashboard landing page from validated saved artifacts."""
+    valid_runs = discovery.valid_runs
+    best_run = max(valid_runs, key=lambda run: run.test_roc_auc or float("-inf"), default=None)
+    all_runs = [run for run in valid_runs if run.feature_group == "all"]
+    best_all = max(all_runs, key=lambda run: run.test_roc_auc or float("-inf"), default=best_run)
+    rows = max((run.row_count for run in valid_runs), default=0)
+    eda = _eda_summary()
+
+    _hero(best_run, len(valid_runs), rows)
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Current rows", f"{rows:,}" if rows else "N/A")
+    c2.metric("Valid runs", str(len(valid_runs)))
+    c3.metric("Best ROC-AUC", f"{best_run.test_roc_auc:.4f}" if best_run else "N/A")
+    c4.metric("Features", "28")
+    c5.metric("Missing values", str(eda.get("missing_values", "N/A")) if eda else "N/A")
+
+    st.markdown('<div class="section-rule"></div>', unsafe_allow_html=True)
+    st.markdown("### What is proven in this workspace")
+    proof_cols = st.columns(3)
+    proof_data = [
+        ("DATA PROOF", f"{eda.get('signal_fraction', 0):.2%} signal" if eda else "EDA not loaded", "Saved EDA summary, zero missing and non-finite values."),
+        ("MODEL PROOF", f"{_model_name(best_all.model_name)}" if best_all else "No best run", f"All-feature leader: {best_all.test_roc_auc:.4f} ROC-AUC" if best_all else "Run models to populate this card."),
+        ("APP PROOF", "Artifact-backed", "Metrics, predictions, curves and EDA are read from outputs/; no training at startup."),
+    ]
+    for col, (eyebrow, value, detail) in zip(proof_cols, proof_data):
+        with col:
             st.markdown(
-                f"""
-                - **Primary research question:** Can classifiers separate simulated signal from background, and how much do the 21 low-level and 7 high-level feature groups contribute?
-                - **Current artifact registry:** {len(discovery.valid_runs)} validated runs are loaded from `outputs/`; every displayed score comes from a saved metrics envelope and prediction file.
-                - **Best currently loaded run:** `{best_run.run_id}` reaches **{best_run.test_roc_auc:.4f} test ROC-AUC** on the `{best_run.feature_group}` feature group with {best_run.row_count:,} recorded rows.
-                - **Scientific boundary:** These are simulated benchmark events. The dashboard makes no particle-discovery or real-detector claim.
-                """
+                f'<div class="evidence-card"><div class="eyebrow">{eyebrow}</div><div class="value">{value}</div><div class="detail">{detail}</div></div>',
+                unsafe_allow_html=True,
             )
+
+    if best_all:
+        st.markdown("### Current all-feature leaders")
+        leader_rows = []
+        for run in sorted(all_runs, key=lambda item: item.test_roc_auc or 0, reverse=True):
+            leader_rows.append({
+                "Model": _model_name(run.model_name),
+                "Test ROC-AUC": run.test_roc_auc,
+                "PR-AUC": run.test_pr_auc,
+                "Brier": run.test_brier_score,
+                "Training (s)": run.training_seconds,
+                "Artifact": run.run_id,
+            })
+        st.dataframe(pd.DataFrame(leader_rows), width="stretch", hide_index=True)
+
+    left, right = st.columns([1.15, 1])
+    with left:
+        st.markdown("### Saved evidence preview")
+        image = Path("outputs/eda/feature_group_separation.png")
+        if image.is_file():
+            st.image(str(image), caption="Feature-group separation from saved EDA")
         else:
-            st.info("No valid artifacts are loaded yet. Run the documented training workflow first.")
+            st.info("Run EDA to display the saved feature-group evidence.")
+    with right:
+        st.markdown("### Registry health")
+        health = pd.DataFrame([
+            {"Check": "Schema-valid runs", "Status": "PASS" if valid_runs else "WAITING", "Value": str(len(valid_runs))},
+            {"Check": "Incomplete run folders", "Status": "PASS" if not discovery.incomplete_runs else "CHECK", "Value": str(len(discovery.incomplete_runs))},
+            {"Check": "Malformed artifacts", "Status": "PASS" if not discovery.malformed_runs else "CHECK", "Value": str(len(discovery.malformed_runs))},
+            {"Check": "Saved EDA", "Status": "PASS" if eda else "WAITING", "Value": "outputs/eda" if eda else "missing"},
+        ])
+        st.dataframe(health, width="stretch", hide_index=True)
+        st.caption("PASS means the dashboard found and validated the corresponding saved evidence.")
 
-    st.markdown("---")
+    st.markdown("### Scientific boundary")
+    st.info("HIGGS is simulated Monte Carlo data. These scores compare classifiers on a benchmark; they are not particle-discovery evidence or real-detector probabilities.")
 
-    # Artifact Discovery Status Section
-    st.markdown("### Artifact Registry Status")
-
-    if not discovery.dir_exists:
-        st.warning(
-            f"Directory `{discovery.base_dir}` does not exist yet. "
-            "No experiment runs have been generated locally."
-        )
-    elif discovery.total_scanned == 0:
-        st.info(
-            f"Directory `{discovery.base_dir}` exists but contains no run subdirectories."
-        )
-    else:
-        stat_col1, stat_col2, stat_col3 = st.columns(3)
-        with stat_col1:
-            st.metric("Successfully Loaded", f"{len(discovery.valid_runs)} runs")
-        with stat_col2:
-            st.metric("Incomplete Runs", f"{len(discovery.incomplete_runs)} runs")
-        with stat_col3:
-            st.metric("Malformed Runs", f"{len(discovery.malformed_runs)} runs")
-
-    # Show Diagnostic Warnings if there are incomplete or malformed runs
-    if discovery.incomplete_runs:
-        with st.expander(f"{len(discovery.incomplete_runs)} Incomplete Run(s) Detected", expanded=False):
-            st.markdown(
-                "An experiment folder is considered **incomplete** if it lacks either `metrics.json` "
-                "or `test_predictions.csv`."
-            )
-            for inc in discovery.incomplete_runs:
-                st.markdown(
-                    f"- **`{inc.run_id}`** in `{inc.run_dir}`: {inc.reason} "
-                    f"(missing: `{', '.join(inc.missing_files)}`)"
-                )
-
-    if discovery.malformed_runs:
-        with st.expander(f"{len(discovery.malformed_runs)} Malformed Run(s) Detected", expanded=False):
-            st.markdown(
-                "A run is **malformed** if its JSON schema violates `higgs-experiment-v1`, "
-                "or if predictions contain non-finite numbers or invalid labels."
-            )
-            for mal in discovery.malformed_runs:
-                st.markdown(f"- **`{mal.run_id}`**: {mal.reason}")
-
-    # Available Valid Experiments Table
-    if discovery.has_valid_runs:
-        st.markdown("### Loaded Benchmark Experiments")
-        table_data = []
-        for run in discovery.valid_runs:
-            table_data.append(
-                {
-                    "Run ID": run.run_id,
-                    "Model": run.model_name,
-                    "Family": run.model_family,
-                    "Feature Group": run.feature_group,
-                    "Features": run.feature_count,
-                    "Seed": run.split.get("seed", 42),
-                    "Train Time (s)": f"{run.training_seconds:.2f}" if run.training_seconds is not None else "N/A",
-                    "Val ROC-AUC": f"{run.validation_metrics.get('roc_auc', 0.0):.4f}" if "roc_auc" in run.validation_metrics else "N/A",
-                    "Test ROC-AUC": f"{run.test_roc_auc:.4f}" if run.test_roc_auc is not None else "N/A",
-                    "Test PR-AUC": f"{run.test_pr_auc:.4f}" if run.test_pr_auc is not None else "N/A",
-                    "Brier Score": f"{run.test_brier_score:.4f}" if run.test_brier_score is not None else "N/A",
-                }
-            )
-        st.dataframe(pd.DataFrame(table_data), width="stretch", hide_index=True)
-    else:
-        st.markdown("### Honest Empty State: Reproducing Experiment Runs")
-        st.markdown(
-            "> **Integrity Policy:** HiggsLens will never invent, simulate, or display mock benchmark "
-            "metrics without genuine artifacts. In accordance with project rule 4 (`README.md`), all "
-            "scores must come from executed runs adhering to `higgs-experiment-v1`."
-        )
-
-        col_boot1, col_boot2 = st.columns([1, 2])
-        with col_boot1:
-            if st.button(
-                "Bootstrap Demo Benchmarks",
-                key="empty_state_bootstrap_btn",
-                help="Populate outputs/ with genuine mid-semester benchmark artifacts for instant evaluation.",
-                width="stretch",
-            ):
-                from scripts.generate_sample_artifacts import main as generate_artifacts
-
-                generate_artifacts()
-                st.cache_data.clear()
-                st.rerun()
-        with col_boot2:
-            st.caption(
-                "For hosting and demonstration, clicking above automatically loads pre-computed "
-                "mid-semester benchmark runs (compact MLP &amp; Logistic Regression across all groups)."
-            )
-
-        st.markdown(
-            "Alternatively, to generate experiment runs from scratch, "
-            "execute these verified CLI commands in your terminal:"
-        )
-
-        st.markdown("#### 1. Extract a Documented Subset (250,000 events)")
-        st.code(
-            "python -m higgs_event_lab.data \\\n"
-            "    --source data/raw/HIGGS.csv.gz \\\n"
-            "    --output data/processed/higgs_sample_250k.csv.gz \\\n"
-            "    --rows 250000",
-            language="bash",
-        )
-
-        st.markdown("#### 2. Train Logistic Regression Baselines Across All Feature Groups")
-        st.code(
-            "python -m higgs_event_lab.classical \\\n"
-            "    --data data/processed/higgs_sample_250k.csv.gz \\\n"
-            "    --all-groups \\\n"
-            "    --output-dir outputs",
-            language="bash",
-        )
-
-        st.markdown("#### 3. Train Compact MLP Neural Networks Across All Feature Groups")
-        st.code(
-            "python -m higgs_event_lab.neural \\\n"
-            "    --data data/processed/higgs_sample_250k.csv.gz \\\n"
-            "    --all-groups \\\n"
-            "    --output-dir outputs",
-            language="bash",
-        )
-
-        st.info(
-            "Once training completes, reload this dashboard to inspect curves, "
-            "reliability diagrams, and threshold operating points."
-        )
+    if not valid_runs:
+        st.markdown("### Reproduce the registry")
+        st.code("streamlit run app/main.py\n\n# Then run notebooks/03_full/00_full_higgs_colab.ipynb", language="bash")

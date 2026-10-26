@@ -12,6 +12,8 @@ present on the current machine.
 
 from __future__ import annotations
 
+import os
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -34,9 +36,10 @@ import matplotlib.pyplot as plt
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 WEIGHTS_DIR = ROOT_DIR / "outputs" / "model_weights"
+MODEL_LOAD_NOTICES: list[str] = []
 
 FEATURE_LABELS = {
-    "lepton_p_t": "Lepton pT",
+    "lepton_pt": "Lepton pT",
     "lepton_eta": "Lepton eta",
     "lepton_phi": "Lepton phi",
     "missing_energy_magnitude": "Missing energy magnitude",
@@ -58,12 +61,12 @@ FEATURE_LABELS = {
     "jet_4_phi": "Jet 4 phi",
     "jet_4_btag": "Jet 4 b-tag",
     "m_jj": "Mass jj",
-    "m_jjb": "Mass jjb",
+    "m_jjj": "Mass jjj",
+    "m_lv": "Mass lv",
+    "m_jlv": "Mass jlv",
     "m_bb": "Mass bb",
-    "m_wbj": "Mass Wbj",
-    "m_wbj2": "Mass Wbj2",
-    "m_wwbj": "Mass Wwbj",
-    "m_wwbb": "Mass Wwbb",
+    "m_wbb": "Mass Wbb",
+    "m_wwbb": "Mass WWbb",
 }
 
 
@@ -71,8 +74,9 @@ def _friendly(name: str) -> str:
     return FEATURE_LABELS.get(name, name)
 
 
-def load_models() -> dict[str, Any]:
+def load_models() -> tuple[dict[str, Any], Any]:
     """Load saved models and the shared scaler if present on disk."""
+    MODEL_LOAD_NOTICES.clear()
     models: dict[str, Any] = {}
     scaler = None
 
@@ -82,18 +86,36 @@ def load_models() -> dict[str, Any]:
     mlp_path = WEIGHTS_DIR / "wide_mlp_tuned.pt"
 
     if logreg_path.exists():
-        models["logistic_regression_tuned"] = joblib.load(logreg_path)
-    if xgb_path.exists():
-        models["xgboost_tuned"] = joblib.load(xgb_path)
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+                models["logistic_regression_tuned"] = joblib.load(logreg_path)
+        except Exception as exc:
+            MODEL_LOAD_NOTICES.append(f"Logistic Regression weights could not be loaded: {exc}")
+
+    if xgb_path.exists() and os.environ.get("HIGGSLENS_ENABLE_XGB_WEIGHTS") == "1":
+        try:
+            models["xgboost_tuned"] = joblib.load(xgb_path)
+        except Exception as exc:
+            MODEL_LOAD_NOTICES.append(f"XGBoost weights were skipped because they are incompatible: {exc}")
+    elif xgb_path.exists():
+        MODEL_LOAD_NOTICES.append(
+            "XGBoost interactive weights are disabled by default because the saved binary was created with a different XGBoost runtime. Re-run the full training notebook in this environment to enable them."
+        )
+
     if scaler_path.exists():
-        scaler = joblib.load(scaler_path)
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+                scaler = joblib.load(scaler_path)
+        except Exception as exc:
+            MODEL_LOAD_NOTICES.append(f"Shared feature scaler could not be loaded: {exc}")
+
     if mlp_path.exists() and HAS_TORCH:
         try:
-            models["wide_mlp_tuned"] = torch.load(mlp_path, map_location="cpu")
+            models["wide_mlp_tuned"] = torch.load(mlp_path, map_location="cpu", weights_only=False)
         except Exception:
-            models["wide_mlp_tuned"] = torch.load(
-                mlp_path, map_location="cpu", weights_only=False
-            )
+            MODEL_LOAD_NOTICES.append("Wide MLP weights could not be loaded; held-out artifacts remain available.")
 
     return models, scaler
 
@@ -118,7 +140,7 @@ def predict_scores(models: dict[str, Any], scaler: Any, X: pd.DataFrame) -> dict
 
             model.eval()
             with torch.no_grad():
-                batch = torch.as_tensor(Xf.values, dtype=torch.float32)
+                batch = torch.as_tensor(Xf.to_numpy(copy=True), dtype=torch.float32)
                 prob = torch.sigmoid(model(batch)).squeeze(1).cpu().numpy()
             scores[name] = prob
         elif hasattr(model, "predict_proba"):
@@ -148,6 +170,12 @@ def render_simulation(discovery: RunDiscoveryResult) -> None:
 
     feature_cols = list(ALL_FEATURES)
 
+    for notice in MODEL_LOAD_NOTICES:
+        if "XGBoost" in notice:
+            st.warning(notice)
+        else:
+            st.error(notice)
+
     if not models:
         st.info(
             "Saved model weights were not found under `outputs/model_weights/`. "
@@ -158,7 +186,7 @@ def render_simulation(discovery: RunDiscoveryResult) -> None:
         _render_demo_distributions(discovery)
         return
 
-    st.success(f"{len(models)} model(s) loaded and ready: {', '.join(sorted(models))}")
+    st.success(f"{len(models)} saved model(s) loaded and ready: {', '.join(sorted(models))}")
 
     tab_upload, tab_single, tab_dist = st.tabs(
         ["Batch CSV Upload", "Single-Event Prediction", "Score Distributions"]

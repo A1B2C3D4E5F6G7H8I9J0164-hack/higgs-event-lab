@@ -37,8 +37,8 @@ from app.views.validation import render_validation
 
 # Page Configuration
 st.set_page_config(
-    page_title="HiggsEvent | Scientific Workbench",
-    page_icon="atom",
+    page_title="HiggsLens | Evidence Workbench",
+    page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -55,11 +55,11 @@ def main() -> None:
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="material-icons icon-md" style="color:#00e5ff;">science</span>
                 <h2 style="margin: 0; font-size: 1.4rem; color: #f8fafc !important; font-weight: 800; letter-spacing: -0.02em;">
-                    HiggsEvent
+                    HiggsLens
                 </h2>
             </div>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.78rem; color: #94a3b8; font-family: monospace;">
-                Scientific ML Workbench &bull; v0.1.0-midsem
+                 Evidence-first scientific ML workbench &bull; v0.2
             </p>
         </div>
         """,
@@ -123,15 +123,10 @@ def main() -> None:
         ("Model Simulation", "psychology"),
     ]
 
-    # Build navigation with icons
-    nav_labels = []
-    for label, icon_name in NAV_SECTIONS:
-        nav_labels.append(f'<span class="material-icons icon-sm" style="vertical-align: middle; margin-right: 0.4rem;">{icon_name}</span>{label}')
-
     selected_index = st.sidebar.radio(
         "Navigation",
         options=list(range(len(NAV_SECTIONS))),
-        format_func=lambda i: nav_labels[i],
+        format_func=lambda i: NAV_SECTIONS[i][0],
         index=0,
         label_visibility="collapsed",
     )
