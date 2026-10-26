@@ -22,6 +22,8 @@
 
 ### Added
 
+* **2026-10-26:** `streamlit_app.py`, `.streamlit/config.toml`, `app/main.py`, `app/views/overview.py`, and `deployment/DEPLOYMENT_RUNBOOK.md` — Streamlit Community Cloud hosting integration with auto-bootstrap fallback for clean cloud deployments, custom scientific dark theme, and complete mid-semester evaluation readiness. *(Ronit & Krishna)*
+
 * **2026-10-26:** `docs/`, `reports/01_report_draft_methodology_limitations.md`, `team/BUG_TRACKER.md`, and `team/TASK_BACKLOG.csv` — Completed mid-semester methodology and limitations synthesis with genuine empirical benchmark figures, added comprehensive Mermaid architecture, decay topology, feature hierarchy, and testing pyramid diagrams across documentation, closed all 14 bug tracker items, and marked `MID-07` as Done. *(Saumya)*
 
 * **2026-10-25:** `outputs/mlp_<group>/`, `outputs/logreg_<group>/`, and `reports/02_neural_network_benchmarks.md` — Executed and validated multi-group MLP benchmark runs across `low_level`, `high_level`, and `all` features under `higgs-split-v1`, exported genuine `metrics.json` and `test_predictions.csv` artifacts, and completed empirical neural benchmark report (`MID-04`). *(Rachit)*

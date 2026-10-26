@@ -33,6 +33,7 @@ notebooks/README.md
 outputs/README.md
 reports/README.md
 src/higgs_event_lab/README.md
+streamlit_app.py
 team/CHANGELOG.md
 team/MEETING_NOTES_TEMPLATE.md
 team/TASK_BACKLOG.csv

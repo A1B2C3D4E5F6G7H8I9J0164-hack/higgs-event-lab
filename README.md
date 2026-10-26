@@ -107,13 +107,22 @@ python -m higgs_event_lab.neural --all-groups --output-dir outputs
 # Primary Scientific Laboratory Dashboard
 streamlit run app/main.py
 
+# Or launch via the root cloud entrypoint (auto-bootstraps demo benchmarks if needed):
+streamlit run streamlit_app.py
+
 # Alternative Retro Terminal HUD Dashboard
 streamlit run app/streamlit_app.py
 ```
 
-### 4.4 Run Automated QA & Test Suite
+### 4.4 Cloud Hosting (Streamlit Community Cloud)
+The project is configured for one-click deployment on [Streamlit Community Cloud](https://share.streamlit.io/):
+1. Connect repository `CosmicMagnetar/higgs-event-lab` on branch `main`.
+2. Main file path: `streamlit_app.py` (auto-detected).
+3. The app automatically initializes benchmark artifacts on first boot, providing immediate interactive access to all 6 model runs with zero cloud setup.
+
+### 4.5 Run Automated QA & Test Suite
 ```bash
-# Run all 103 unit, integration, and hygiene tests
+# Run all 104 unit, integration, and hygiene tests
 pytest
 ```
 
@@ -138,5 +147,5 @@ The mid-semester MVP milestone is fully achieved:
 - Classical and deep learning baselines benchmarked across 3 feature groups.
 - Shared `higgs-split-v1` and `higgs-experiment-v1` protocols enforced.
 - Streamlit scientific dashboard operating read-only on real serialized artifacts.
-- 103 of 103 automated tests passing.
+- 104 of 104 automated tests passing.
 - Presentation slide deck and viva examination defense pack ready.

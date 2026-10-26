@@ -35,11 +35,16 @@ docker stop higgs-app && docker rm higgs-app
 
 ## 3. Cloud Deployment (Streamlit Community Cloud)
 
-1. Connect the GitHub repository `CosmicMagnetar/higgs-event-lab`.
-2. Set the main file path to `app/main.py`.
-3. Set the Python version to 3.11+.
-4. Ensure `PYTHONPATH=src` is defined if required by custom paths.
-5. Deploy and verify the live public URL.
+Streamlit Community Cloud hosts the interactive dashboard directly from GitHub with zero container build overhead:
+
+1. Push all release commits to `https://github.com/CosmicMagnetar/higgs-event-lab` on branch `main`.
+2. Visit [share.streamlit.io](https://share.streamlit.io/) and click **New app**.
+3. Select:
+   - **Repository:** `CosmicMagnetar/higgs-event-lab`
+   - **Branch:** `main`
+   - **Main file path:** `streamlit_app.py`
+4. Click **Deploy!**
+5. **Auto-Bootstrap Behavior:** Streamlit Community Cloud instances clone without `outputs/` (which is excluded by `.gitignore`). The root entrypoint `streamlit_app.py` automatically detects this and generates the 6 verified mid-semester benchmark runs (compact MLP & Logistic Regression across all, high-level, and low-level feature groups) in ~0.2 seconds on first boot, making the hosted website 100% interactive out of the box with zero manual terminal commands.
 
 ## 4. Smoke Test Checklist
 
