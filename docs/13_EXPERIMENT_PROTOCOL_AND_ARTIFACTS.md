@@ -17,6 +17,37 @@ The default seed is 42. A different seed is allowed only when it is recorded in 
 
 ## `higgs-experiment-v1` JSON envelope
 
+```mermaid
+flowchart TD
+    subgraph RunArtifactPackage ["Run Artifact Directory: outputs/<run_id>/"]
+        METRICS_FILE["metrics.json (Metadata & Aggregate Evaluation)"]
+        PRED_FILE["test_predictions.csv (Per-Event Scores on Held-Out Test Set)"]
+    end
+
+    subgraph MetricsEnvelope ["higgs-experiment-v1 JSON Envelope"]
+        V[schema_version: higgs-experiment-v1]
+        R[run_id: unique run string]
+        M[model: name, family]
+        F[features: group, count, ordered names]
+        D[data: source, row_count]
+        S[split: protocol_version, seed, partitions]
+        T[training: runtime_seconds, epochs, device]
+        E[evaluation: validation and test ROC-AUC, PR-AUC, Brier, Calibration]
+    end
+
+    subgraph PredictionsSchema ["test_predictions.csv Schema"]
+        C1[row_index: int]
+        C2[class_label: binary 0 or 1]
+        C3[score: predicted probability in 0.0, 1.0]
+    end
+
+    METRICS_FILE --- MetricsEnvelope
+    PRED_FILE --- PredictionsSchema
+
+    RunArtifactPackage --> LOADER[Safe Loader: app/loader.py]
+    LOADER --> DASHBOARD[Streamlit Scientific & Terminal Dashboard]
+```
+
 Each run writes `metrics.json` under an ignored output directory. It has these required top-level keys:
 
 | Key | Meaning |
