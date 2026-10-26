@@ -200,7 +200,7 @@ def test_run_feature_group_benchmarks(tmp_path: Path):
         groups=("low_level", "high_level"),
     )
 
-    assert set(results.keys()) == {"low_level", "high_level"}
+    assert set(results.keys()) == {"logreg_low_level", "logreg_high_level"}
     assert (out_dir / "logreg_low_level" / "metrics.json").exists()
     assert (out_dir / "logreg_low_level" / "test_predictions.csv").exists()
     assert (out_dir / "logreg_high_level" / "metrics.json").exists()
