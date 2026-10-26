@@ -20,13 +20,25 @@ pip install -e .
 ```
 
 ### Launch the Dashboard
-Run the Streamlit application from the repository root:
+Run either interface from the repository root:
 
 ```bash
+# 1. Scientific Laboratory Workbench (Default)
 streamlit run app/main.py
+
+# 2. Terminal HUD UI
+streamlit run app/streamlit_app.py
 ```
 
 The application will launch locally at `http://localhost:8501`.
+
+### Instant Sample Artifact Generation (Optional)
+To test and explore the dashboard immediately without downloading the full dataset:
+
+```bash
+python scripts/generate_sample_artifacts.py
+```
+This generates schema-compliant benchmark artifacts across all 3 feature groups in `outputs/`.
 
 ---
 
