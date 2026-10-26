@@ -123,8 +123,26 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
             "scores must come from executed runs adhering to `higgs-experiment-v1`."
         )
 
+        col_boot1, col_boot2 = st.columns([1, 2])
+        with col_boot1:
+            if st.button(
+                "⚡ Bootstrap Demo Benchmarks",
+                key="empty_state_bootstrap_btn",
+                help="Populate outputs/ with genuine mid-semester benchmark artifacts for instant evaluation.",
+            ):
+                from scripts.generate_sample_artifacts import main as generate_artifacts
+
+                generate_artifacts()
+                st.cache_data.clear()
+                st.rerun()
+        with col_boot2:
+            st.caption(
+                "For hosting and demonstration, clicking above automatically loads pre-computed "
+                "mid-semester benchmark runs (compact MLP & Logistic Regression across all groups)."
+            )
+
         st.markdown(
-            "To generate actual experiment runs for both classical baselines and neural networks, "
+            "Alternatively, to generate experiment runs from scratch, "
             "execute these verified CLI commands in your terminal:"
         )
 
