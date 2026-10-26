@@ -1,40 +1,39 @@
 {
   "schema_version": "higgs-experiment-v1",
   "run_id": "logreg_low_level",
-  "created_at": "2026-10-26T09:59:54.256150+00:00",
   "model": {
     "name": "logistic_regression",
-    "family": "classical_ml"
+    "family": "classical_linear"
   },
   "features": {
     "group": "low_level",
     "count": 21,
     "names": [
-      "feat_0",
-      "feat_1",
-      "feat_2",
-      "feat_3",
-      "feat_4",
-      "feat_5",
-      "feat_6",
-      "feat_7",
-      "feat_8",
-      "feat_9",
-      "feat_10",
-      "feat_11",
-      "feat_12",
-      "feat_13",
-      "feat_14",
-      "feat_15",
-      "feat_16",
-      "feat_17",
-      "feat_18",
-      "feat_19",
-      "feat_20"
+      "lepton_pt",
+      "lepton_eta",
+      "lepton_phi",
+      "missing_energy_magnitude",
+      "missing_energy_phi",
+      "jet_1_pt",
+      "jet_1_eta",
+      "jet_1_phi",
+      "jet_1_btag",
+      "jet_2_pt",
+      "jet_2_eta",
+      "jet_2_phi",
+      "jet_2_btag",
+      "jet_3_pt",
+      "jet_3_eta",
+      "jet_3_phi",
+      "jet_3_btag",
+      "jet_4_pt",
+      "jet_4_eta",
+      "jet_4_phi",
+      "jet_4_btag"
     ]
   },
   "data": {
-    "source": "data/processed/higgs_sample_250k.csv.gz",
+    "source": "/content/higgs-event-lab/data/raw/HIGGS.csv.gz",
     "row_count": 250000
   },
   "split": {
@@ -47,70 +46,86 @@
     "test_rows": 37500
   },
   "training": {
-    "runtime_seconds": 0.07,
-    "device": "cpu",
-    "epochs_completed": 1,
-    "learning_rate": 0.001
+    "config": {
+      "C": 1.0,
+      "max_iter": 1000,
+      "solver": "lbfgs",
+      "seed": 42,
+      "tol": 0.0001,
+      "target_signal_efficiency": 0.5
+    },
+    "training_seconds": 0.3863649709999777,
+    "n_iter": 9,
+    "intercept": 0.11423933551413969
   },
   "evaluation": {
     "validation": {
-      "roc_auc": 0.7479,
-      "pr_auc": 0.7572,
-      "brier_score": 0.2055,
+      "roc_auc": 0.5925280101900972,
+      "pr_auc": 0.6198800968463722,
+      "brier_score": 0.24227005400917168,
       "calibration": {
         "fraction_positives": [
-          0.12000000000000001,
-          0.22,
-          0.32,
-          0.42000000000000004,
-          0.52,
-          0.62,
-          0.72,
-          0.8200000000000001,
-          0.92
+          0.0,
+          0.05,
+          0.24888888888888888,
+          0.41044454035390593,
+          0.46486195769092864,
+          0.5342498649216546,
+          0.6454588088166328,
+          0.7798561151079136,
+          0.9032258064516129
         ],
         "mean_predicted_value": [
-          0.1,
-          0.2,
-          0.3,
-          0.4,
-          0.5,
-          0.6,
-          0.7,
-          0.8,
-          0.9
+          0.09112584496924198,
+          0.174373604060249,
+          0.27068284059822173,
+          0.3667677996289831,
+          0.45879260028347785,
+          0.547768296046044,
+          0.6357596701606764,
+          0.7290150675487902,
+          0.8215145311327112
         ]
       }
     },
     "test": {
-      "roc_auc": 0.7476,
-      "pr_auc": 0.7622,
-      "brier_score": 0.2035,
-      "accuracy": 0.681,
+      "roc_auc": 0.5959782522549529,
+      "pr_auc": 0.6221640191577607,
+      "brier_score": 0.2417661752746425,
       "calibration": {
         "fraction_positives": [
-          0.11,
-          0.21000000000000002,
-          0.31,
-          0.41000000000000003,
-          0.51,
-          0.61,
-          0.71,
-          0.81,
-          0.91
+          0.5,
+          0.125,
+          0.16818181818181818,
+          0.3950892857142857,
+          0.4601087941976428,
+          0.5377746026076085,
+          0.6466973886328725,
+          0.7948717948717948,
+          0.9545454545454546
         ],
         "mean_predicted_value": [
-          0.1,
-          0.2,
-          0.3,
-          0.4,
-          0.5,
-          0.6,
-          0.7,
-          0.8,
-          0.9
+          0.08490581233667797,
+          0.16046563749528217,
+          0.2670474793691412,
+          0.36683643833042756,
+          0.45902074050705904,
+          0.5476411702997837,
+          0.6361813628802635,
+          0.7279919487603623,
+          0.8196123081978667
         ]
-      }
+      },
+      "accuracy": 0.5679733333333333
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "validation_threshold": 0.5418921340151446,
+      "validation_actual_signal_efficiency": 0.5,
+      "validation_background_rejection": 0.6367178676304495,
+      "test_actual_signal_efficiency": 0.5035622252539033,
+      "test_background_rejection": 0.6352702015924107
     }
-  }
+  },
+  "created_at_utc": "2026-10-26T21:37:38.497060+00:00"
 }

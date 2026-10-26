@@ -41,6 +41,18 @@ Store report source files and selected small figures in this folder. Place large
 | `04_midsem_presentation_and_demo.md` | Ronit Singh | Draft | 12-slide presentation structure and live demo script. |
 | `05_viva_defense_guide.md` | Krishna | Draft | Viva examination Q&A preparation pack (20 questions). |
 
+## Final generated deliverables
+
+These files are generated from the saved artifacts under `outputs/`:
+
+| File | Purpose |
+|---|---|
+| `HiggsLens_Final_Report.pdf` | Formatted artifact-backed final report |
+| `HiggsLens_Final_Report.html` | Browser-editable/previewable report version |
+| `HiggsLens_Final_Report.md` | Reproducible report source |
+| `../presentations/HiggsLens_Final_Presentation.pptx` | Final presentation deck |
+| `../scripts/build_final_deliverables.py` | Rebuilds the report and presentation sources from current outputs |
+
 Placeholders marked `[RUN: ...]` indicate where real metric values should be inserted once artifacts exist.
 
 ---

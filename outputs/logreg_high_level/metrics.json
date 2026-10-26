@@ -1,26 +1,25 @@
 {
   "schema_version": "higgs-experiment-v1",
   "run_id": "logreg_high_level",
-  "created_at": "2026-10-26T09:59:54.255095+00:00",
   "model": {
     "name": "logistic_regression",
-    "family": "classical_ml"
+    "family": "classical_linear"
   },
   "features": {
     "group": "high_level",
     "count": 7,
     "names": [
-      "feat_0",
-      "feat_1",
-      "feat_2",
-      "feat_3",
-      "feat_4",
-      "feat_5",
-      "feat_6"
+      "m_jj",
+      "m_jjj",
+      "m_lv",
+      "m_jlv",
+      "m_bb",
+      "m_wbb",
+      "m_wwbb"
     ]
   },
   "data": {
-    "source": "data/processed/higgs_sample_250k.csv.gz",
+    "source": "/content/higgs-event-lab/data/raw/HIGGS.csv.gz",
     "row_count": 250000
   },
   "split": {
@@ -33,70 +32,90 @@
     "test_rows": 37500
   },
   "training": {
-    "runtime_seconds": 0.05,
-    "device": "cpu",
-    "epochs_completed": 1,
-    "learning_rate": 0.001
+    "config": {
+      "C": 1.0,
+      "max_iter": 1000,
+      "solver": "lbfgs",
+      "seed": 42,
+      "tol": 0.0001,
+      "target_signal_efficiency": 0.5
+    },
+    "training_seconds": 0.3202832019999846,
+    "n_iter": 13,
+    "intercept": 0.09951074868479108
   },
   "evaluation": {
     "validation": {
-      "roc_auc": 0.7702,
-      "pr_auc": 0.7377,
-      "brier_score": 0.1965,
+      "roc_auc": 0.6460136914765151,
+      "pr_auc": 0.6159311097461819,
+      "brier_score": 0.23209459543507838,
       "calibration": {
         "fraction_positives": [
-          0.12000000000000001,
-          0.22,
-          0.32,
-          0.42000000000000004,
-          0.52,
-          0.62,
-          0.72,
-          0.8200000000000001,
-          0.92
+          0.17770034843205576,
+          0.1841726618705036,
+          0.23103212576896787,
+          0.28769908505591324,
+          0.41846107513928626,
+          0.5909873708381171,
+          0.6530314807617567,
+          0.5415129151291513,
+          0.6666666666666666,
+          0.8125
         ],
         "mean_predicted_value": [
-          0.1,
-          0.2,
-          0.3,
-          0.4,
-          0.5,
-          0.6,
-          0.7,
-          0.8,
-          0.9
+          0.0604280623505337,
+          0.15683787484122594,
+          0.2556879116220012,
+          0.35562916782720455,
+          0.45694519213219686,
+          0.5543668199719005,
+          0.6366009563219637,
+          0.7308660028042063,
+          0.8356872878433287,
+          0.9292002381654156
         ]
       }
     },
     "test": {
-      "roc_auc": 0.7661,
-      "pr_auc": 0.7427,
-      "brier_score": 0.1945,
-      "accuracy": 0.698,
+      "roc_auc": 0.651750121881117,
+      "pr_auc": 0.6216770052636046,
+      "brier_score": 0.23149117566419708,
       "calibration": {
         "fraction_positives": [
-          0.11,
-          0.21000000000000002,
-          0.31,
-          0.41000000000000003,
-          0.51,
-          0.61,
-          0.71,
-          0.81,
-          0.91
+          0.1935483870967742,
+          0.17246596066565809,
+          0.22478991596638656,
+          0.30318602261048305,
+          0.40693025322079074,
+          0.58735069794215,
+          0.6594357976653696,
+          0.5714285714285714,
+          0.5725190839694656,
+          0.8571428571428571
         ],
         "mean_predicted_value": [
-          0.1,
-          0.2,
-          0.3,
-          0.4,
-          0.5,
-          0.6,
-          0.7,
-          0.8,
-          0.9
+          0.05885100435349466,
+          0.15611204208535912,
+          0.25611790561784,
+          0.355640667253584,
+          0.45693257323612885,
+          0.5551171644147124,
+          0.6372774575124994,
+          0.7304867601445244,
+          0.8373843290555326,
+          0.9239171006995834
         ]
-      }
+      },
+      "accuracy": 0.6294933333333333
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "validation_threshold": 0.5778797139852367,
+      "validation_actual_signal_efficiency": 0.5,
+      "validation_background_rejection": 0.699006098938333,
+      "test_actual_signal_efficiency": 0.5087160830680613,
+      "test_background_rejection": 0.7021853294934779
     }
-  }
+  },
+  "created_at_utc": "2026-10-26T21:37:41.719834+00:00"
 }

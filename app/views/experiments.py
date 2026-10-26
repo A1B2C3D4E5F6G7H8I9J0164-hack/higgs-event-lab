@@ -28,7 +28,7 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
         unsafe_allow_html=True,
     )
     st.markdown(
-        "Evaluate comparative performance across models (Logistic Regression, compact MLP) "
+        "Evaluate comparative performance across Logistic Regression, XGBoost and compact MLP "
         "and feature configurations (`low_level`, `high_level`, `all`). All evaluations derive "
         "strictly from held-out test predictions under the `higgs-split-v1` partition."
     )

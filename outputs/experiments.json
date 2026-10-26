@@ -6,22 +6,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.9406,
-      "pr_auc": 0.9372,
-      "brier_score": 0.0945,
-      "accuracy": 0.865,
-      "training_time_sec": 10.52,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.812104,
+      "pr_auc": 0.826959,
+      "brier_score": 0.176701,
+      "accuracy": 0.732187,
+      "training_time_sec": 50.2249
+    },
+    "validation": {
+      "roc_auc": 0.807815
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.582,
-      "test_background_rejection": 0.962,
-      "test_signal_efficiency": 0.501
+      "selected_threshold": null,
+      "test_background_rejection": null,
+      "test_signal_efficiency": null
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.251265+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/mlp_all/metrics.json"
     }
   },
   {
@@ -31,22 +32,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.9043,
-      "pr_auc": 0.8888,
-      "brier_score": 0.1184,
-      "accuracy": 0.824,
-      "training_time_sec": 5.13,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.783159,
+      "pr_auc": 0.802023,
+      "brier_score": 0.189245,
+      "accuracy": 0.7044,
+      "training_time_sec": 47.002
+    },
+    "validation": {
+      "roc_auc": 0.780703
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.541,
-      "test_background_rejection": 0.925,
-      "test_signal_efficiency": 0.498
+      "selected_threshold": null,
+      "test_background_rejection": null,
+      "test_signal_efficiency": null
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.252206+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/mlp_high_level/metrics.json"
     }
   },
   {
@@ -56,22 +58,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.8,
-      "pr_auc": 0.8097,
-      "brier_score": 0.1824,
-      "accuracy": 0.728,
-      "training_time_sec": 15.02,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.725741,
+      "pr_auc": 0.736573,
+      "brier_score": 0.211324,
+      "accuracy": 0.66496,
+      "training_time_sec": 47.8944
+    },
+    "validation": {
+      "roc_auc": 0.719578
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.512,
-      "test_background_rejection": 0.841,
-      "test_signal_efficiency": 0.504
+      "selected_threshold": null,
+      "test_background_rejection": null,
+      "test_signal_efficiency": null
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.253198+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/mlp_low_level/metrics.json"
     }
   },
   {
@@ -81,22 +84,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.8369,
-      "pr_auc": 0.8377,
-      "brier_score": 0.1639,
-      "accuracy": 0.755,
-      "training_time_sec": 0.1,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.685399,
+      "pr_auc": 0.681704,
+      "brier_score": 0.223111,
+      "accuracy": 0.643893,
+      "training_time_sec": 0.6793
+    },
+    "validation": {
+      "roc_auc": 0.682179
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.528,
-      "test_background_rejection": 0.865,
-      "test_signal_efficiency": 0.502
+      "selected_threshold": 0.5795616114478861,
+      "test_background_rejection": 0.7383816138686543,
+      "test_signal_efficiency": 0.5038653933606184
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.254192+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/logreg_all/metrics.json"
     }
   },
   {
@@ -106,22 +110,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.7661,
-      "pr_auc": 0.7427,
-      "brier_score": 0.1945,
-      "accuracy": 0.698,
-      "training_time_sec": 0.05,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.65175,
+      "pr_auc": 0.621677,
+      "brier_score": 0.231491,
+      "accuracy": 0.629493,
+      "training_time_sec": 0.3203
+    },
+    "validation": {
+      "roc_auc": 0.646014
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.519,
-      "test_background_rejection": 0.812,
-      "test_signal_efficiency": 0.497
+      "selected_threshold": 0.5778797139852367,
+      "test_background_rejection": 0.7021853294934779,
+      "test_signal_efficiency": 0.5087160830680613
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.255244+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/logreg_high_level/metrics.json"
     }
   },
   {
@@ -131,22 +136,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.7476,
-      "pr_auc": 0.7622,
-      "brier_score": 0.2035,
-      "accuracy": 0.681,
-      "training_time_sec": 0.07,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.595978,
+      "pr_auc": 0.622164,
+      "brier_score": 0.241766,
+      "accuracy": 0.567973,
+      "training_time_sec": 0.3864
+    },
+    "validation": {
+      "roc_auc": 0.592528
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.51,
-      "test_background_rejection": 0.795,
-      "test_signal_efficiency": 0.501
+      "selected_threshold": 0.5418921340151446,
+      "test_background_rejection": 0.6352702015924107,
+      "test_signal_efficiency": 0.5035622252539033
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.256295+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/logreg_low_level/metrics.json"
     }
   },
   {
@@ -156,22 +162,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.8924,
-      "pr_auc": 0.8897,
-      "brier_score": 0.1252,
-      "accuracy": 0.818,
-      "training_time_sec": 18.4,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.812343,
+      "pr_auc": 0.826569,
+      "brier_score": 0.17653,
+      "accuracy": 0.733413,
+      "training_time_sec": 4.7176
+    },
+    "validation": {
+      "roc_auc": 0.809204
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.558,
-      "test_background_rejection": 0.941,
-      "test_signal_efficiency": 0.501
+      "selected_threshold": 0.6905725598335266,
+      "test_background_rejection": 0.8916934891862894,
+      "test_signal_efficiency": 0.502955889040473
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.257364+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/xgboost_all/metrics.json"
     }
   },
   {
@@ -181,22 +188,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.8379,
-      "pr_auc": 0.8243,
-      "brier_score": 0.1588,
-      "accuracy": 0.776,
-      "training_time_sec": 7.85,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.78483,
+      "pr_auc": 0.802596,
+      "brier_score": 0.188246,
+      "accuracy": 0.70456,
+      "training_time_sec": 2.4442
+    },
+    "validation": {
+      "roc_auc": 0.781722
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.531,
-      "test_background_rejection": 0.897,
-      "test_signal_efficiency": 0.503
+      "selected_threshold": 0.6590167880058289,
+      "test_background_rejection": 0.8687672934665989,
+      "test_signal_efficiency": 0.5061896821787681
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.258334+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/xgboost_high_level/metrics.json"
     }
   },
   {
@@ -206,22 +214,23 @@
     "seed": 42,
     "sample_size": 250000,
     "metrics": {
-      "roc_auc": 0.8152,
-      "pr_auc": 0.8229,
-      "brier_score": 0.1714,
-      "accuracy": 0.749,
-      "training_time_sec": 12.3,
-      "inference_latency_ms": 1.2
+      "roc_auc": 0.70925,
+      "pr_auc": 0.723306,
+      "brier_score": 0.216494,
+      "accuracy": 0.6512,
+      "training_time_sec": 4.174
+    },
+    "validation": {
+      "roc_auc": 0.70135
     },
     "operating_point": {
       "target_signal_efficiency": 0.5,
-      "selected_threshold": 0.521,
-      "test_background_rejection": 0.858,
-      "test_signal_efficiency": 0.502
+      "selected_threshold": 0.5820682048797607,
+      "test_background_rejection": 0.7781354113727483,
+      "test_signal_efficiency": 0.5048759537163358
     },
     "provenance": {
-      "created_at": "2026-10-26T09:59:54.259340+00:00",
-      "author": "CosmicMagnetar"
+      "source_artifact": "outputs/xgboost_low_level/metrics.json"
     }
   }
 ]

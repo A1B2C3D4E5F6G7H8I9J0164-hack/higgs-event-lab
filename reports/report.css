@@ -1,0 +1,33 @@
+@page {
+  size: A4;
+  margin: 18mm 16mm 18mm 16mm;
+  @bottom-right { content: counter(page); color: #5b6b7a; font-size: 9pt; }
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172536;
+  line-height: 1.45;
+  font-size: 10.5pt;
+}
+
+h1, h2, h3 { color: #174d86; page-break-after: avoid; }
+h1 { font-size: 25pt; border-bottom: 3px solid #59b8c5; padding-bottom: 8px; }
+h2 { font-size: 17pt; margin-top: 22px; border-bottom: 1px solid #59b8c5; padding-bottom: 4px; }
+h3 { font-size: 13pt; }
+
+table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 8.5pt; }
+th { background: #24558f; color: white; text-align: left; }
+th, td { border: 1px solid #9aa9b8; padding: 5px 6px; vertical-align: top; }
+tr:nth-child(even) { background: #eef3f8; }
+
+blockquote { border-left: 4px solid #f2c94c; background: #fff8dc; padding: 8px 12px; margin: 12px 0; }
+code { color: #174d86; background: #eef3f8; padding: 1px 3px; }
+pre { background: #172536; color: #f5f8fb; padding: 10px; border-radius: 4px; font-size: 8.5pt; }
+img { max-width: 100%; display: block; margin: 12px auto; page-break-inside: avoid; }
+figure { page-break-inside: avoid; }
+li { margin: 3px 0; }
+
+/* Keep the title and major sections visually clean in the PDF. */
+h1:first-child { text-align: center; margin-top: 80px; }
+h1:first-child + p { text-align: center; color: #5b6b7a; }

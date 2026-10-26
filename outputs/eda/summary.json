@@ -1,0 +1,151 @@
+{
+  "schema_version": "higgs-eda-v1",
+  "data_source": "/content/higgs-event-lab/data/raw/HIGGS.csv.gz",
+  "rows": 250000,
+  "feature_count": 28,
+  "label_counts": {
+    "0": 118058,
+    "1": 131942
+  },
+  "signal_fraction": 0.527768,
+  "missing_values": 0,
+  "nonfinite_values": 0,
+  "feature_groups": {
+    "low_level": 21,
+    "high_level": 7,
+    "all": 28
+  },
+  "top_correlations": [
+    {
+      "feature_1": "m_wbb",
+      "feature_2": "m_wwbb",
+      "correlation": 0.8947660304839828,
+      "absolute_correlation": 0.8947660304839828
+    },
+    {
+      "feature_1": "m_jj",
+      "feature_2": "m_jjj",
+      "correlation": 0.7905060393839327,
+      "absolute_correlation": 0.7905060393839327
+    },
+    {
+      "feature_1": "m_jjj",
+      "feature_2": "m_wbb",
+      "correlation": 0.6107875220424894,
+      "absolute_correlation": 0.6107875220424894
+    },
+    {
+      "feature_1": "m_jjj",
+      "feature_2": "m_wwbb",
+      "correlation": 0.5885101425818683,
+      "absolute_correlation": 0.5885101425818683
+    },
+    {
+      "feature_1": "m_jlv",
+      "feature_2": "m_wbb",
+      "correlation": 0.5711852055979091,
+      "absolute_correlation": 0.5711852055979091
+    },
+    {
+      "feature_1": "m_bb",
+      "feature_2": "m_wbb",
+      "correlation": 0.556757375707698,
+      "absolute_correlation": 0.556757375707698
+    },
+    {
+      "feature_1": "m_jlv",
+      "feature_2": "m_wwbb",
+      "correlation": 0.5509990110724541,
+      "absolute_correlation": 0.5509990110724541
+    },
+    {
+      "feature_1": "jet_1_pt",
+      "feature_2": "jet_2_pt",
+      "correlation": 0.489355117157111,
+      "absolute_correlation": 0.489355117157111
+    },
+    {
+      "feature_1": "jet_1_pt",
+      "feature_2": "m_wbb",
+      "correlation": 0.4851254186002266,
+      "absolute_correlation": 0.4851254186002266
+    },
+    {
+      "feature_1": "m_jj",
+      "feature_2": "m_wwbb",
+      "correlation": 0.4592785271516246,
+      "absolute_correlation": 0.4592785271516246
+    },
+    {
+      "feature_1": "jet_1_pt",
+      "feature_2": "m_wwbb",
+      "correlation": 0.4527976886712075,
+      "absolute_correlation": 0.4527976886712075
+    },
+    {
+      "feature_1": "m_jj",
+      "feature_2": "m_wbb",
+      "correlation": 0.4514747717466157,
+      "absolute_correlation": 0.4514747717466157
+    },
+    {
+      "feature_1": "jet_2_pt",
+      "feature_2": "m_wbb",
+      "correlation": 0.4370708917139186,
+      "absolute_correlation": 0.4370708917139186
+    },
+    {
+      "feature_1": "m_bb",
+      "feature_2": "m_wwbb",
+      "correlation": 0.4117928500150928,
+      "absolute_correlation": 0.4117928500150928
+    },
+    {
+      "feature_1": "jet_2_pt",
+      "feature_2": "m_wwbb",
+      "correlation": 0.387393232647203,
+      "absolute_correlation": 0.387393232647203
+    },
+    {
+      "feature_1": "jet_2_pt",
+      "feature_2": "m_bb",
+      "correlation": 0.37298412070742587,
+      "absolute_correlation": 0.37298412070742587
+    },
+    {
+      "feature_1": "jet_1_pt",
+      "feature_2": "m_bb",
+      "correlation": 0.33602906484447964,
+      "absolute_correlation": 0.33602906484447964
+    },
+    {
+      "feature_1": "missing_energy_magnitude",
+      "feature_2": "m_wwbb",
+      "correlation": 0.2994594505197293,
+      "absolute_correlation": 0.2994594505197293
+    },
+    {
+      "feature_1": "jet_3_pt",
+      "feature_2": "m_wbb",
+      "correlation": 0.29264198490938353,
+      "absolute_correlation": 0.29264198490938353
+    },
+    {
+      "feature_1": "jet_2_pt",
+      "feature_2": "jet_3_pt",
+      "correlation": 0.2921294879464088,
+      "absolute_correlation": 0.2921294879464088
+    }
+  ],
+  "figures": [
+    "class_balance.png",
+    "feature_distributions.png",
+    "correlation_heatmap.png",
+    "feature_group_separation.png"
+  ],
+  "tables": [
+    "feature_summary.csv",
+    "btag_summary.json",
+    "top_correlations.csv"
+  ]
+}
