@@ -58,20 +58,34 @@ flowchart TD
 
 ---
 
-## 3. Mid-Semester Empirical Benchmark Summary
+## 3. Benchmark Results
 
-All values derive directly from serialized `higgs-experiment-v1` artifacts on the held-out test partition ($N = 37,500$):
+### Full-Dataset Benchmark (1,000,000 events)
 
-| Model | Feature Group | Features | Test ROC-AUC | Test PR-AUC | Brier Score | Runtime (s) |
-|---|---|---|---|---|---|---|
-| Logistic Regression | Low-level | 21 | 0.7476 <!-- allow-metric --> | 0.7622 <!-- allow-metric --> | 0.2035 <!-- allow-metric --> | 0.07 |
-| Logistic Regression | High-level | 7 | 0.7661 <!-- allow-metric --> | 0.7427 <!-- allow-metric --> | 0.1945 <!-- allow-metric --> | 0.05 |
-| Logistic Regression | All features | 28 | 0.8369 <!-- allow-metric --> | 0.8377 <!-- allow-metric --> | 0.1639 <!-- allow-metric --> | 0.10 |
-| Compact MLP | Low-level | 21 | 0.8000 <!-- allow-metric --> | 0.8097 <!-- allow-metric --> | 0.1824 <!-- allow-metric --> | 15.02 |
-| Compact MLP | High-level | 7 | 0.9043 <!-- allow-metric --> | 0.8888 <!-- allow-metric --> | 0.1184 <!-- allow-metric --> | 5.13 |
-| Compact MLP | All features | 28 | 0.9406 <!-- allow-metric --> | 0.9372 <!-- allow-metric --> | 0.0945 <!-- allow-metric --> | 10.52 |
+Trained on the full UCI HIGGS sample via `notebooks/03_full/00_full_higgs_colab.ipynb` using one frozen stratified split (seed 42, 15% validation, 15% test). All metrics computed on the held-out test partition ($N = 150{,}000$).
 
-**Key Finding:** 7 physicist-derived invariant masses ($m_{jj}, \dots, m_{wwbb}$) significantly outperform 21 raw four-momenta for both linear and neural classifiers. Combining all 28 features with the compact MLP yields the strongest discrimination (ROC-AUC = 0.9406 <!-- allow-metric -->) and lowest Brier error (0.0945 <!-- allow-metric -->).
+| Model | Test ROC-AUC | Test PR-AUC | Brier Score | Test Accuracy | Training Time |
+|---|---|---|---|---|---|
+| Wide MLP (tuned) | 0.8399 | 0.8539 | 0.1630 | 0.7565 | ~6.9 min |
+| XGBoost (tuned) | 0.8271 | 0.8415 | 0.1693 | 0.7451 | ~6.9 min |
+| Logistic Regression (tuned) | 0.6834 | 0.6832 | 0.2233 | 0.6406 | ~6.9 min |
+
+**Best model:** Wide compact MLP (256-128-64, BatchNorm + Dropout, AdamW) achieves the highest discrimination (ROC-AUC 0.8399) and best calibration (Brier 0.1630).
+
+### Mid-Semester Benchmark (250,000 events)
+
+Smaller-sample results from `notebooks/01_midsem/` for reference. Values below come from serialized `higgs-experiment-v1` artifacts:
+
+| Model | Feature Group | Features | Test ROC-AUC | Test PR-AUC | Brier Score |
+|---|---|---|---|---|---|
+| Logistic Regression | Low-level | 21 | 0.7476 | 0.7622 | 0.2035 |
+| Logistic Regression | High-level | 7 | 0.7661 | 0.7427 | 0.1945 |
+| Logistic Regression | All features | 28 | 0.8369 | 0.8377 | 0.1639 |
+| Compact MLP | Low-level | 21 | 0.8000 | 0.8097 | 0.1824 |
+| Compact MLP | High-level | 7 | 0.9043 | 0.8888 | 0.1184 |
+| Compact MLP | All features | 28 | 0.9406 | 0.9372 | 0.0945 |
+
+**Key finding:** Expert-derived high-level invariant masses strongly outperform raw low-level kinematics. The wide tuned MLP on 1M events generalizes well (ROC-AUC 0.8399) on the larger sample.
 
 ---
 

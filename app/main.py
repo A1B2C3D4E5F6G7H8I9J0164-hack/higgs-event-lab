@@ -31,6 +31,7 @@ from app.views.experiments import render_experiments
 from app.views.methods import render_methods
 from app.views.overview import render_overview
 from app.views.physics import render_physics
+from app.views.simulation import render_simulation
 from app.views.validation import render_validation
 
 # Page Configuration
@@ -116,6 +117,7 @@ def main() -> None:
         "4. Experiment Comparison",
         "5. Validation",
         "6. Methods and Research",
+        "7. Model Simulation",
     ]
 
     selected_section = st.sidebar.radio(
@@ -149,6 +151,8 @@ def main() -> None:
         render_validation(discovery)
     elif selected_section == "6. Methods and Research":
         render_methods()
+    elif selected_section == "7. Model Simulation":
+        render_simulation(discovery)
 
 
 if __name__ == "__main__":

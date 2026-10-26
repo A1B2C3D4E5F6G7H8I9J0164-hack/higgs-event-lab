@@ -89,7 +89,25 @@ def train_and_score_all(sample_path: Path) -> tuple[list[dict[str, float]], list
     started = time.perf_counter()
     logreg = LogisticRegression(max_iter=2000, C=1.0, n_jobs=-1)
     logreg.fit(X_train, y_train)
-    seconds = time.perf_counter() - started
+    logreg_seconds = time.perf_counter() - started
+    logreg_scores = logreg.predict_proba(X_test)[:, 1]
+
+    # Tuned XGBoost: deeper trees and a slower learning rate than the quick baseline.
+    started = time.perf_counter()
+    xgb_module = __import__("xgboost")
+    xgboost = xgb_module.XGBClassifier(
+        n_estimators=600,
+        max_depth=7,
+        learning_rate=0.06,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        tree_method="hist",
+        eval_metric="logloss",
+        n_jobs=-1,
+        random_state=42,
+    )
+    logreg.fit(X_train, y_train)
+    logreg_seconds = time.perf_counter() - started
     logreg_scores = logreg.predict_proba(X_test)[:, 1]
 
     # Tuned XGBoost: deeper trees and a slower learning rate than the quick baseline.
@@ -107,7 +125,7 @@ def train_and_score_all(sample_path: Path) -> tuple[list[dict[str, float]], list
         random_state=42,
     )
     xgboost.fit(X_train, y_train)
-    seconds = time.perf_counter() - started
+    xgb_seconds = time.perf_counter() - started
     xgb_scores = xgboost.predict_proba(X_test)[:, 1]
 
     # Wider compact MLP: same batch norm / dropout recipe, more capacity and epochs.
@@ -123,13 +141,13 @@ def train_and_score_all(sample_path: Path) -> tuple[list[dict[str, float]], list
         seed=42,
     )
     mlp_result = train_mlp(features, labels, split=split, config=mlp_config)
-    seconds = time.perf_counter() - started
+    mlp_seconds = time.perf_counter() - started
     mlp_scores = np.asarray(mlp_result["test"]["probabilities"], dtype=np.float64)
 
     records = [
-        evaluate_run("logistic_regression_tuned", y_test, logreg_scores, seconds),
-        evaluate_run("xgboost_tuned", y_test, xgb_scores, seconds),
-        evaluate_run("wide_mlp_tuned", y_test, mlp_scores, seconds),
+        evaluate_run("logistic_regression_tuned", y_test, logreg_scores, logreg_seconds),
+        evaluate_run("xgboost_tuned", y_test, xgb_scores, xgb_seconds),
+        evaluate_run("wide_mlp_tuned", y_test, mlp_scores, mlp_seconds),
     ]
 
     prediction_sources = {
