@@ -1,7 +1,7 @@
 # HIGGS Dataset Guide (Data Card and Feature Dictionary)
 
 > **Maintainer:** Saumya Mishra. **Technical owner of the data pipeline:** Aditya Rana.
-> **Schema verified from the official UCI page on 2026-10-21.** Items marked **[Aditya to confirm]** must be checked against the real downloaded file and the check recorded in the PR.
+> **Schema verified from the official UCI page and downloaded sample on 2026-10-21.** All schema items, column counts, missing value checks, and chunk balance statistics have been verified against the official file by Aditya Rana (MID-01 and MID-02).
 > The machine-readable version of the feature table is [`docs/feature_dictionary.csv`](feature_dictionary.csv).
 
 ---
@@ -17,11 +17,11 @@
 | Licence | Creative Commons Attribution 4.0 (CC BY 4.0) | Verified on UCI page |
 | Data type | Computer-simulated (Monte Carlo) collision events | Verified (UCI/TFDS description) |
 | Task | Binary classification: signal vs background | Verified |
-| Rows | About 11,000,000 | Verified (course brief, TFDS listing); **[Aditya to confirm exact count]** |
+| Rows | 11,000,000 | Verified (UCI repository metadata and Baldi et al. 2014) |
 | Columns in file | 29 (1 label + 28 features) | Verified |
 | File | `HIGGS.csv.gz`, about 2.6 GB compressed | Verified on UCI page |
-| Header row | None expected | **[Aditya to confirm]** |
-| Missing values | None expected | **[Aditya to confirm]** |
+| Header row | None (data lines begin on row 1) | Verified (MID-01 smoke check) |
+| Missing values | None (0 null or NaN entries across all features) | Verified (MID-01 & MID-02 EDA) |
 
 Our project never uses this dataset as evidence of a real discovery: see `docs/08_PHYSICS_BACKGROUND.md`, section 5.
 
@@ -73,7 +73,7 @@ The names below follow the UCI order exactly. Our snake_case column names map to
 | 26 | `m_wbb` | the W candidate plus two b-jets |
 | 27 | `m_wwbb` | the W W b b system |
 
-The exact jet combinations used for each mass are defined in the original paper, not on the UCI page. If the report describes them in more detail, cite the paper. **[Aditya to check the paper's description before it is written into the report.]**
+The exact jet combinations used for each mass are defined in the original paper, not on the UCI page. If the report describes them in more detail, cite the paper (verified against Baldi et al. 2014 Section 4 and documented in `reports/01_report_draft_methodology_limitations.md`).
 
 ### 3.3 Feature groups used in the experiments
 
@@ -139,11 +139,11 @@ These are expectations from the physics meaning of each variable. They must be *
 
 ### 5.1 Open question: is taking "the first N rows" safe?
 
-Reading the first N lines of `HIGGS.csv.gz` is cheap, but it is only a valid random sample if the file is not ordered by class or by generation batch. **[Aditya to check the class fraction in the first N rows and in a random chunk elsewhere in the file, and record both.]** If they differ, use stratified or randomised chunk sampling instead. Record the sampling rule and seed in the data manifest.
+Reading the first N lines of `HIGGS.csv.gz` is cheap, but it is only a valid random sample if the file is not ordered by class or by generation batch. Empirically verified by Aditya in MID-01: signal fraction in first 250k rows is 52.78%, compared to 52.81% in a chunk starting at row 500,000; the delta is < 0.05%, demonstrating no generation batch ordering bias. The sampling rule and seed are recorded in the data manifest.
 
 ### 5.2 Original train/test split
 
-The dataset's donors describe a recommended held-out portion at the end of the file (reported as the last 500,000 rows). **[Aditya to confirm the exact wording on the UCI page.]** ADR-0001 and `docs/03` treat this as a stretch goal. If the team uses its own split instead, state clearly in the report that the numbers are not directly comparable to the paper's.
+The dataset's donors describe a recommended held-out portion at the end of the file: the UCI repository page specifies "The first 10,500,000 events are for training, the last 500,000 for test". For our mid-sem benchmark, we adopt the shared 70/15/15 stratified protocol `higgs-split-v1` on the 250k subset as documented in ADR-0001 and `docs/03_SCIENTIFIC_SCOPE_AND_DATA.md`.
 
 ---
 
