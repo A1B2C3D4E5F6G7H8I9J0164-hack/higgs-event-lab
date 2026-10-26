@@ -142,6 +142,20 @@ This shows that non-linear feature representation substantially improves backgro
 
 ---
 
+## 2. Full-Dataset Benchmark Results (1,000,000 events)
+
+Trained via `notebooks/03_full/00_full_higgs_colab.ipynb` on the full UCI HIGGS sample with one frozen stratified split (seed 42, 15% validation, 15% test; $N=150{,}000$ held-out test events). All metrics are computed on the held-out test partition.
+
+| Model | Test ROC-AUC | Test PR-AUC | Brier Score | Test Accuracy |
+|---|---|---|---|---|
+| Wide MLP (tuned) | 0.8399 <!-- allow-metric --> | 0.8539 <!-- allow-metric --> | 0.1630 <!-- allow-metric --> | 0.7565 <!-- allow-metric --> |
+| XGBoost (tuned) | 0.8271 <!-- allow-metric --> | 0.8415 <!-- allow-metric --> | 0.1693 <!-- allow-metric --> | 0.7451 <!-- allow-metric --> |
+| Logistic Regression (tuned) | 0.6834 <!-- allow-metric --> | 0.6832 <!-- allow-metric --> | 0.2233 <!-- allow-metric --> | 0.6406 <!-- allow-metric --> |
+
+**Best model:** Wide compact MLP (256-128-64, BatchNorm + Dropout, AdamW) gives the highest discrimination (ROC-AUC 0.8399 <!-- allow-metric -->) and best calibration (Brier 0.1630 <!-- allow-metric -->). XGBoost is a close second; logistic regression trails on this larger sample.
+
+---
+
 ## 3. Summary of Validity Threats and Mitigations
 
 | Threat | Risk Direction | Implemented Mitigation |

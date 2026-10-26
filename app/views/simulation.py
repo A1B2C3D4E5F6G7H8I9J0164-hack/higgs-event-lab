@@ -30,6 +30,7 @@ except Exception:  # pragma: no cover - environment dependent
     HAS_TORCH = False
 
 import joblib
+import matplotlib.pyplot as plt
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 WEIGHTS_DIR = ROOT_DIR / "outputs" / "model_weights"
@@ -264,7 +265,7 @@ def _render_demo_distributions(discovery: RunDiscoveryResult) -> None:
         return
     run = discovery.valid_runs[0]
     scores = run.test_scores
-    fig_hist, ax_hist = __import__("matplotlib.pyplot").pyplot.subplots(figsize=(7, 3.6))
+    fig_hist, ax_hist = plt.subplots(figsize=(7, 3.6))
     ax_hist.hist(scores[run.test_labels == 1], bins=30, alpha=0.7, label="Signal", color="#00e5ff")
     ax_hist.hist(scores[run.test_labels == 0], bins=30, alpha=0.7, label="Background", color="#f472b6")
     ax_hist.set_xlabel("Predicted signal probability")

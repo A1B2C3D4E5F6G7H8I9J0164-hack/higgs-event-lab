@@ -66,9 +66,9 @@ Trained on the full UCI HIGGS sample via `notebooks/03_full/00_full_higgs_colab.
 
 | Model | Test ROC-AUC | Test PR-AUC | Brier Score | Test Accuracy | Training Time |
 |---|---|---|---|---|---|
-| Wide MLP (tuned) | 0.8399 | 0.8539 | 0.1630 | 0.7565 | ~6.9 min |
-| XGBoost (tuned) | 0.8271 | 0.8415 | 0.1693 | 0.7451 | ~6.9 min |
-| Logistic Regression (tuned) | 0.6834 | 0.6832 | 0.2233 | 0.6406 | ~6.9 min |
+| Wide MLP (tuned) | 0.8399 | 0.8539 | 0.1630 | 0.7565 | Colab/Kaggle GPU (T4) |
+| XGBoost (tuned) | 0.8271 | 0.8415 | 0.1693 | 0.7451 | Colab/Kaggle GPU (T4) |
+| Logistic Regression (tuned) | 0.6834 | 0.6832 | 0.2233 | 0.6406 | Colab/Kaggle GPU (T4) |
 
 **Best model:** Wide compact MLP (256-128-64, BatchNorm + Dropout, AdamW) achieves the highest discrimination (ROC-AUC 0.8399) and best calibration (Brier 0.1630).
 
