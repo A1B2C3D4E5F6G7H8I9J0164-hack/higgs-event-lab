@@ -1,31 +1,46 @@
 # Reports and Figures
 
-The final report is synthesized by **Krishna** from actual results; each module owner writes the methods/results for their experiments, and **Saumya** reviews readability, references, terminology, and consistency.
+The final report is synthesized by **Krishna** from actual results. Each module owner writes the methods/results for their experiments, and **Saumya Mishra** reviews readability, references, terminology, and consistency.
 
-Store report source files and selected small figures in this folder. Place large run outputs under the ignored `outputs/` folder and copy only chosen, appropriately sized figures into the `reports/` folder when needed.
+## Folder Purpose
+
+Store report source files and selected small figures in this folder. Place large run outputs under the ignored `outputs/` folder and copy only chosen, appropriately sized figures into `reports/` when needed.
+
+## Rule: No Premature Numbers
+
+> Never write numeric results until they exist in saved experiment output under `outputs/`. All reported metrics must be traceable to serialized `metrics.json` / `test_predictions.csv` artifacts.
+
+---
 
 ## Report Sections
 
-* Abstract
-* Physics Motivation
-* Task
-* Data / Provenance
-* Methods
-* Experiment Protocol
-* Results
-* Error / Threshold Analysis
-* Compute Trade-off
-* Limitations
-* Conclusion
-* References
-
-> **Note:** Never write numeric results until they exist in saved experiment output.
+| Section | Description |
+|---|---|
+| Abstract | High-level summary of task, methods, and key findings. |
+| Physics Motivation | Why the HIGGS benchmark matters; signal vs. background definition. |
+| Task | Binary classification of simulated collision events. |
+| Data / Provenance | UCI dataset source, schema, sampling, split protocol. |
+| Methods | Preprocessing, feature groups, model architectures, training setup. |
+| Experiment Protocol | `higgs-split-v1`: stratified train/val/test, seed 42, leakage prevention. |
+| Results | ROC-AUC, PR-AUC, Brier score, accuracy per model and feature group. |
+| Error / Threshold Analysis | Operating-point selection, calibration, confusion analysis. |
+| Compute Trade-off | Training time, inference latency, model size. |
+| Limitations | Simulated data only, no physical discovery claims, sample-size constraints. |
+| Conclusion | Summary of findings and future work. |
+| References | Academic citations and data sources. |
 
 ---
 
 ## Current Drafts
 
-* **`01_report_draft_methodology_limitations.md`**: Covers methodology and limitations; contains no result numbers (placeholders are marked `[RUN: ...]`). *(Saumya)*
-* **`02_neural_network_benchmarks.md`**: Covers compact MLP architecture, regularisation, cross-feature benchmark protocol, and artifact export; placeholders marked `[RUN: ...]`. *(Rachit)*
-* **`03_classical_baseline_benchmarks.md`**: Covers Logistic Regression pipeline, leakage-free scaling, cross-group benchmarks, and artifact export; placeholders marked `[RUN: ...]`. *(Aditya)*
+| File | Author | Status | Contents |
+|---|---|---|---|
+| `01_report_draft_methodology_limitations.md` | Saumya Mishra | Final mid-semester | Methodology, full-dataset benchmark results (1M events), validity threats and mitigations. |
+| `02_neural_network_benchmarks.md` | Rachit Gupta | Draft | Compact MLP architecture, regularization, cross-feature benchmark protocol, artifact export. |
+| `03_classical_baseline_benchmarks.md` | Aditya Rana | Draft | Logistic Regression pipeline, leakage-free scaling, cross-group benchmarks, artifact export. |
+| `04_midsem_presentation_and_demo.md` | Ronit Singh | Draft | 12-slide presentation structure and live demo script. |
+| `05_viva_defense_guide.md` | Krishna | Draft | Viva examination Q&A preparation pack (20 questions). |
 
+Placeholders marked `[RUN: ...]` indicate where real metric values should be inserted once artifacts exist.
+
+---

@@ -2,56 +2,63 @@
 
 **Owner:** Ronit Singh (Product UI / Streamlit Dashboard).
 
-HiggsLens provides an interactive, scientific workbench for inspecting machine-learning experiments on the simulated UCI HIGGS dataset (Baldi et al., 2014). It visualizes held-out evaluation curves, compares classical baselines against compact neural networks across feature groups, and enables interactive operating-threshold exploration.
+HiggsLens provides an interactive, scientific workbench for inspecting machine-learning experiments on the simulated UCI HIGGS dataset (Baldi et al., 2014). It visualizes held-out evaluation curves, compares classical baselines (Logistic Regression, XGBoost) against compact neural networks (Wide MLP) across feature groups, enables interactive operating-threshold exploration, and includes a **Model Simulation** view for scoring new events with trained models.
 
 ---
 
 ## 1. Quickstart & Launch Instructions
 
 ### Prerequisites
+
 Ensure the virtual environment is activated and project dependencies are installed:
 
 ```bash
 # Install core dependencies
 pip install -r requirements.txt
 
-# Or install repository in editable mode
+# Install repository in editable mode (so app/ imports work)
 pip install -e .
 ```
 
 ### Launch the Dashboard
-Run either interface from the repository root:
+
+Run from the repository root:
 
 ```bash
-# 1. Scientific Laboratory Workbench (Default)
+# Primary Scientific Laboratory Dashboard (recommended)
 streamlit run app/main.py
 
-# 2. Terminal HUD UI
+# Alternative Retro Terminal HUD Dashboard
 streamlit run app/streamlit_app.py
 ```
 
-The application will launch locally at `http://localhost:8501`.
+The application launches locally at `http://localhost:8501`.
 
 ### Instant Sample Artifact Generation (Optional)
+
 To test and explore the dashboard immediately without downloading the full dataset:
 
 ```bash
 python scripts/generate_sample_artifacts.py
 ```
+
 This generates schema-compliant benchmark artifacts across all 3 feature groups in `outputs/`.
 
 ---
 
 ## 2. Navigation & Application Architecture
 
-HiggsLens is organized into six focused scientific sections:
+HiggsLens is organized into seven focused scientific sections:
 
-1. **Overview:** Project objectives, dataset parameters, artifact registry discovery status, and verified reproduction commands.
-2. **Physics Explorer:** Standard Model electroweak symmetry breaking, the exotic-Higgs benchmark decay kinematics, and explicit project boundaries.
-3. **Dataset Observatory:** Searchable 28-feature dictionary, interactive signal vs background distribution explorer, cross-feature Pearson correlation matrix, and empirical class balance observatory.
-4. **Experiment Comparison:** Model comparison leaderboard, multi-group representation learning analysis (`low_level` vs `high_level` vs `all`), and training runtime vs performance trade-off scatter plot.
-5. **Validation:** Receiver Operating Characteristic (ROC) curves, Precision-Recall (PR) curves, calibration reliability diagrams, genuine MLP training loss/AUC curves, and the interactive threshold operating-point workbench.
-6. **Methods and Research:** The `higgs-split-v1` leakage-free protocol, neural and linear model configurations, academic citations, and research limitations.
+| Section | What it shows |
+|---|---|
+| **1. Overview** | Project objectives, dataset parameters, artifact registry discovery status, verified reproduction commands. |
+| **2. Physics Explorer** | Standard Model electroweak symmetry breaking, exotic-Higgs benchmark decay kinematics, explicit project boundaries. |
+| **3. Dataset Observatory** | Searchable 28-feature dictionary, signal vs background distribution explorer, cross-feature Pearson correlation matrix, empirical class balance observatory. |
+| **4. Experiment Comparison** | Model comparison leaderboard, multi-group representation learning analysis (`low_level` vs `high_level` vs `all`), runtime vs performance trade-off. |
+| **5. Validation** | ROC curves, Precision-Recall curves, calibration reliability diagrams, genuine MLP training history, interactive threshold operating-point workbench. |
+| **6. Methods and Research** | `higgs-split-v1` leakage-free protocol, neural and linear model configurations, academic citations, research limitations. |
+| **7. Model Simulation** | Upload a CSV of events and score them with trained logistic regression, XGBoost, and Wide MLP models; single-event prediction with sliders; score distribution histograms. |
 
 ---
 
@@ -59,10 +66,25 @@ HiggsLens is organized into six focused scientific sections:
 
 HiggsLens dynamically discovers run folders beneath `outputs/` (or a custom path entered in the sidebar). A run folder is classified as usable only when it contains both required files complying with `higgs-experiment-v1`:
 
-- **`metrics.json`**: Metadata dictionary including schema version, model architecture, feature group, split seed, training configuration, runtime, and validation/test metrics.
-- **`test_predictions.csv`**: Held-out test predictions containing `row_index`, `class_label` ($y \in \{0, 1\}$), and predicted class-1 probability `score` ($\in [0.0, 1.0]$).
+### Required Files
+
+- **`metrics.json`** — Metadata dictionary including schema version, run ID, model architecture, feature group, split seed, training configuration, runtime, and validation/test metrics.
+- **`test_predictions.csv`** — Held-out test predictions containing `row_index`, `class_label` ($y \in \{0, 1\}$), and predicted class-1 probability `score` ($\in [0.0, 1.0]$).
+
+### Validation Rules
+
+The dashboard validates every discovered artifact before displaying it:
+
+- `schema_version` must equal `higgs-experiment-v1`.
+- `run_id` must be a non-empty string.
+- `model` must be a dictionary containing `name`.
+- `features.group` must be `low_level`, `high_level`, or `all`; `features.count` must be a positive integer; `features.names` must be a list.
+- `split.seed` must be an integer.
+- `evaluation.test` must contain `roc_auc`, `pr_auc`, and `brier_score` as finite numeric values.
+- `test_predictions.csv` must contain the required columns, binary labels, and probability scores bounded in $[0, 1]`.
 
 ### Honest Empty State Policy
+
 If `outputs/` is missing or contains no valid runs, HiggsLens displays an honest empty state with verified CLI commands to reproduce runs. It never simulates fake benchmark metrics or trains heavy models on dashboard startup.
 
 ---
@@ -91,9 +113,23 @@ python -m higgs_event_lab.neural \
     --output-dir outputs
 ```
 
+Or run the full Colab/Kaggle benchmark notebook (`notebooks/03_full/00_full_higgs_colab.ipynb`) to train on 1M events and export tuned models to `outputs/model_weights/`.
+
 ---
 
-## 5. Automated Tests
+## 5. Model Simulation
+
+The **Model Simulation** section lets you use the trained models on new data:
+
+- **Batch CSV Upload:** Upload a CSV containing the 28 HIGGS feature columns. Each row is scored by every loaded model (logistic regression, XGBoost, Wide MLP). Download the predictions as a CSV.
+- **Single-Event Prediction:** Adjust feature values with sliders and compare every model's signal probability side by side.
+- **Score Distributions:** View histogram distributions of predicted probabilities across held-out test runs.
+
+Models are loaded from `outputs/model_weights/` (git-ignored). If weights are missing, the view falls back to a demo mode showing held-out test score distributions from existing artifacts.
+
+---
+
+## 6. Automated Tests
 
 Targeted unit tests for the dashboard loader, schema validation, and threshold calculations are located in `tests/unit/`:
 
@@ -104,3 +140,5 @@ pytest tests/unit/test_app_loader.py tests/unit/test_app_metrics.py -v
 # Run entire repository test suite
 pytest
 ```
+
+---

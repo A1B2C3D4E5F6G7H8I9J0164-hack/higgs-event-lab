@@ -2,13 +2,16 @@
 
 The `data/interim/` directory is reserved for intermediate, staged, or temporary data transformations during pipeline execution.
 
-> **Policy:** All data files in this directory are local and **never committed to Git**. The `.gitignore` configuration explicitly excludes `data/interim/*` while tracking this documentation.
+## Policy
+
+All data files in this directory are local and **never committed to Git**. The `.gitignore` configuration explicitly excludes `data/interim/*` while tracking this documentation.
 
 ---
 
 ## 1. Role in the Data Pipeline
 
 Interim data serves three specific roles in the project workflow:
+
 1. **Chunk Staging & Verification:** Staging streaming chunks during full dataset validation sweeps or sampling before compiling into final subsets.
 2. **Intermediate Transformations:** Holding temporary scaled features, outlier filters, or alternative representation experiments before committing to `data/processed/`.
 3. **Partition Caching:** Staging index lists or temporary partition dumps during hyperparameter sweeps to avoid recomputing preprocessing on every iteration.
@@ -17,10 +20,12 @@ Interim data serves three specific roles in the project workflow:
 
 ## 2. Operating Guidelines
 
-* **Full Reproducibility:** Every intermediate file generated in `data/interim/` must be deterministically reproducible from raw source data using a script or command with documented parameters and random seeds.
-* **Row Count & Dropped Record Accounting:** If any rows are filtered or modified, the generating code must log the exact before/after row count and the reason for rejection (e.g., non-finite entries or corrupted sensors).
-* **No Test Set Fitting:** Preprocessing fits (such as scalers or encoders) must never be applied to interim data before splitting into train/validation/test partitions.
-* **Periodic Cleanup:** Intermediate files should be removed once final processed subsets are exported to `data/processed/` to save local disk space.
+| Guideline | Requirement |
+|---|---|
+| **Full Reproducibility** | Every intermediate file must be deterministically reproducible from raw source data using a script or command with documented parameters and random seeds. |
+| **Row Count Accounting** | If any rows are filtered or modified, the generating code must log the exact before/after row count and the reason for rejection (e.g., non-finite entries or corrupted sensors). |
+| **No Test Set Fitting** | Preprocessing fits (such as scalers or encoders) must never be applied to interim data before splitting into train/validation/test partitions. |
+| **Periodic Cleanup** | Intermediate files should be removed once final processed subsets are exported to `data/processed/` to save local disk space. |
 
 ---
 
@@ -41,7 +46,10 @@ df_chunk.to_csv(chunk_path, index=False)
 ```
 
 To purge temporary files:
+
 ```bash
 # Clean up temporary interim cache
 rm -f data/interim/*.csv data/interim/*.parquet data/interim/*.tmp
 ```
+
+---
