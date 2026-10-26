@@ -37,3 +37,19 @@ def test_generate_sample_artifacts_produces_valid_schema(tmp_path, monkeypatch):
     assert len(loaded.experiments) >= 6
     assert len(loaded.curves) >= 6
     assert not loaded.errors
+
+
+def test_bootstrap_cloud_artifacts_if_needed(tmp_path, monkeypatch):
+    """Verify that cloud entrypoint bootstrap creates runs when outputs/ is empty."""
+    import streamlit_app
+
+    fake_outputs = tmp_path / "outputs"
+    fake_outputs.mkdir()
+    monkeypatch.setattr(streamlit_app, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr("scripts.generate_sample_artifacts.OUTPUTS_DIR", fake_outputs)
+    monkeypatch.setattr("scripts.generate_sample_artifacts.CURVES_DIR", fake_outputs / "curves")
+
+    streamlit_app.bootstrap_cloud_artifacts_if_needed()
+
+    runs = [d for d in fake_outputs.iterdir() if d.is_dir() and (d / "metrics.json").exists()]
+    assert len(runs) == 6
