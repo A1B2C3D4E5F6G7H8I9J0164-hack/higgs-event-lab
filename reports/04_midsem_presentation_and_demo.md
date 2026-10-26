@@ -83,7 +83,7 @@
 
 ### Slide 10: Compute & Engineering Trade-Offs
 - **Training Budget:** Total training time for all 6 models combined is under 32 seconds on an ordinary 8-core CPU without GPU requirements.
-- **Software Quality:** 103 automated tests verifying repository hygiene, notebook readability, mathematical leak protection, and artifact schemas.
+- **Software Quality:** 104 automated tests verifying repository hygiene, notebook readability, mathematical leak protection, and artifact schemas.
 - **Artifact Contract:** Versioned JSON envelope (`higgs-experiment-v1`) decoupling model training from dashboard presentation.
 
 ### Slide 11: Threats to Validity & Honest Limitations
