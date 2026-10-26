@@ -338,9 +338,12 @@ def plot_runtime_vs_auc(runs: list[ExperimentArtifact]) -> Figure:
                 fontsize=8.5,
             )
 
-    legend = ax.legend(loc="lower right", facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=8.5)
-    for text in legend.get_texts():
-        text.set_color(TEXT_SECONDARY)
+    # Only show legend if there are labeled artists to avoid empty-legend warnings
+    handles, labels = ax.get_legend_handles_labels()
+    if handles:
+        legend = ax.legend(loc="lower right", facecolor=SURFACE_CARD, edgecolor=SURFACE_BORDER, fontsize=8.5)
+        for text in legend.get_texts():
+            text.set_color(TEXT_SECONDARY)
 
     fig.tight_layout()
     return fig

@@ -150,7 +150,7 @@ def render_results_view(loaded: LoadedExperiments) -> None:
     )
     st.dataframe(
         filtered.sort_values("ROC-AUC", ascending=False),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
     csv_bytes = filtered.to_csv(index=False).encode("utf-8")
@@ -314,7 +314,7 @@ def render_results_view(loaded: LoadedExperiments) -> None:
                 "Test SigEff": f"{op.test_signal_efficiency:.2%}",
                 "Test BkgRej": f"{op.test_background_rejection:.2%}",
             })
-        st.dataframe(pd.DataFrame(op_data), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(op_data), width="stretch", hide_index=True)
 
     # ── Provenance Inspector ──────────────────────────────────────────────────
     st.markdown(

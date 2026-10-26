@@ -196,7 +196,7 @@ def _render_batch_upload(models: dict[str, Any], scaler: Any, feature_cols: list
         out[f"{name}_score"] = probs
 
     st.markdown(f"### Predictions for {len(df)} event(s)")
-    st.dataframe(out.head(20), use_container_width=True)
+    st.dataframe(out.head(20), width="stretch")
 
     csv_bytes = out.to_csv(index=False).encode("utf-8")
     st.download_button(
@@ -204,7 +204,7 @@ def _render_batch_upload(models: dict[str, Any], scaler: Any, feature_cols: list
         data=csv_bytes,
         file_name="higgs_simulation_predictions.csv",
         mime="text/csv",
-        use_container_width=True,
+        width="stretch",
     )
 
     # Average score per model bar chart
@@ -214,7 +214,7 @@ def _render_batch_upload(models: dict[str, Any], scaler: Any, feature_cols: list
             "average_signal_score": [float(np.mean(p)) for p in scores.values()],
         }
     )
-    st.bar_chart(avg_df, x="model", y="average_signal_score", use_container_width=True)
+    st.bar_chart(avg_df, x="model", y="average_signal_score", width="stretch")
 
 
 def _render_single_event(models: dict[str, Any], scaler: Any, feature_cols: list[str]) -> None:
@@ -234,7 +234,7 @@ def _render_single_event(models: dict[str, Any], scaler: Any, feature_cols: list
                 key=f"sim_{feat}",
             )
 
-    if st.button("Score this event", key="sim_score_btn", use_container_width=True):
+    if st.button("Score this event", key="sim_score_btn", width="stretch"):
         row = pd.DataFrame([inputs], columns=feature_cols)
         try:
             scores = predict_scores(models, scaler, row)
@@ -247,7 +247,7 @@ def _render_single_event(models: dict[str, Any], scaler: Any, feature_cols: list
         for name in sorted(scores):
             score_rows.append({"Model": name.replace("_", " ").title(), "Signal Probability": float(scores[name][0])})
         score_df = pd.DataFrame(score_rows)
-        st.dataframe(score_df, use_container_width=True, hide_index=True)
+        st.dataframe(score_df, width="stretch", hide_index=True)
 
         best = max(score_rows, key=lambda r: r["Signal Probability"])
         st.markdown(
@@ -256,7 +256,7 @@ def _render_single_event(models: dict[str, Any], scaler: Any, feature_cols: list
 
         # Simple horizontal bar of scores
         chart_df = score_df.sort_values("Signal Probability")
-        st.bar_chart(chart_df, x="Model", y="Signal Probability", use_container_width=True)
+        st.bar_chart(chart_df, x="Model", y="Signal Probability", width="stretch")
 
 
 def _render_demo_distributions(discovery: RunDiscoveryResult) -> None:

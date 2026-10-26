@@ -69,7 +69,7 @@ def main() -> None:
         help="Path where experiment run folders are located (metrics.json + test_predictions.csv)",
     )
 
-    if st.sidebar.button("🔄 Rescan Artifacts", use_container_width=True):
+    if st.sidebar.button("🔄 Rescan Artifacts"):
         st.cache_data.clear()
 
     # Discover and validate experiment runs
@@ -100,7 +100,6 @@ def main() -> None:
     if valid_count == 0:
         if st.sidebar.button(
             "⚡ Bootstrap Demo Runs",
-            use_container_width=True,
             help="Generate genuine mid-semester benchmark artifacts in outputs/ for instant evaluation.",
         ):
             from scripts.generate_sample_artifacts import main as generate_artifacts

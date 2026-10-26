@@ -128,7 +128,7 @@ def render_overview(discovery: RunDiscoveryResult) -> None:
                     "Brier Score": f"{run.test_brier_score:.4f}" if run.test_brier_score is not None else "N/A",
                 }
             )
-        st.dataframe(pd.DataFrame(table_data), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(table_data), width="stretch", hide_index=True)
     else:
         st.markdown("### Honest Empty State: Reproducing Experiment Runs")
         st.markdown(

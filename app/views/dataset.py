@@ -165,7 +165,7 @@ def render_dataset() -> None:
         else:
             df_filtered = df_dict
 
-        st.dataframe(df_filtered, use_container_width=True, hide_index=True)
+        st.dataframe(df_filtered, width="stretch", hide_index=True)
 
     with t2:
         st.markdown("### Interactive Feature Distribution Explorer")

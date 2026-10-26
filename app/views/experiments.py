@@ -71,7 +71,7 @@ def render_experiments(discovery: RunDiscoveryResult) -> None:
         ascending = sort_col in ("Brier Score", "Runtime (s)")
         df_sorted = df_leaderboard.sort_values(by=sort_col, ascending=ascending, na_position="last")
 
-        st.dataframe(df_sorted, use_container_width=True, hide_index=True)
+        st.dataframe(df_sorted, width="stretch", hide_index=True)
 
         st.markdown(
             "> **Note on Brier Score:** Lower values indicate superior probabilistic calibration, "

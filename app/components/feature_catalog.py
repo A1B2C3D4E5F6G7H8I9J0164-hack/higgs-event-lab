@@ -109,7 +109,7 @@ def render_feature_catalog() -> None:
 
     st.dataframe(
         filtered_df,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         column_config={
             "file_column_index": st.column_config.NumberColumn("Col#", format="%d", width="small"),
