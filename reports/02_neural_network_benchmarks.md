@@ -17,6 +17,43 @@ We implement a compact PyTorch Multi-Layer Perceptron (MLP) binary classifier de
 - **Stopping Criteria:** Validation ROC-AUC monitored after every epoch with early-stopping patience of 5 epochs. When early stopping triggers, model parameters revert to the best validation checkpoint state.
 - **Hardware / Device:** CPU execution with deterministic PyTorch and NumPy seeding (seed 42).
 
+### Compact MLP Network Flowchart
+
+```mermaid
+flowchart TD
+    INPUT[Input Feature Vector: D in 21, 7, 28] --> L1[Linear Layer: D -> 64]
+    L1 --> BN1[BatchNorm1d: 64 features]
+    BN1 --> ACT1[ReLU Activation]
+    ACT1 --> DROP1[Dropout: p = 0.20]
+    
+    DROP1 --> L2[Linear Layer: 64 -> 32]
+    L2 --> BN2[BatchNorm1d: 32 features]
+    BN2 --> ACT2[ReLU Activation]
+    ACT2 --> DROP2[Dropout: p = 0.20]
+    
+    DROP2 --> L3[Linear Layer: 32 -> 1]
+    L3 --> LOGIT[Raw Scalar Logit: z]
+    LOGIT --> LOSS[BCEWithLogitsLoss during Training]
+    LOGIT --> SIGMOID[Sigmoid: sigma of z during Inference]
+    SIGMOID --> PROBA[Predicted Event Score in 0, 1]
+```
+
+### Checkpointing and Early-Stopping Protocol
+
+```mermaid
+flowchart LR
+    EPOCH[Epoch Finished] --> VAL_EVAL[Evaluate Validation ROC-AUC]
+    VAL_EVAL --> CHECK{Is Val ROC-AUC > Best?}
+    CHECK -- Yes --> SAVE_BEST[Save Checkpoint State & Reset Patience = 0]
+    CHECK -- No --> INC_PAT[Increment Patience Counter]
+    INC_PAT --> PAT_CHECK{Patience >= 5 or Max Epochs?}
+    PAT_CHECK -- No --> NEXT[Next Epoch]
+    PAT_CHECK -- Yes --> RESTORE[Restore Best Checkpoint State Dict]
+    SAVE_BEST --> NEXT
+    RESTORE --> FROZEN[Freeze Model Weights]
+    FROZEN --> TEST_EVAL[Score Untouched Held-Out Test Set Once]
+```
+
 ---
 
 ## 2. Experimental Results Summary
