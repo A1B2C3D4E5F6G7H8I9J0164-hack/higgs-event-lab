@@ -21,6 +21,8 @@ from app.visualizations import (
 def _model_label(name: str) -> str:
     return {
         "compact_mlp": "Compact MLP",
+        "deep_mlp": "Deep MLP (5x300)",
+        "resnet_mlp": "Residual MLP",
         "logistic_regression": "Logistic Regression",
         "xgboost": "XGBoost",
     }.get(name, name.replace("_", " ").title())

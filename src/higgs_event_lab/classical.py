@@ -87,6 +87,7 @@ class XGBoostConfig:
     seed: int = 42
     target_signal_efficiency: float = 0.50
     device: str = "auto"
+    early_stopping_rounds: int | None = None
 
     def __post_init__(self) -> None:
         if self.n_estimators <= 0:
@@ -284,6 +285,9 @@ def train_xgboost(
     }
     if config.device == "cuda":
         clf_kwargs["device"] = "cuda"
+    if config.early_stopping_rounds:
+        # Stops on validation log-loss; the test split is never seen during fitting.
+        clf_kwargs["early_stopping_rounds"] = config.early_stopping_rounds
 
     model = xgb.XGBClassifier(**clf_kwargs)
 

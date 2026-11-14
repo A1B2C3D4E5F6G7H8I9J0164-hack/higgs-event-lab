@@ -29,6 +29,8 @@ from app.styles import (
     ACCENT_AMBER,
     ACCENT_BLUE,
     ACCENT_CYAN,
+    ACCENT_GREEN,
+    ACCENT_VIOLET,
     ACCENT_RED,
     ACCENT_TEAL,
     MPL_COLORS,
@@ -192,9 +194,11 @@ def plot_feature_group_comparison(runs: list[ExperimentArtifact]) -> Figure:
         "logistic_regression": ACCENT_AMBER,
         "xgboost": ACCENT_BLUE,
         "compact_mlp": ACCENT_CYAN,
+        "deep_mlp": ACCENT_GREEN,
+        "resnet_mlp": ACCENT_VIOLET,
     }
 
-    width = 0.35
+    width = min(0.35, 0.8 / max(len(models), 1))
     x = np.arange(len(group_order))
 
     for m_idx, model in enumerate(models):
@@ -216,11 +220,11 @@ def plot_feature_group_comparison(runs: list[ExperimentArtifact]) -> Figure:
         # Value annotations
         for bar, val in zip(bars1, roc_vals):
             if val > 0:
-                ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.3f}", ha="center", va="bottom", color=TEXT_PRIMARY, fontsize=8.5)
+                ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.3f}", ha="center", va="bottom", color=TEXT_PRIMARY, fontsize=8.5 if len(models) <= 3 else 6.5)
 
         for bar, val in zip(bars2, pr_vals):
             if val > 0:
-                ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.3f}", ha="center", va="bottom", color=TEXT_PRIMARY, fontsize=8.5)
+                ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.3f}", ha="center", va="bottom", color=TEXT_PRIMARY, fontsize=8.5 if len(models) <= 3 else 6.5)
 
     ax1.set_xticks(x)
     ax1.set_xticklabels(["Low-level (21)", "High-level (7)", "All (28)"])

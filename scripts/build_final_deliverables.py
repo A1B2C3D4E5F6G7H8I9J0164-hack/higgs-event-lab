@@ -56,6 +56,8 @@ def model_label(model: str) -> str:
         "logistic_regression": "Logistic Regression",
         "xgboost": "XGBoost",
         "compact_mlp": "Compact MLP",
+        "deep_mlp": "Deep MLP (5x300)",
+        "resnet_mlp": "Residual MLP",
     }.get(model, model)
 
 
@@ -74,6 +76,50 @@ def table(runs: list[dict[str, object]]) -> str:
     return "\n".join(lines)
 
 
+def load_release() -> dict | None:
+    path = OUTPUTS / "release" / "release_summary.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+
+
+def release_section(release: dict | None) -> str:
+    if not release:
+        return "No release run is saved yet. Run `python scripts/release_benchmark.py --source <HIGGS.csv>`.\n"
+    out = []
+    names = sorted({row["run"] for budget in release["budgets"].values() for row in budget["results"]})
+    tags = list(release["budgets"])
+    out.append("| Run | " + " | ".join(f"{tag} ROC-AUC | {tag} PR-AUC | {tag} Brier | {tag} train s" for tag in tags) + " |")
+    out.append("|---|" + "---:|" * (4 * len(tags)))
+    for name in names:
+        cells = []
+        for tag in tags:
+            row = next((r for r in release["budgets"][tag]["results"] if r["run"] == name), None)
+            if row is None:
+                cells += ["–"] * 4
+            else:
+                cells += [f"{row['roc_auc']:.4f}", f"{row['pr_auc']:.4f}", f"{row['brier']:.4f}", f"{row['train_seconds']:.1f}"]
+        out.append(f"| `{name}` | " + " | ".join(cells) + " |")
+    out.append("")
+    out.append("| Check | " + " | ".join(tags) + " |")
+    out.append("|---|" + "---|" * len(tags))
+    checks = [("Rows", "rows"), ("Signal fraction", "signal_fraction"),
+              ("Split indices disjoint", "indices_disjoint"), ("Splits cover every row", "covers_every_row"),
+              ("Duplicate events in sample", "duplicate_events_in_sample"),
+              ("Events shared by train and test", "events_shared_by_train_and_test")]
+    for label, key in checks:
+        out.append(f"| {label} | " + " | ".join(str(release["budgets"][tag]["split_checks"][key]) for tag in tags) + " |")
+    det = release.get("determinism")
+    if det:
+        out.append("")
+        out.append(f"Determinism: two CPU trainings of the all-feature MLP with seed {release['seed']} "
+                   f"({det['epochs']} epochs) differ by at most {det['max_abs_probability_diff']:.2e} "
+                   f"in any test probability ({'identical' if det['identical'] else 'not identical'}).")
+    out.append("")
+    out.append(f"Environment: Python {release.get('python')}, torch {release.get('torch')}, "
+               f"{'GPU ' + release['cuda'] if release.get('cuda') else 'CPU only'}, {release.get('platform')}. "
+               f"Run started {release.get('started')}.")
+    return "\n".join(out) + "\n"
+
+
 def write_report(runs: list[dict[str, object]]) -> Path:
     REPORTS.mkdir(exist_ok=True)
     all_features = [run for run in runs if run["group"] == "all"]
@@ -84,6 +130,7 @@ def write_report(runs: list[dict[str, object]]) -> Path:
     history_run = next((run for run in runs if run["run_id"] == "mlp_all"), None)
     history_epochs = len(history_run["history"]) if history_run else 0
     total_rows = int(eda["rows"])
+    release = load_release()
     signal_fraction = float(eda["signal_fraction"])
     report = f"""# HiggsLens: Machine-Learning Classification of Simulated HIGGS Events
 
@@ -101,7 +148,7 @@ HiggsLens is a reproducible machine-learning workbench for separating simulated 
 
 The current validated artifact registry contains **{len(runs)} runs** over **{total_rows:,} recorded benchmark rows**, using the `higgs-split-v1` protocol with seed 42. The strongest currently loaded artifact is **{model_label(str(best['model']))} on `{best['group']}` features**, with test ROC-AUC **{float(best['roc']):.4f}**, PR-AUC **{float(best['pr']):.4f}**, Brier score **{float(best['brier']):.4f}**, and accuracy **{float(best['accuracy']):.4f}**. <!-- allow-metric -->
 
-Among all-feature runs, **{model_label(str(best_all['model']))}** is currently highest at ROC-AUC **{float(best_all['roc']):.4f}**. <!-- allow-metric --> This identifies the highest current saved artifact in the recorded {total_rows:,}-row registry; it is not a cross-benchmark model-selection decision. The compact-MLP rows remain provisional pending independent reproduction and the release decision. The separate `outputs/full_colab_results.json` 1M reference uses a different pipeline/configuration and is not mixed into this registry.
+Among all-feature runs, **{model_label(str(best_all['model']))}** is currently highest at ROC-AUC **{float(best_all['roc']):.4f}**. <!-- allow-metric --> This identifies the highest current saved artifact in the recorded {total_rows:,}-row registry; it is not a cross-benchmark model-selection decision. These dashboard runs are the 250k budget from the release benchmark, which trains every model with the same code, split protocol and seed at both 250k and 1M events (Section 7.1). The older `outputs/full_colab_results.json` notebook record used a different pipeline and is kept only for traceability.
 
 ## 2. Research question and scope
 
@@ -184,6 +231,11 @@ All values in the table below are computed from the current `outputs/*/metrics.j
 
 The all-feature models are the strongest configuration for each family in the current registry. The all-feature XGBoost and MLP results are close, while the linear model remains lower. High-level features alone outperform low-level features for each family in the current saved run set, but the combined representation performs best.
 
+### 7.1 Release benchmark: 250k versus 1M
+
+`scripts/release_benchmark.py` builds both seeded samples from the raw UCI file and trains all nine model/feature combinations at each budget with identical code, seed and `higgs-split-v1` splits. Logs and artifacts are under `outputs/release/`.
+
+{release_section(release)}
 ## 8. Operating-point analysis
 
 The threshold is selected on validation data rather than test data. For the current all-feature runs, the saved operating-point records show:
@@ -205,7 +257,7 @@ Background rejection is a benchmark operating metric, not a discovery significan
 Launch the application with:
 
 ```bash
-streamlit run app/main.py
+streamlit run streamlit_app.py
 ```
 
 The dashboard now uses:
@@ -221,15 +273,15 @@ The app reports **{len(runs)} valid runs** and skips non-run folders such as `ou
 
 ## 10. Testing and reproducibility
 
-QA branch commit `50800faa19e1ae4fbd217aa7e9e5ddf120429b54` passed the GitHub Actions workflow: editable installation and the full `python -m pytest -q` suite succeeded on Python 3.11; the Docker image build also passed. See `docs/12_QA_TEST_PLAN.md` for the exact commit and run links. The hosted log does not publish a test count. Full manual notebook execution has not been completed. The raw dataset is downloaded at runtime from UCI, and generated data/model binaries remain outside version control.
+`python -m pytest -q` runs the unit and integration suite, and the GitHub Actions workflow runs it on every push. The release benchmark was run end to end on Kaggle against the full 11M-row UCI file (Section 7.1), covering sampling, the split-integrity checks, all nine trainings per budget and the determinism check. The raw dataset and model binaries stay out of version control. `scripts/release_benchmark.py` regenerates everything from the raw file.
 
 ## 11. Limitations and validity threats
 
 1. The benchmark is simulated and does not represent real detector data.
 2. The benchmark class balance is approximately 53/47, unlike a real rare-event search.
-3. The current results use one seed and one recorded benchmark sample.
-4. The historical 1M summary was produced by a different pipeline/configuration and has a copied runtime field; it is retained for traceability but not used as the current headline.
-5. The current report does not claim that the full 11-million-row training run has completed. The notebooks are configured to download the full source, while the saved artifacts in this workspace record the {total_rows:,}-row benchmark.
+3. Results use one seed per budget, so run-to-run variance across seeds is not measured.
+4. Training time depends on the hardware recorded in Section 7.1 and is only comparable within one run.
+5. The largest budget is 1M events; the full 11M-row file was not used for training.
 
 ## 12. Conclusion
 
@@ -248,7 +300,8 @@ HiggsLens provides a working, artifact-backed comparison of three model families
 - `outputs/eda/feature_summary.csv`
 - `outputs/eda/feature_distributions.png`
 - `outputs/eda/correlation_heatmap.png`
-- `outputs/experiments.json`
+- `outputs/release/release_summary.json`
+- `outputs/release/250k/*/metrics.json`, `outputs/release/1m/*/metrics.json`
 - `outputs/mlp_*/metrics.json`
 - `outputs/logreg_*/metrics.json`
 - `outputs/xgboost_*/metrics.json`
@@ -356,7 +409,7 @@ def write_presentation(runs: list[dict[str, object]]) -> Path:
 # HiggsLens Streamlit dashboard
 
 ```bash
-streamlit run app/main.py
+streamlit run streamlit_app.py
 ```
 
 - Overview: artifact registry and current best run.

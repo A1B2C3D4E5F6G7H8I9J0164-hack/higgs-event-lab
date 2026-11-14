@@ -62,3 +62,18 @@ def test_run_feature_group_benchmarks(tmp_path: Path):
     assert set(results.keys()) == {"low_level", "high_level"}
     assert (out_dir / "mlp_low_level" / "metrics.json").exists()
     assert (out_dir / "mlp_high_level" / "metrics.json").exists()
+
+
+def test_deep_and_resnet_presets_build_and_train():
+    rng = np.random.default_rng(0)
+    X = rng.normal(size=(400, 6)).astype(np.float32)
+    y = (X[:, 0] * X[:, 1] > 0).astype(int)
+    from higgs_event_lab.neural import MODEL_NAMES, PRESETS, preset
+
+    assert PRESETS["deep"].hidden_sizes == (300,) * 5
+    assert set(MODEL_NAMES) == set(PRESETS)
+    for name in ("deep", "resnet"):
+        config = preset(name, hidden_sizes=(16, 16), max_epochs=2, batch_size=64, device="cpu")
+        result = train_mlp(X, y, config=config)
+        assert 0.0 <= result["test"]["metrics"]["roc_auc"] <= 1.0
+        assert len(result["history"]) == 2

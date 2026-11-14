@@ -95,7 +95,7 @@
 # HiggsLens Streamlit dashboard
 
 ```bash
-streamlit run app/main.py
+streamlit run streamlit_app.py
 ```
 
 - Overview: artifact registry and current best run.

@@ -14,6 +14,8 @@ from app.loader import RunDiscoveryResult, load_saved_eda
 def _model_name(name: str) -> str:
     return {
         "compact_mlp": "Compact MLP",
+        "deep_mlp": "Deep MLP (5x300)",
+        "resnet_mlp": "Residual MLP",
         "logistic_regression": "Logistic Regression",
         "xgboost": "XGBoost",
     }.get(name, name.replace("_", " ").title())
