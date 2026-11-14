@@ -8,6 +8,7 @@ prediction files, and invalid data types gracefully without crashing or faking d
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -456,3 +457,36 @@ def discover_and_load_runs(base_dir: str | Path = "outputs") -> RunDiscoveryResu
             )
 
     return result
+
+
+def load_saved_eda(base_dir: str | Path = "outputs") -> tuple[dict[str, Any], pd.DataFrame, pd.DataFrame] | None:
+    """Read saved EDA and validate the fields the dashboard relies on."""
+    folder = Path(base_dir) / "eda"
+    summary_path, feature_path = folder / "summary.json", folder / "feature_summary.csv"
+    if not summary_path.is_file() and not feature_path.is_file():
+        return None
+    try:
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        features = pd.read_csv(feature_path)
+        correlations = pd.read_csv(folder / "top_correlations.csv") if (folder / "top_correlations.csv").is_file() else pd.DataFrame()
+        if not isinstance(summary, dict):
+            raise ValueError("summary must be a JSON object")
+        rows = summary.get("rows")
+        counts = summary.get("label_counts")
+        if type(rows) is not int or rows <= 0 or not isinstance(counts, dict):
+            raise ValueError("rows and label_counts are required")
+        if any(type(counts.get(k)) is not int or counts[k] <= 0 for k in ("0", "1")) or counts["0"] + counts["1"] != rows:
+            raise ValueError("label_counts must contain positive class counts summing to rows")
+        fraction = summary.get("signal_fraction")
+        if type(fraction) not in (int, float) or not math.isfinite(fraction) or not 0 <= fraction <= 1:
+            raise ValueError("signal_fraction must be a finite fraction")
+        columns = {"feature", "signal_mean", "background_mean", "unique_count"}
+        if not columns.issubset(features.columns):
+            raise ValueError("feature summary is missing required columns")
+        for name in columns - {"feature"}:
+            values = pd.to_numeric(features[name], errors="raise")
+            if not values.map(math.isfinite).all():
+                raise ValueError(f"{name} contains non-finite values")
+        return summary, features, correlations
+    except (OSError, ValueError, TypeError) as exc:
+        raise ValueError(f"Invalid saved EDA under {folder}: {exc}") from exc

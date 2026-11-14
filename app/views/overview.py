@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from app.loader import RunDiscoveryResult
+from app.loader import RunDiscoveryResult, load_saved_eda
 
 
 def _model_name(name: str) -> str:
@@ -20,7 +20,6 @@ def _model_name(name: str) -> str:
 
 
 def _eda_summary(base_dir: str) -> dict[str, object] | None:
-    from app.utils.loader import load_saved_eda
     try:
         loaded = load_saved_eda(base_dir)
         return loaded[0] if loaded else None

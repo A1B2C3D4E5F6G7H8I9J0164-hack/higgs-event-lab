@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+from app.loader import load_saved_eda as read_saved_eda
 from app.styles import (
     ACCENT_AMBER,
     ACCENT_BLUE,
@@ -72,9 +73,8 @@ def load_feature_dictionary() -> pd.DataFrame:
 
 def load_saved_eda(base_dir: str = "outputs"):
     """Display an actionable notice for invalid saved EDA."""
-    from app.utils.loader import load_saved_eda as read_eda
     try:
-        return read_eda(base_dir)
+        return read_saved_eda(base_dir)
     except ValueError as exc:
         st.error(str(exc))
         return None

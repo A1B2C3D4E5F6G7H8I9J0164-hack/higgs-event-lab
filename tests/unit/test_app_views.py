@@ -7,7 +7,6 @@ from pathlib import Path
 from streamlit.testing.v1 import AppTest
 
 from app.loader import discover_and_load_runs
-from app.utils.loader import load_experiments
 from tests.unit.test_app_loader import valid_run_envelope, valid_predictions_df
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,14 +20,17 @@ def save_run(root, envelope, predictions):
     return folder
 
 
-def test_adapter_uses_canonical_runs(tmp_path, valid_run_envelope, valid_predictions_df):
+def test_single_loader_and_entry_point():
+    assert not (ROOT / "app" / "utils").exists()
+    assert not (ROOT / "app" / "components").exists()
+    assert not (ROOT / "app" / "streamlit_app.py").exists()
+    assert (ROOT / "streamlit_app.py").is_file()
+
+
+def test_canonical_runs_load_from_outputs(tmp_path, valid_run_envelope, valid_predictions_df):
     save_run(tmp_path, valid_run_envelope, valid_predictions_df)
-    nested = discover_and_load_runs(tmp_path / "outputs")
-    adapted = load_experiments(tmp_path)
-    assert len(adapted.experiments) == len(nested.valid_runs) == 1
-    assert adapted.experiments[0].metrics.roc_auc == nested.valid_runs[0].test_roc_auc
-    assert adapted.experiments[0].provenance["source_file"] == nested.valid_runs[0].data_source
-    assert len(adapted.curves) == 1
+    found = discover_and_load_runs(tmp_path / "outputs")
+    assert len(found.valid_runs) == 1
 
 
 def test_import_launcher_never_generates_artifacts(tmp_path, monkeypatch):
