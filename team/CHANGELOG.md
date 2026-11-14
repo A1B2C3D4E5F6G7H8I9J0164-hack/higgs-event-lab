@@ -10,6 +10,8 @@
 
 ### Changed
 
+* **2026-11-15:** `src/higgs_event_lab/neural.py`, `src/higgs_event_lab/classical.py`, `scripts/release_benchmark.py`, `docs/16_WHY_DEEP_LEARNING.md`, `outputs/`, `reports/`. Deep (5×300) and residual MLPs, early-stopped XGBoost, and a deduplicated 250k/1M/2.5M release benchmark run on Kaggle. Dashboard runs are replaced by the release 250k set, and the report is regenerated from the release summary. The legacy flat-schema exporters and outputs are removed. *(Krishna)*
+
 * **2026-11-14:** PR #2 follow-up QA — reject hard-label outputs in interactive simulation, add regression coverage, clarify that baseline QA evidence predates this branch, neutralize viva prompts, correct stale neural benchmark reconciliation rows, and add a Docker image build to CI. Current-branch CI test suite and Docker image build passed on commit `50800faa19e1ae4fbd217aa7e9e5ddf120429b54` (runs #43573525224 and #43573521445). *(Saumya)*
 * **2026-11-14:** `reports/01_report_draft_methodology_limitations.md`, `reports/03_classical_baseline_benchmarks.md` and `reports/README.md` — integrated methodology, corrected the invalid 250k Logistic Regression placeholder, separated 250k and 1M results, and marked neural results provisional pending release evidence. *(Saumya)*
 * **2026-11-14:** `docs/11_SETUP_GUIDE.md` and `CITATION.cff` — aligned repository instructions and version metadata with the current repository and documented QA status. Current-branch test and Docker CI runs passed on `50800faa19e1ae4fbd217aa7e9e5ddf120429b54` (runs #43573525224 and #43573521445). *(Saumya)*

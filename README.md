@@ -75,33 +75,56 @@ The HIGGS dataset has **28 features** split into two groups:
 
 ## Benchmark Results
 
-### 1M reference benchmark — separate pipeline
+All numbers come from `outputs/release/release_summary.json`, produced by `scripts/release_benchmark.py` on Kaggle (Tesla T4). The run removed 278,698 duplicate events from the 11M-row UCI file, then drew nested seeded samples (250k ⊂ 1M ⊂ 2.5M, seed 42). Every model at a budget uses the same `higgs-split-v1` 70/15/15 split, and no event appears in both train and test. Why we added deep models: [docs/16_WHY_DEEP_LEARNING.md](docs/16_WHY_DEEP_LEARNING.md).
 
-The saved 1M benchmark uses a 1,000,000-row sequential-head sample and a stratified 70/15/15 split (700,000 train, 150,000 validation, 150,000 test). These results are retained separately from the current 250k registry because the model configurations and pipeline differ. The wide-MLP result remains provisional pending independent neural reproduction and the release decision. Source: `outputs/full_colab_results.json` and `docs/14_RESULTS_RECONCILIATION.md`.
+### Test ROC-AUC as data grows, all 28 features
 
-| Model | Feature Group | Test ROC-AUC | Test PR-AUC | Brier Score | Accuracy | Training time (s) |
+| Model | 250k | 1M | 2.5M |
+|---|---:|---:|---:|
+| Logistic Regression | 0.6864 | 0.6838 | 0.6842 |
+| XGBoost | 0.8188 | 0.8302 | 0.8382 |
+| Compact MLP (64-32) | 0.8165 | 0.8230 | 0.8255 |
+| Deep MLP (5x300) | 0.8271 | 0.8474 | 0.8591 |
+| Residual MLP | 0.8339 | 0.8506 | 0.8613 |
+
+### Test ROC-AUC as data grows, 21 low-level features only
+
+| Model | 250k | 1M | 2.5M |
+|---|---:|---:|---:|
+| Logistic Regression | 0.5962 | 0.5939 | 0.5938 |
+| XGBoost | 0.7223 | 0.7478 | 0.7669 |
+| Compact MLP (64-32) | 0.7250 | 0.7382 | 0.7448 |
+| Deep MLP (5x300) | 0.7561 | 0.8141 | 0.8396 |
+| Residual MLP | 0.7716 | 0.8203 | 0.8532 |
+
+### Full table at 2.5M events
+
+| Model | Features | ROC-AUC | PR-AUC | Brier | ECE | Train time (s, T4 GPU) |
 |---|---|---:|---:|---:|---:|---:|
-| Wide MLP (256-128-64) | all (28) | 0.8399 | 0.8539 | 0.1630 | 0.7565 | 395.1 |
-| XGBoost | all (28) | 0.8271 | 0.8415 | 0.1693 | 0.7451 | 35.1 |
-| Logistic Regression | all (28) | 0.6834 | 0.6832 | 0.2233 | 0.6406 | 2.6 |
+| Logistic Regression | all | 0.6842 | 0.6951 | 0.2222 | 0.0231 | 5 |
+| XGBoost | all | 0.8382 | 0.8578 | 0.1632 | 0.0033 | 29 |
+| Compact MLP (64-32) | all | 0.8255 | 0.8465 | 0.1705 | 0.0286 | 124 |
+| Deep MLP (5x300) | all | 0.8591 | 0.8769 | 0.1524 | 0.0156 | 426 |
+| Residual MLP | all | 0.8613 | 0.8788 | 0.1513 | 0.0184 | 494 |
+| Logistic Regression | low_level | 0.5938 | 0.6353 | 0.2410 | 0.0152 | 3 |
+| XGBoost | low_level | 0.7669 | 0.7842 | 0.1946 | 0.0077 | 35 |
+| Compact MLP (64-32) | low_level | 0.7448 | 0.7646 | 0.2048 | 0.0365 | 112 |
+| Deep MLP (5x300) | low_level | 0.8396 | 0.8548 | 0.1622 | 0.0117 | 431 |
+| Residual MLP | low_level | 0.8532 | 0.8687 | 0.1553 | 0.0164 | 560 |
+| Logistic Regression | high_level | 0.6471 | 0.6327 | 0.2307 | 0.0495 | 2 |
+| XGBoost | high_level | 0.7921 | 0.8178 | 0.1845 | 0.0036 | 7 |
+| Compact MLP (64-32) | high_level | 0.7882 | 0.8146 | 0.1868 | 0.0218 | 124 |
+| Deep MLP (5x300) | high_level | 0.7987 | 0.8245 | 0.1817 | 0.0041 | 430 |
+| Residual MLP | high_level | 0.7989 | 0.8248 | 0.1816 | 0.0056 | 560 |
 
-### Current 250k saved-artifact registry
+**What it shows.**
 
-The current 250,000-row registry contains nine runs with seed 42 and the `higgs-split-v1` 70/15/15 split. Metrics below are copied from the per-run `metrics.json` artifacts. The compact-MLP rows describe the saved artifacts but remain provisional until neural reproduction and the release decision are complete.
+- With enough data the deep and residual networks beat a tuned XGBoost, and the gap widens with data.
+- On raw low-level features alone, the deep networks beat XGBoost even when XGBoost gets all 28 features. That is the central claim of Baldi et al. (2014): depth lets the network learn the invariant-mass features itself.
+- The mid-semester compact MLP flattens out near XGBoost, which explains the mid-semester tie.
+- XGBoost trains about 15× faster and is better calibrated (lower ECE).
 
-| Model | Feature Group | Test ROC-AUC | Test PR-AUC | Brier Score | Accuracy |
-|---|---|---:|---:|---:|---:|
-| XGBoost | all (28) | 0.8123 | 0.8266 | 0.1765 | 0.7334 |
-| Compact MLP | all (28) | 0.8121 | 0.8270 | 0.1767 | 0.7322 |
-| XGBoost | high_level (7) | 0.7848 | 0.8026 | 0.1882 | 0.7046 |
-| Compact MLP | high_level (7) | 0.7832 | 0.8020 | 0.1892 | 0.7044 |
-| Compact MLP | low_level (21) | 0.7257 | 0.7366 | 0.2113 | 0.6650 |
-| XGBoost | low_level (21) | 0.7092 | 0.7233 | 0.2165 | 0.6512 |
-| Logistic Regression | all (28) | 0.6854 | 0.6817 | 0.2231 | 0.6439 |
-| Logistic Regression | high_level (7) | 0.6518 | 0.6217 | 0.2315 | 0.6295 |
-| Logistic Regression | low_level (21) | 0.5960 | 0.6222 | 0.2418 | 0.5680 |
-
-> **Interpretation:** In the current 250k registry, all-feature XGBoost and compact MLP artifacts are close in test ROC-AUC. The MLP evidence is provisional; do not treat this table as an approved cross-model release ranking. The historical 1M benchmark is a different configuration and is not ranked directly against these 250k runs.
+The dashboard shows the 250k runs (`outputs/<run_id>/`). Metrics for every budget are under `outputs/release/<budget>/`.
 
 ## Quick Start
 

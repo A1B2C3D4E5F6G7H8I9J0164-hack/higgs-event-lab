@@ -41,9 +41,8 @@ tests/README.md
 tests/integration/README.md
 tests/unit/README.md
 
-# Committed experiment results (full 1M benchmark)
 outputs/README.md
 outputs/full_colab_results.json
-outputs/logistic_regression_tuned_test_predictions.csv
-outputs/xgboost_tuned_test_predictions.csv
-outputs/wide_mlp_tuned_test_predictions.csv
+docs/16_WHY_DEEP_LEARNING.md
+scripts/release_benchmark.py
+outputs/release/release_summary.json

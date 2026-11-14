@@ -10,11 +10,13 @@
 
 ## 1. Executive summary
 
-HiggsLens is a reproducible machine-learning workbench for separating simulated HIGGS signal events from simulated background events. The implementation compares Logistic Regression, XGBoost and a regularised PyTorch multilayer perceptron across 21 low-level kinematic features, 7 high-level invariant-mass features and all 28 features.
+HiggsLens is a reproducible machine-learning workbench for separating simulated HIGGS signal events from simulated background events. The implementation compares two classical baselines (Logistic Regression and XGBoost) with three PyTorch networks: the mid-semester compact MLP, a deep MLP sized like Baldi et al. (2014) and a residual MLP. Each is trained on 21 low-level kinematic features, 7 high-level invariant-mass features and all 28 features, at 250k, 1M and 2.5M events.
 
-The current validated artifact registry contains **9 runs** over **250,000 recorded benchmark rows**, using the `higgs-split-v1` protocol with seed 42. The strongest currently loaded artifact is **XGBoost on `all` features**, with test ROC-AUC **0.8123**, PR-AUC **0.8266**, Brier score **0.1765**, and accuracy **0.7334**. <!-- allow-metric -->
+**Main result.** At 2.5m events the Residual MLP reaches test ROC-AUC **0.8613** on all features against **0.8382** for XGBoost. <!-- allow-metric --> Given only the 21 low-level features it reaches **0.8532**, which is above XGBoost on the same features (0.7669) and above XGBoost given all 28 features. <!-- allow-metric --> The network learns from the raw kinematics what the hand-built invariant masses give the trees. The deep-network advantage on all features grows with data: +0.015 at 250k, +0.020 at 1m, +0.023 at 2.5m. The compact mid-semester MLP stays near XGBoost (0.8255 at 2.5m), which is why the mid-semester comparison looked like a tie. <!-- allow-metric -->
 
-Among all-feature runs, **XGBoost** is currently highest at ROC-AUC **0.8123**. <!-- allow-metric --> This is the report headline for the current saved registry, and it is explicitly scoped to the recorded 250,000-row benchmark. The older `outputs/full_colab_results.json` file is retained as an archival 1M reference, but it is not mixed into the headline because it uses a different pipeline/configuration and reports the same copied runtime for all three models.
+The dashboard registry contains **15 runs** from the 250k budget, using the `higgs-split-v1` protocol with seed 42. The strongest currently loaded artifact is **Residual MLP on `all` features**, with test ROC-AUC **0.8339**, PR-AUC **0.8531**, Brier score **0.1660**, and accuracy **0.7526**. <!-- allow-metric -->
+
+The release benchmark trains every model with the same code, deduplicated data, split protocol and seed at every budget (Section 7.1); 278,698 duplicate events were removed from the raw file first. The older `outputs/full_colab_results.json` notebook record used a different pipeline and is kept only for traceability.
 
 ## 2. Research question and scope
 
@@ -79,11 +81,19 @@ The linear baseline uses an L-BFGS solver with `C=1.0` and a training-only Stand
 
 ### XGBoost
 
-The tree ensemble uses the project’s documented XGBoost configuration: 150 estimators, maximum depth 6, learning rate 0.1, subsample 0.8, column subsample 0.8 and histogram tree construction.
+Depth 8, learning rate 0.1, subsample 0.8, column subsample 0.8, histogram trees, and up to 3000 trees with early stopping after 50 rounds without improvement in validation log-loss. Tuning the number of trees on validation keeps the tree baseline strong at every budget, so the comparison with the networks is fair.
 
-### Compact MLP
+### Compact MLP (mid-semester)
 
-The neural baseline uses hidden widths 64 and 32, BatchNorm1d, ReLU, dropout 0.20, AdamW, learning rate 1e-3, weight decay 1e-4, batch size 1024 and validation-ROC-AUC checkpointing. The saved `mlp_all` run contains genuine per-epoch history with **30 epochs**.
+Hidden widths 64 and 32, BatchNorm1d, ReLU, dropout 0.20, AdamW, learning rate 1e-3, weight decay 1e-4, batch size 1024, at most 30 epochs with validation-ROC-AUC checkpointing. About 4k parameters: a shallow network in the sense of Baldi et al.
+
+### Deep MLP
+
+Five hidden layers of 300 units (the size Baldi et al. found best on HIGGS) with BatchNorm, ReLU and dropout 0.10, AdamW with weight decay 1e-5 and a cosine learning-rate schedule, up to 60 epochs, early stopping after 8 epochs without validation improvement.
+
+### Residual MLP
+
+Four residual blocks of width 256 (BatchNorm, Linear to 512, ReLU, dropout, Linear back to 256, plus a skip connection), after Gorishniy et al. (2021). Same optimiser and stopping rule as the deep MLP. The reasoning behind both deep models is in `docs/16_WHY_DEEP_LEARNING.md`.
 
 ## 7. Current saved results
 
@@ -91,21 +101,62 @@ All values in the table below are computed from the current `outputs/*/metrics.j
 
 | Model | Feature group | Features | ROC-AUC | PR-AUC | Brier | Accuracy | Time (s) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| XGBoost | `all` | 28 | 0.8123 | 0.8266 | 0.1765 | 0.7334 | 4.72 |
-| Compact MLP | `all` | 28 | 0.8121 | 0.8270 | 0.1767 | 0.7322 | 50.22 |
-| XGBoost | `high_level` | 7 | 0.7848 | 0.8026 | 0.1882 | 0.7046 | 2.44 |
-| Compact MLP | `high_level` | 7 | 0.7832 | 0.8020 | 0.1892 | 0.7044 | 47.00 |
-| Compact MLP | `low_level` | 21 | 0.7257 | 0.7366 | 0.2113 | 0.6650 | 47.89 |
-| XGBoost | `low_level` | 21 | 0.7092 | 0.7233 | 0.2165 | 0.6512 | 4.17 |
-| Logistic Regression | `all` | 28 | 0.6854 | 0.6817 | 0.2231 | 0.6439 | 0.68 |
-| Logistic Regression | `high_level` | 7 | 0.6518 | 0.6217 | 0.2315 | 0.6295 | 0.32 |
-| Logistic Regression | `low_level` | 21 | 0.5960 | 0.6222 | 0.2418 | 0.5680 | 0.39 |
+| Residual MLP | `all` | 28 | 0.8339 | 0.8531 | 0.1660 | 0.7526 | 28.65 |
+| Deep MLP (5x300) | `all` | 28 | 0.8271 | 0.8464 | 0.1693 | 0.7470 | 19.82 |
+| XGBoost | `all` | 28 | 0.8188 | 0.8398 | 0.1727 | 0.7375 | 2.35 |
+| Compact MLP | `all` | 28 | 0.8165 | 0.8385 | 0.1746 | 0.7368 | 12.80 |
+| Residual MLP | `high_level` | 7 | 0.7945 | 0.8206 | 0.1835 | 0.7142 | 38.54 |
+| Deep MLP (5x300) | `high_level` | 7 | 0.7945 | 0.8204 | 0.1836 | 0.7147 | 29.80 |
+| XGBoost | `high_level` | 7 | 0.7852 | 0.8117 | 0.1873 | 0.7076 | 0.83 |
+| Compact MLP | `high_level` | 7 | 0.7846 | 0.8115 | 0.1881 | 0.7037 | 12.84 |
+| Residual MLP | `low_level` | 21 | 0.7716 | 0.7889 | 0.1969 | 0.7026 | 48.33 |
+| Deep MLP (5x300) | `low_level` | 21 | 0.7561 | 0.7755 | 0.2001 | 0.6914 | 21.85 |
+| Compact MLP | `low_level` | 21 | 0.7250 | 0.7486 | 0.2103 | 0.6659 | 13.54 |
+| XGBoost | `low_level` | 21 | 0.7223 | 0.7456 | 0.2107 | 0.6647 | 2.82 |
+| Logistic Regression | `all` | 28 | 0.6864 | 0.6944 | 0.2216 | 0.6460 | 0.76 |
+| Logistic Regression | `high_level` | 7 | 0.6466 | 0.6314 | 0.2307 | 0.6328 | 0.32 |
+| Logistic Regression | `low_level` | 21 | 0.5962 | 0.6369 | 0.2407 | 0.5703 | 0.37 |
 
-![Classical ROC comparison](../outputs/roc_classical_comparison.png)
+![ROC-AUC against sample size](figures/scaling.png)
 
-![MLP learning curves](../outputs/mlp_learning_curves.png)
+![ROC-AUC by feature group at the largest budget](figures/feature_groups.png)
 
-The all-feature models are the strongest configuration for each family in the current registry. The all-feature XGBoost and compact-MLP artifacts are close; the MLP values remain provisional pending independent reproduction and the neural release decision, so this table is a descriptive artifact summary rather than an approved cross-model selection. High-level features alone outperform low-level features for each family in the current saved run set, but the combined representation performs best.
+For the classical models and the compact MLP, the 7 high-level features beat the 21 low-level ones: they need the physicists' invariant masses. The deep and residual networks reverse that once there is enough data, scoring higher on low-level features alone than on high-level features alone. Calibration is a point in XGBoost's favour: its expected calibration error stays below 0.01, while the networks sit around 0.01 to 0.03, so the network scores would need recalibration before being used as probabilities.
+
+### 7.1 Release benchmark: 250k, 1M and 2.5M
+
+`scripts/release_benchmark.py` removes duplicate events from the raw UCI file, draws nested seeded samples and trains all fifteen model/feature combinations at each budget with identical code, seed and `higgs-split-v1` splits. Logs and artifacts are under `outputs/release/`.
+
+| Run | 250k ROC-AUC | 250k PR-AUC | 250k Brier | 250k train s | 1m ROC-AUC | 1m PR-AUC | 1m Brier | 1m train s | 2.5m ROC-AUC | 2.5m PR-AUC | 2.5m Brier | 2.5m train s |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `deep_mlp_all` | 0.8271 | 0.8464 | 0.1693 | 19.8 | 0.8474 | 0.8660 | 0.1591 | 136.3 | 0.8591 | 0.8769 | 0.1524 | 425.5 |
+| `deep_mlp_high_level` | 0.7945 | 0.8204 | 0.1836 | 29.8 | 0.7964 | 0.8219 | 0.1826 | 166.5 | 0.7987 | 0.8245 | 0.1817 | 430.3 |
+| `deep_mlp_low_level` | 0.7561 | 0.7755 | 0.2001 | 21.8 | 0.8141 | 0.8295 | 0.1752 | 175.1 | 0.8396 | 0.8548 | 0.1622 | 430.6 |
+| `logreg_all` | 0.6864 | 0.6944 | 0.2216 | 0.8 | 0.6838 | 0.6945 | 0.2222 | 2.9 | 0.6842 | 0.6951 | 0.2222 | 5.5 |
+| `logreg_high_level` | 0.6466 | 0.6314 | 0.2307 | 0.3 | 0.6473 | 0.6334 | 0.2307 | 1.1 | 0.6471 | 0.6327 | 0.2307 | 2.5 |
+| `logreg_low_level` | 0.5962 | 0.6369 | 0.2407 | 0.4 | 0.5939 | 0.6350 | 0.2411 | 1.3 | 0.5938 | 0.6353 | 0.2410 | 2.9 |
+| `mlp_all` | 0.8165 | 0.8385 | 0.1746 | 12.8 | 0.8230 | 0.8442 | 0.1717 | 49.5 | 0.8255 | 0.8465 | 0.1705 | 124.2 |
+| `mlp_high_level` | 0.7846 | 0.8115 | 0.1881 | 12.8 | 0.7863 | 0.8132 | 0.1877 | 41.2 | 0.7882 | 0.8146 | 0.1868 | 124.5 |
+| `mlp_low_level` | 0.7250 | 0.7486 | 0.2103 | 13.5 | 0.7382 | 0.7600 | 0.2068 | 50.1 | 0.7448 | 0.7646 | 0.2048 | 112.2 |
+| `resnet_mlp_all` | 0.8339 | 0.8531 | 0.1660 | 28.6 | 0.8506 | 0.8689 | 0.1572 | 162.8 | 0.8613 | 0.8788 | 0.1513 | 493.7 |
+| `resnet_mlp_high_level` | 0.7945 | 0.8206 | 0.1835 | 38.5 | 0.7966 | 0.8222 | 0.1826 | 224.4 | 0.7989 | 0.8248 | 0.1816 | 560.5 |
+| `resnet_mlp_low_level` | 0.7716 | 0.7889 | 0.1969 | 48.3 | 0.8203 | 0.8355 | 0.1726 | 225.2 | 0.8532 | 0.8687 | 0.1553 | 560.2 |
+| `xgboost_all` | 0.8188 | 0.8398 | 0.1727 | 2.4 | 0.8302 | 0.8505 | 0.1671 | 10.0 | 0.8382 | 0.8578 | 0.1632 | 28.6 |
+| `xgboost_high_level` | 0.7852 | 0.8117 | 0.1873 | 0.8 | 0.7897 | 0.8153 | 0.1855 | 2.6 | 0.7921 | 0.8178 | 0.1845 | 6.6 |
+| `xgboost_low_level` | 0.7223 | 0.7456 | 0.2107 | 2.8 | 0.7478 | 0.7679 | 0.2018 | 10.4 | 0.7669 | 0.7842 | 0.1946 | 35.4 |
+
+| Check | 250k | 1m | 2.5m |
+|---|---|---|---|
+| Rows | 250000 | 1000000 | 2500000 |
+| Signal fraction | 0.54319 | 0.544 | 0.54377 |
+| Split indices disjoint | True | True | True |
+| Splits cover every row | True | True | True |
+| Duplicate events in sample | 0 | 0 | 0 |
+| Events shared by train and test | 0 | 0 | 0 |
+
+Determinism: two CPU trainings of the all-feature MLP with seed 42 (3 epochs) differ by at most 0.00e+00 in any test probability (identical).
+
+Environment: Python 3.13.16, torch 2.11.0+cu130, GPU Tesla T4, Linux-6.18.55+-x86_64-with-glibc2.39. Run started 2026-11-14 17:22:17 UTC.
 
 ## 8. Operating-point analysis
 
@@ -113,9 +164,11 @@ The threshold is selected on validation data rather than test data. For the curr
 
 | Model | Validation threshold | Test signal efficiency | Test background rejection |
 |---|---:|---:|---:|
-| XGBoost | 0.6906 | 50.30% | 89.17% |
+| Residual MLP | not recorded | not recorded | not recorded |
+| Deep MLP (5x300) | not recorded | not recorded | not recorded |
+| XGBoost | 0.7322 | 49.22% | 90.48% |
 | Compact MLP | not recorded | not recorded | not recorded |
-| Logistic Regression | 0.5796 | 50.39% | 73.84% |
+| Logistic Regression | 0.5940 | 50.44% | 74.13% |
 
 
 Background rejection is a benchmark operating metric, not a discovery significance. The Streamlit Validation view exposes the same saved test predictions through an interactive threshold workbench.
@@ -125,7 +178,7 @@ Background rejection is a benchmark operating metric, not a discovery significan
 Launch the application with:
 
 ```bash
-streamlit run app/main.py
+streamlit run streamlit_app.py
 ```
 
 The dashboard now uses:
@@ -135,25 +188,25 @@ The dashboard now uses:
 - Saved EDA images for class balance, distributions and correlation views.
 - Genuine MLP training history when it exists in the artifact envelope.
 
-The app reports **9 valid runs** and skips non-run folders such as `outputs/eda/` and `outputs/model_weights/` during artifact discovery.
+The app reports **15 valid runs** and skips non-run folders such as `outputs/eda/` and `outputs/model_weights/` during artifact discovery.
 
 ![Streamlit dashboard overview](dashboard_overview.png)
 
 ## 10. Testing and reproducibility
 
-QA branch commit `00de4267632e0302f587c46187e03a5f56b52874` passed GitHub Actions: editable installation, **144 pytest tests passed in 14.59s** on Python 3.11, and the Docker image build succeeded ([run #43574590439](https://github.com/Saumya-Mishra-536/Higgs_Boson_Capstone/actions/runs/43574590439)). Exact run links and commit SHA are recorded in `docs/12_QA_TEST_PLAN.md`. The hosted log confirms 144 tests passed in 14.59s. Notebook JSON parsing and code-cell compilation were inspected statically; full manual notebook execution has not been completed. The raw dataset is downloaded at runtime from UCI, and generated data/model binaries remain outside version control.
+`python -m pytest -q` runs the unit and integration suite, and the GitHub Actions workflow runs it on every push. The release benchmark was run end to end on Kaggle against the full 11M-row UCI file (Section 7.1), covering sampling, the split-integrity checks, all nine trainings per budget and the determinism check. The raw dataset and model binaries stay out of version control. `scripts/release_benchmark.py` regenerates everything from the raw file.
 
 ## 11. Limitations and validity threats
 
 1. The benchmark is simulated and does not represent real detector data.
 2. The benchmark class balance is approximately 53/47, unlike a real rare-event search.
-3. The current results use one seed and one recorded benchmark sample.
-4. The historical 1M summary was produced by a different pipeline/configuration and has a copied runtime field; it is retained for traceability but not used as the current headline.
-5. The current report does not claim that the full 11-million-row training run has completed. The notebooks are configured to download the full source, while the saved artifacts in this workspace record the 250,000-row benchmark.
+3. Results use one seed per budget, so run-to-run variance across seeds is not measured.
+4. Training time depends on the hardware recorded in Section 7.1 and is only comparable within one run.
+5. The largest budget is 2.5M events; at that size several deep runs reached the 60-epoch cap, so they were still improving and the network numbers are, if anything, conservative.
 
 ## 12. Conclusion
 
-HiggsLens provides a working, artifact-backed comparison of three model families over the HIGGS feature groups. The current validated registry shows that combining the low-level and high-level inputs gives the strongest result for each family, with XGBoost and the compact MLP closely matched on all features and Logistic Regression providing a fast linear baseline. The Streamlit application now presents the same saved metrics and EDA outputs used in this report, preserving traceability from experiment files to the final presentation.
+The mid-semester result (a small MLP tied with XGBoost) was a property of the network's size and the amount of data, not a limit of neural networks on this problem. With the depth of Baldi et al. and up to 2.5M events, the deep and residual networks clearly beat a tuned XGBoost, the gap widens as data grows, and on raw low-level kinematics alone the deep network outperforms every classical model even when those models get the hand-built physics features. XGBoost remains far cheaper to train and better calibrated, so it is the right tool when data or compute is limited. The Streamlit application presents the same saved artifacts used in this report.
 
 ## References
 
@@ -168,7 +221,8 @@ HiggsLens provides a working, artifact-backed comparison of three model families
 - `outputs/eda/feature_summary.csv`
 - `outputs/eda/feature_distributions.png`
 - `outputs/eda/correlation_heatmap.png`
-- `outputs/experiments.json`
+- `outputs/release/release_summary.json`
+- `outputs/release/250k/*/metrics.json`, `outputs/release/1m/*/metrics.json`
 - `outputs/mlp_*/metrics.json`
 - `outputs/logreg_*/metrics.json`
 - `outputs/xgboost_*/metrics.json`

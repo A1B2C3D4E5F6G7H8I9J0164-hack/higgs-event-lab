@@ -46,44 +46,51 @@
 
 **XGBoost**
 
-- 150 trees, depth 6, learning rate 0.1, histogram method.
+- Depth 8, up to 3000 trees, early stopping on validation.
 
-**Compact MLP**
+**Networks**
 
-- Hidden widths 64 → 32.
-- BatchNorm + ReLU + dropout 0.20.
-- AdamW, learning rate 1e-3, early stopping on validation ROC-AUC.
+- Compact MLP 64 → 32 (mid-semester, shallow).
+- Deep MLP 5 × 300 (Baldi et al. 2014).
+- Residual MLP, 4 blocks of 256 (Gorishniy et al. 2021).
 
 # Current leaderboard
 
 | Model | Feature group | ROC-AUC | PR-AUC | Brier |
 |---|---|---:|---:|---:|
-| XGBoost | `all` | 0.8123 | 0.8266 | 0.1765 |
-| Compact MLP | `all` | 0.8121 | 0.8270 | 0.1767 |
-| XGBoost | `high_level` | 0.7848 | 0.8026 | 0.1882 |
-| Compact MLP | `high_level` | 0.7832 | 0.8020 | 0.1892 |
-| Compact MLP | `low_level` | 0.7257 | 0.7366 | 0.2113 |
-| XGBoost | `low_level` | 0.7092 | 0.7233 | 0.2165 |
-| Logistic Regression | `all` | 0.6854 | 0.6817 | 0.2231 |
-| Logistic Regression | `high_level` | 0.6518 | 0.6217 | 0.2315 |
-| Logistic Regression | `low_level` | 0.5960 | 0.6222 | 0.2418 |
+| Residual MLP | `all` | 0.8339 | 0.8531 | 0.1660 |
+| Deep MLP (5x300) | `all` | 0.8271 | 0.8464 | 0.1693 |
+| XGBoost | `all` | 0.8188 | 0.8398 | 0.1727 |
+| Compact MLP | `all` | 0.8165 | 0.8385 | 0.1746 |
+| Residual MLP | `high_level` | 0.7945 | 0.8206 | 0.1835 |
+| Deep MLP (5x300) | `high_level` | 0.7945 | 0.8204 | 0.1836 |
+| XGBoost | `high_level` | 0.7852 | 0.8117 | 0.1873 |
+| Compact MLP | `high_level` | 0.7846 | 0.8115 | 0.1881 |
+| Residual MLP | `low_level` | 0.7716 | 0.7889 | 0.1969 |
+| Deep MLP (5x300) | `low_level` | 0.7561 | 0.7755 | 0.2001 |
+| Compact MLP | `low_level` | 0.7250 | 0.7486 | 0.2103 |
+| XGBoost | `low_level` | 0.7223 | 0.7456 | 0.2107 |
+| Logistic Regression | `all` | 0.6864 | 0.6944 | 0.2216 |
+| Logistic Regression | `high_level` | 0.6466 | 0.6314 | 0.2307 |
+| Logistic Regression | `low_level` | 0.5962 | 0.6369 | 0.2407 |
 
-**Highest current saved artifact:** XGBoost on `all` features, ROC-AUC **0.8123**. The compact-MLP result is close but remains provisional pending independent reproduction and the release decision; this is not an approved cross-run model-selection claim.
+**Best at 250k:** Residual MLP on `all` features, ROC-AUC **0.8339**. The 2.5M results are on the next two slides.
 
 # Feature-group finding
 
-![Classical feature-group comparison](../outputs/roc_classical_comparison.png)
+![Feature groups](../reports/figures/feature_groups.png)
 
-- Low-level-only models are weakest in the current registry.
-- High-level invariant masses provide a stronger compact representation.
-- Combining all 28 features gives the strongest result for each model family.
+- Trees and the small MLP need the high-level invariant masses.
+- The deep networks score higher on raw low-level features than XGBoost does on all 28.
+- That is the paper's claim: depth lets the network learn the physics features itself.
 
-# Neural training evidence
+# Why deep learning: it scales
 
-![MLP learning curves](../outputs/mlp_learning_curves.png)
+![Scaling with data](../reports/figures/scaling.png)
 
-- The learning curve is loaded from genuine per-epoch history in `outputs/mlp_all/metrics.json`.
-- No synthetic training history is used.
+- Same code, same seed, nested 250k ⊂ 1M ⊂ 2.5M samples.
+- XGBoost and the compact MLP flatten; the deep and residual MLPs keep improving.
+- Trade-off: the networks take minutes on a GPU, XGBoost seconds.
 
 # Operating-point view
 
@@ -110,7 +117,7 @@ streamlit run streamlit_app.py
 
 - Artifact contract: `higgs-experiment-v1`.
 - Split protocol: `higgs-split-v1`, seed 42.
-- Latest QA-branch GitHub Actions: editable install and full pytest workflow passed on Python 3.11; Docker image build passed. See `docs/12_QA_TEST_PLAN.md` for commit and run links. The hosted log confirms 144 tests passed in 14.59s.
+- Latest QA-branch GitHub Actions: editable install and full pytest workflow passed on Python 3.11; Docker image build passed. See `docs/12_QA_TEST_PLAN.md` for commit and run links. The hosted log does not publish a test count.
 - Raw data is downloaded from UCI at runtime and is not committed.
 
 # Limitations and conclusion

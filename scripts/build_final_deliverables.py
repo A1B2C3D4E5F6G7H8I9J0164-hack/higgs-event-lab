@@ -76,6 +76,88 @@ def table(runs: list[dict[str, object]]) -> str:
     return "\n".join(lines)
 
 
+FIGURES = REPORTS / "figures"
+MODEL_ORDER = ("logreg", "xgboost", "mlp", "deep_mlp", "resnet_mlp")
+SHORT = {"logreg": "Logistic Regression", "xgboost": "XGBoost", "mlp": "Compact MLP (64-32)",
+         "deep_mlp": "Deep MLP (5x300)", "resnet_mlp": "Residual MLP"}
+
+
+def write_release_figures(release: dict | None) -> None:
+    """Scaling curve and feature-group bars, both straight from release_summary.json."""
+    if not release:
+        return
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    tags = sorted(release["budgets"], key=lambda tag: release["budgets"][tag]["rows"])
+    rows = [release["budgets"][tag]["rows"] for tag in tags]
+
+    def auc(tag: str, model: str, group: str) -> float:
+        for r in release["budgets"][tag]["results"]:
+            if r["model"] == model and r["group"] == group:
+                return r["roc_auc"]
+        return float("nan")
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 3.8), sharey=True)
+    for ax, group in zip(axes, ("all", "low_level")):
+        for model in MODEL_ORDER[1:]:
+            ax.plot(rows, [auc(tag, model, group) for tag in tags], marker="o", label=SHORT[model])
+        ax.set_xscale("log")
+        ax.minorticks_off()
+        ax.set_xticks(rows, [tag for tag in tags])
+        ax.set_xlabel("events in sample")
+        ax.set_title({"all": "All 28 features", "low_level": "21 low-level features only"}[group])
+        ax.grid(alpha=0.3)
+    axes[0].set_ylabel("test ROC-AUC")
+    axes[1].legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(FIGURES / "scaling.png", dpi=150)
+    plt.close(fig)
+
+    largest = tags[-1]
+    groups = ("low_level", "high_level", "all")
+    fig, ax = plt.subplots(figsize=(8, 3.6))
+    width = 0.16
+    for i, model in enumerate(MODEL_ORDER):
+        values = [auc(largest, model, g) for g in groups]
+        bars = ax.bar([g + (i - 2) * width for g in range(3)], values, width, label=SHORT[model])
+        for bar, v in zip(bars, values):
+            ax.text(bar.get_x() + bar.get_width() / 2, v + 0.004, f"{v:.3f}", ha="center", fontsize=6.5)
+    ax.set_xticks(range(3), ["low-level (21)", "high-level (7)", "all (28)"])
+    ax.set_ylim(0.55, 0.9)
+    ax.set_ylabel("test ROC-AUC")
+    ax.set_title(f"Feature groups at {largest} events")
+    ax.legend(fontsize=7, ncol=3, loc="upper left")
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(FIGURES / "feature_groups.png", dpi=150)
+    plt.close(fig)
+
+
+def findings(release: dict | None) -> dict:
+    """Headline numbers quoted in the text, computed from release_summary.json."""
+    if not release:
+        return {}
+    tags = sorted(release["budgets"], key=lambda tag: release["budgets"][tag]["rows"])
+
+    def auc(tag: str, model: str, group: str) -> float:
+        return next(r["roc_auc"] for r in release["budgets"][tag]["results"]
+                    if r["model"] == model and r["group"] == group)
+
+    big, small = tags[-1], tags[0]
+    best_net = max(("deep_mlp", "resnet_mlp"), key=lambda m: auc(big, m, "all"))
+    return {
+        "big": big, "small": small, "best_net": SHORT[best_net],
+        "net_all": auc(big, best_net, "all"), "xgb_all": auc(big, "xgboost", "all"),
+        "net_low": auc(big, best_net, "low_level"), "xgb_low": auc(big, "xgboost", "low_level"),
+        "xgb_high": auc(big, "xgboost", "high_level"), "mlp_all": auc(big, "mlp", "all"),
+        "gaps": [(tag, max(auc(tag, "deep_mlp", "all"), auc(tag, "resnet_mlp", "all")) - auc(tag, "xgboost", "all")) for tag in tags],
+        "duplicates": release.get("duplicate_rows_removed"),
+    }
+
+
 def load_release() -> dict | None:
     path = OUTPUTS / "release" / "release_summary.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
@@ -131,6 +213,8 @@ def write_report(runs: list[dict[str, object]]) -> Path:
     history_epochs = len(history_run["history"]) if history_run else 0
     total_rows = int(eda["rows"])
     release = load_release()
+    f = findings(release)
+    gap_text = ", ".join(f"{gap:+.3f} at {tag}" for tag, gap in f.get("gaps", []))
     signal_fraction = float(eda["signal_fraction"])
     report = f"""# HiggsLens: Machine-Learning Classification of Simulated HIGGS Events
 
@@ -144,11 +228,13 @@ def write_report(runs: list[dict[str, object]]) -> Path:
 
 ## 1. Executive summary
 
-HiggsLens is a reproducible machine-learning workbench for separating simulated HIGGS signal events from simulated background events. The implementation compares Logistic Regression, XGBoost and a regularised PyTorch multilayer perceptron across 21 low-level kinematic features, 7 high-level invariant-mass features and all 28 features.
+HiggsLens is a reproducible machine-learning workbench for separating simulated HIGGS signal events from simulated background events. The implementation compares two classical baselines (Logistic Regression and XGBoost) with three PyTorch networks: the mid-semester compact MLP, a deep MLP sized like Baldi et al. (2014) and a residual MLP. Each is trained on 21 low-level kinematic features, 7 high-level invariant-mass features and all 28 features, at 250k, 1M and 2.5M events.
 
-The current validated artifact registry contains **{len(runs)} runs** over **{total_rows:,} recorded benchmark rows**, using the `higgs-split-v1` protocol with seed 42. The strongest currently loaded artifact is **{model_label(str(best['model']))} on `{best['group']}` features**, with test ROC-AUC **{float(best['roc']):.4f}**, PR-AUC **{float(best['pr']):.4f}**, Brier score **{float(best['brier']):.4f}**, and accuracy **{float(best['accuracy']):.4f}**. <!-- allow-metric -->
+**Main result.** At {f.get('big')} events the {f.get('best_net')} reaches test ROC-AUC **{f.get('net_all', 0):.4f}** on all features against **{f.get('xgb_all', 0):.4f}** for XGBoost. <!-- allow-metric --> Given only the 21 low-level features it reaches **{f.get('net_low', 0):.4f}**, which is above XGBoost on the same features ({f.get('xgb_low', 0):.4f}) and above XGBoost given all 28 features. <!-- allow-metric --> The network learns from the raw kinematics what the hand-built invariant masses give the trees. The deep-network advantage on all features grows with data: {gap_text}. The compact mid-semester MLP stays near XGBoost ({f.get('mlp_all', 0):.4f} at {f.get('big')}), which is why the mid-semester comparison looked like a tie. <!-- allow-metric -->
 
-Among all-feature runs, **{model_label(str(best_all['model']))}** is currently highest at ROC-AUC **{float(best_all['roc']):.4f}**. <!-- allow-metric --> This identifies the highest current saved artifact in the recorded {total_rows:,}-row registry; it is not a cross-benchmark model-selection decision. These dashboard runs are the 250k budget from the release benchmark, which trains every model with the same code, split protocol and seed at both 250k and 1M events (Section 7.1). The older `outputs/full_colab_results.json` notebook record used a different pipeline and is kept only for traceability.
+The dashboard registry contains **{len(runs)} runs** from the 250k budget, using the `higgs-split-v1` protocol with seed 42. The strongest currently loaded artifact is **{model_label(str(best['model']))} on `{best['group']}` features**, with test ROC-AUC **{float(best['roc']):.4f}**, PR-AUC **{float(best['pr']):.4f}**, Brier score **{float(best['brier']):.4f}**, and accuracy **{float(best['accuracy']):.4f}**. <!-- allow-metric -->
+
+The release benchmark trains every model with the same code, deduplicated data, split protocol and seed at every budget (Section 7.1); {f.get('duplicates') or 0:,} duplicate events were removed from the raw file first. The older `outputs/full_colab_results.json` notebook record used a different pipeline and is kept only for traceability.
 
 ## 2. Research question and scope
 
@@ -213,11 +299,19 @@ The linear baseline uses an L-BFGS solver with `C=1.0` and a training-only Stand
 
 ### XGBoost
 
-The tree ensemble uses the project’s documented XGBoost configuration: 150 estimators, maximum depth 6, learning rate 0.1, subsample 0.8, column subsample 0.8 and histogram tree construction.
+Depth 8, learning rate 0.1, subsample 0.8, column subsample 0.8, histogram trees, and up to 3000 trees with early stopping after 50 rounds without improvement in validation log-loss. Tuning the number of trees on validation keeps the tree baseline strong at every budget, so the comparison with the networks is fair.
 
-### Compact MLP
+### Compact MLP (mid-semester)
 
-The neural baseline uses hidden widths 64 and 32, BatchNorm1d, ReLU, dropout 0.20, AdamW, learning rate 1e-3, weight decay 1e-4, batch size 1024 and validation-ROC-AUC checkpointing. The saved `mlp_all` run contains genuine per-epoch history with **{history_epochs} epochs**.
+Hidden widths 64 and 32, BatchNorm1d, ReLU, dropout 0.20, AdamW, learning rate 1e-3, weight decay 1e-4, batch size 1024, at most 30 epochs with validation-ROC-AUC checkpointing. About 4k parameters: a shallow network in the sense of Baldi et al.
+
+### Deep MLP
+
+Five hidden layers of 300 units (the size Baldi et al. found best on HIGGS) with BatchNorm, ReLU and dropout 0.10, AdamW with weight decay 1e-5 and a cosine learning-rate schedule, up to 60 epochs, early stopping after 8 epochs without validation improvement.
+
+### Residual MLP
+
+Four residual blocks of width 256 (BatchNorm, Linear to 512, ReLU, dropout, Linear back to 256, plus a skip connection), after Gorishniy et al. (2021). Same optimiser and stopping rule as the deep MLP. The reasoning behind both deep models is in `docs/16_WHY_DEEP_LEARNING.md`.
 
 ## 7. Current saved results
 
@@ -225,15 +319,15 @@ All values in the table below are computed from the current `outputs/*/metrics.j
 
 {table(runs)}
 
-![Classical ROC comparison](../outputs/roc_classical_comparison.png)
+![ROC-AUC against sample size](figures/scaling.png)
 
-![MLP learning curves](../outputs/mlp_learning_curves.png)
+![ROC-AUC by feature group at the largest budget](figures/feature_groups.png)
 
-The all-feature models are the strongest configuration for each family in the current registry. The all-feature XGBoost and MLP results are close, while the linear model remains lower. High-level features alone outperform low-level features for each family in the current saved run set, but the combined representation performs best.
+For the classical models and the compact MLP, the 7 high-level features beat the 21 low-level ones: they need the physicists' invariant masses. The deep and residual networks reverse that once there is enough data, scoring higher on low-level features alone than on high-level features alone. Calibration is a point in XGBoost's favour: its expected calibration error stays below 0.01, while the networks sit around 0.01 to 0.03, so the network scores would need recalibration before being used as probabilities.
 
-### 7.1 Release benchmark: 250k versus 1M
+### 7.1 Release benchmark: 250k, 1M and 2.5M
 
-`scripts/release_benchmark.py` builds both seeded samples from the raw UCI file and trains all nine model/feature combinations at each budget with identical code, seed and `higgs-split-v1` splits. Logs and artifacts are under `outputs/release/`.
+`scripts/release_benchmark.py` removes duplicate events from the raw UCI file, draws nested seeded samples and trains all fifteen model/feature combinations at each budget with identical code, seed and `higgs-split-v1` splits. Logs and artifacts are under `outputs/release/`.
 
 {release_section(release)}
 ## 8. Operating-point analysis
@@ -281,11 +375,11 @@ The app reports **{len(runs)} valid runs** and skips non-run folders such as `ou
 2. The benchmark class balance is approximately 53/47, unlike a real rare-event search.
 3. Results use one seed per budget, so run-to-run variance across seeds is not measured.
 4. Training time depends on the hardware recorded in Section 7.1 and is only comparable within one run.
-5. The largest budget is 1M events; the full 11M-row file was not used for training.
+5. The largest budget is 2.5M events; at that size several deep runs reached the 60-epoch cap, so they were still improving and the network numbers are, if anything, conservative.
 
 ## 12. Conclusion
 
-HiggsLens provides a working, artifact-backed comparison of three model families over the HIGGS feature groups. The current validated registry shows that combining the low-level and high-level inputs gives the strongest result for each family, with XGBoost and the compact MLP closely matched on all features and Logistic Regression providing a fast linear baseline. The Streamlit application now presents the same saved metrics and EDA outputs used in this report, preserving traceability from experiment files to the final presentation.
+The mid-semester result (a small MLP tied with XGBoost) was a property of the network's size and the amount of data, not a limit of neural networks on this problem. With the depth of Baldi et al. and up to 2.5M events, the deep and residual networks clearly beat a tuned XGBoost, the gap widens as data grows, and on raw low-level kinematics alone the deep network outperforms every classical model even when those models get the hand-built physics features. XGBoost remains far cheaper to train and better calibrated, so it is the right tool when data or compute is limited. The Streamlit application presents the same saved artifacts used in this report.
 
 ## References
 
@@ -368,13 +462,13 @@ def write_presentation(runs: list[dict[str, object]]) -> Path:
 
 **XGBoost**
 
-- 150 trees, depth 6, learning rate 0.1, histogram method.
+- Depth 8, up to 3000 trees, early stopping on validation.
 
-**Compact MLP**
+**Networks**
 
-- Hidden widths 64 → 32.
-- BatchNorm + ReLU + dropout 0.20.
-- AdamW, learning rate 1e-3, early stopping on validation ROC-AUC.
+- Compact MLP 64 → 32 (mid-semester, shallow).
+- Deep MLP 5 × 300 (Baldi et al. 2014).
+- Residual MLP, 4 blocks of 256 (Gorishniy et al. 2021).
 
 # Current leaderboard
 
@@ -382,22 +476,23 @@ def write_presentation(runs: list[dict[str, object]]) -> Path:
 |---|---|---:|---:|---:|
 {rows}
 
-**Highest current saved artifact:** {model_label(str(best['model']))} on `{best['group']}` features, ROC-AUC **{float(best['roc']):.4f}**. This is not an approved cross-benchmark model-selection claim; neural evidence remains provisional pending independent reproduction and release decision.
+**Best at 250k:** {model_label(str(best['model']))} on `{best['group']}` features, ROC-AUC **{float(best['roc']):.4f}**. The 2.5M results are on the next two slides.
 
 # Feature-group finding
 
-![Classical feature-group comparison](../outputs/roc_classical_comparison.png)
+![Feature groups](../reports/figures/feature_groups.png)
 
-- Low-level-only models are weakest in the current registry.
-- High-level invariant masses provide a stronger compact representation.
-- Combining all 28 features gives the strongest result for each model family.
+- Trees and the small MLP need the high-level invariant masses.
+- The deep networks score higher on raw low-level features than XGBoost does on all 28.
+- That is the paper's claim: depth lets the network learn the physics features itself.
 
-# Neural training evidence
+# Why deep learning: it scales
 
-![MLP learning curves](../outputs/mlp_learning_curves.png)
+![Scaling with data](../reports/figures/scaling.png)
 
-- The learning curve is loaded from genuine per-epoch history in `outputs/mlp_all/metrics.json`.
-- No synthetic training history is used.
+- Same code, same seed, nested 250k ⊂ 1M ⊂ 2.5M samples.
+- XGBoost and the compact MLP flatten; the deep and residual MLPs keep improving.
+- Trade-off: the networks take minutes on a GPU, XGBoost seconds.
 
 # Operating-point view
 
@@ -443,6 +538,7 @@ streamlit run streamlit_app.py
 
 def main() -> None:
     runs = load_runs()
+    write_release_figures(load_release())
     report = write_report(runs)
     presentation = write_presentation(runs)
     print("Report source:", report)

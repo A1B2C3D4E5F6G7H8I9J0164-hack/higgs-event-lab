@@ -65,9 +65,42 @@ That is why our benchmark includes both a Baldi-style deep MLP and a residual ML
 3. **Does the network learn the physics features?** Compare each model on low-level features only against high-level features only. If a network on raw kinematics beats XGBoost on the physicists' invariant masses, it has learned something like those features itself.
 4. **Shallow versus deep.** The compact 64-32 MLP stays in the benchmark as the "shallow" control.
 
-Results are in `outputs/release/release_summary.json` and in Section 7.1 of `reports/HiggsLens_Final_Report.md`.
+Results are in Section 6 below, `outputs/release/release_summary.json` and Section 7.1 of `reports/HiggsLens_Final_Report.md`.
 
-## 6. Limits
+## 6. Results
+
+Kaggle run on a Tesla T4, 2026-11-14 17:22:17 UTC to 2026-11-14 18:44:53 UTC. 278,698 duplicate events were removed before sampling, and every budget's split check reports zero events shared between train and test.
+
+**All 28 features (test ROC-AUC)**
+
+| Model | 250k | 1M | 2.5M |
+|---|---:|---:|---:|
+| Logistic Regression | 0.6864 | 0.6838 | 0.6842 |
+| XGBoost | 0.8188 | 0.8302 | 0.8382 |
+| Compact MLP (64-32) | 0.8165 | 0.8230 | 0.8255 |
+| Deep MLP (5x300) | 0.8271 | 0.8474 | 0.8591 |
+| Residual MLP | 0.8339 | 0.8506 | 0.8613 |
+
+**21 low-level features only (test ROC-AUC)**
+
+| Model | 250k | 1M | 2.5M |
+|---|---:|---:|---:|
+| Logistic Regression | 0.5962 | 0.5939 | 0.5938 |
+| XGBoost | 0.7223 | 0.7478 | 0.7669 |
+| Compact MLP (64-32) | 0.7250 | 0.7382 | 0.7448 |
+| Deep MLP (5x300) | 0.7561 | 0.8141 | 0.8396 |
+| Residual MLP | 0.7716 | 0.8203 | 0.8532 |
+
+Answers to the four questions in Section 5:
+
+1. **Fixed budget.** At every budget both deep networks beat XGBoost on all features. The residual MLP is best: 0.8613 against 0.8382 at 2.5M.
+2. **Scaling.** On all features, the best deep network leads XGBoost by +0.015 at 250k, +0.020 at 1M and +0.023 at 2.5M. On low-level features the lead grows from +0.049 to +0.086.
+3. **Learned features.** At 2.5M the residual MLP on low-level features alone (0.8532) beats XGBoost on the 7 high-level features (0.7921) and even XGBoost on all 28 (0.8382). This reproduces the paper's main finding at a quarter of its training size.
+4. **Shallow versus deep.** The compact 64-32 MLP gains only +0.009 from 250k to 2.5M on all features, against +0.027 for the residual MLP. A small network can't use the extra data, which is why the mid-semester comparison looked like a tie.
+
+**Costs.** At 2.5M XGBoost trains in about 29 s, against about 494 s for the residual MLP on a T4 GPU. XGBoost is also better calibrated (ECE 0.0033 against 0.0184). Several deep runs at 2.5M stopped at the 60-epoch cap while still improving, so the network numbers are conservative.
+
+## 7. Limits
 
 - We train on at most 2.5M events, a quarter of the paper's training set, with one seed per budget. Absolute AUCs will be lower than the paper's 0.885, and small differences (under about 0.002) should not be ranked.
 - HIGGS is simulated. A better AUC here means a better classifier on this benchmark, not a physics discovery.

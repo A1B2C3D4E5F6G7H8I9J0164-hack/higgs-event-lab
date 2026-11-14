@@ -1,0 +1,287 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "mlp_low_level",
+  "model": {
+    "name": "compact_mlp",
+    "family": "neural_network"
+  },
+  "features": {
+    "group": "low_level",
+    "count": 21,
+    "names": [
+      "lepton_pt",
+      "lepton_eta",
+      "lepton_phi",
+      "missing_energy_magnitude",
+      "missing_energy_phi",
+      "jet_1_pt",
+      "jet_1_eta",
+      "jet_1_phi",
+      "jet_1_btag",
+      "jet_2_pt",
+      "jet_2_eta",
+      "jet_2_phi",
+      "jet_2_btag",
+      "jet_3_pt",
+      "jet_3_eta",
+      "jet_3_phi",
+      "jet_3_btag",
+      "jet_4_pt",
+      "jet_4_eta",
+      "jet_4_phi",
+      "jet_4_btag"
+    ]
+  },
+  "data": {
+    "source": "UCI HIGGS seeded sample (1m, seed 42)",
+    "row_count": 1000000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 700000,
+    "validation_rows": 150000,
+    "test_rows": 150000
+  },
+  "training": {
+    "config": {
+      "hidden_sizes": [
+        64,
+        32
+      ],
+      "dropout": 0.2,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "batch_size": 1024,
+      "max_epochs": 30,
+      "early_stopping_patience": 5,
+      "seed": 42,
+      "device": "cuda",
+      "architecture": "mlp",
+      "cosine_schedule": false
+    },
+    "device": "cuda",
+    "parameter_count": 3713,
+    "training_seconds": 50.13657880200003,
+    "epochs_completed": 30,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.6615396054864627,
+        "validation_roc_auc": 0.6804995659722222
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.6433479258714364,
+        "validation_roc_auc": 0.6978627494875874
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.6360463476494739,
+        "validation_roc_auc": 0.7074679296919791
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.6310083136746758,
+        "validation_roc_auc": 0.7153343312836831
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.6270838155035388,
+        "validation_roc_auc": 0.7215012650857127
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.6241349279880524,
+        "validation_roc_auc": 0.7245584250659329
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.6215939323978814,
+        "validation_roc_auc": 0.7295017717649925
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.6197679129086042,
+        "validation_roc_auc": 0.7317843495585368
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.6187903997842331,
+        "validation_roc_auc": 0.7334504376110825
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.6178262893393723,
+        "validation_roc_auc": 0.7347979043938482
+      },
+      {
+        "epoch": 11,
+        "train_loss": 0.6167875485636337,
+        "validation_roc_auc": 0.735931398886309
+      },
+      {
+        "epoch": 12,
+        "train_loss": 0.6157937358345902,
+        "validation_roc_auc": 0.7370490297306788
+      },
+      {
+        "epoch": 13,
+        "train_loss": 0.6152653894577808,
+        "validation_roc_auc": 0.7376552657557907
+      },
+      {
+        "epoch": 14,
+        "train_loss": 0.6146611973033314,
+        "validation_roc_auc": 0.7392066109283625
+      },
+      {
+        "epoch": 15,
+        "train_loss": 0.614366844470738,
+        "validation_roc_auc": 0.7399198876096491
+      },
+      {
+        "epoch": 16,
+        "train_loss": 0.6138232326821277,
+        "validation_roc_auc": 0.7398142731983144
+      },
+      {
+        "epoch": 17,
+        "train_loss": 0.6133173928100463,
+        "validation_roc_auc": 0.7401267787524365
+      },
+      {
+        "epoch": 18,
+        "train_loss": 0.6133913193006961,
+        "validation_roc_auc": 0.7413955911915204
+      },
+      {
+        "epoch": 19,
+        "train_loss": 0.6129840864249837,
+        "validation_roc_auc": 0.7420551898793144
+      },
+      {
+        "epoch": 20,
+        "train_loss": 0.6124441444176679,
+        "validation_roc_auc": 0.7419913281339583
+      },
+      {
+        "epoch": 21,
+        "train_loss": 0.6121011702289358,
+        "validation_roc_auc": 0.742283866976981
+      },
+      {
+        "epoch": 22,
+        "train_loss": 0.6119359891142762,
+        "validation_roc_auc": 0.7422779855198658
+      },
+      {
+        "epoch": 23,
+        "train_loss": 0.6117988654918838,
+        "validation_roc_auc": 0.7429019817466461
+      },
+      {
+        "epoch": 24,
+        "train_loss": 0.6115414539450094,
+        "validation_roc_auc": 0.7429477503117476
+      },
+      {
+        "epoch": 25,
+        "train_loss": 0.6113254499365712,
+        "validation_roc_auc": 0.7430136282034745
+      },
+      {
+        "epoch": 26,
+        "train_loss": 0.6112709461074126,
+        "validation_roc_auc": 0.7438416813582158
+      },
+      {
+        "epoch": 27,
+        "train_loss": 0.6111190075937071,
+        "validation_roc_auc": 0.7442473153881437
+      },
+      {
+        "epoch": 28,
+        "train_loss": 0.6112121718320233,
+        "validation_roc_auc": 0.7429671063381493
+      },
+      {
+        "epoch": 29,
+        "train_loss": 0.610930622233982,
+        "validation_roc_auc": 0.743621018052689
+      },
+      {
+        "epoch": 30,
+        "train_loss": 0.6108497669648009,
+        "validation_roc_auc": 0.7445637976937851
+      }
+    ]
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.7445637976937851,
+      "pr_auc": 0.7645664838687392,
+      "brier_score": 0.20509830346501948,
+      "calibration": {
+        "fraction_positives": [
+          0.03919933277731443,
+          0.09099437148217636,
+          0.17122507122507122,
+          0.2794660946251937,
+          0.41217674319878306,
+          0.5533663217873744,
+          0.6812446278150249,
+          0.7890628484767385,
+          0.8812170047235344,
+          0.9549428379287155
+        ],
+        "mean_predicted_value": [
+          0.062237078462731445,
+          0.1552276969668901,
+          0.2563065203570063,
+          0.35681089499066065,
+          0.4528467302386996,
+          0.5493133299674994,
+          0.6484486691972655,
+          0.7462665739107942,
+          0.8352481253149112,
+          0.9350622007729787
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.7382200641769865,
+      "pr_auc": 0.7600285387517376,
+      "brier_score": 0.20681635891595723,
+      "calibration": {
+        "fraction_positives": [
+          0.04201680672268908,
+          0.08537392455327597,
+          0.17357436801881246,
+          0.29156438963060527,
+          0.41400871153575947,
+          0.5516360686277456,
+          0.6713495689211005,
+          0.7812374716022985,
+          0.8792367227115025,
+          0.964769647696477
+        ],
+        "mean_predicted_value": [
+          0.06089921274003299,
+          0.15549778457284763,
+          0.2574028180258404,
+          0.35684696824430867,
+          0.45320976498012416,
+          0.5490835451624155,
+          0.6485968712894263,
+          0.7459473339474447,
+          0.8352768795233203,
+          0.9344842676224747
+        ]
+      }
+    }
+  },
+  "created_at_utc": "2026-11-14T17:28:12.127942+00:00"
+}

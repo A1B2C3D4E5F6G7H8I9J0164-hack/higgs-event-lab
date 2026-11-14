@@ -1,0 +1,131 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "xgboost_high_level",
+  "model": {
+    "name": "xgboost",
+    "family": "tree_ensemble"
+  },
+  "features": {
+    "group": "high_level",
+    "count": 7,
+    "names": [
+      "m_jj",
+      "m_jjj",
+      "m_lv",
+      "m_jlv",
+      "m_bb",
+      "m_wbb",
+      "m_wwbb"
+    ]
+  },
+  "data": {
+    "source": "UCI HIGGS seeded sample (1m, seed 42)",
+    "row_count": 1000000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 700000,
+    "validation_rows": 150000,
+    "test_rows": 150000
+  },
+  "training": {
+    "config": {
+      "n_estimators": 3000,
+      "max_depth": 8,
+      "learning_rate": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "tree_method": "hist",
+      "seed": 42,
+      "target_signal_efficiency": 0.5,
+      "device": "cuda",
+      "early_stopping_rounds": 50
+    },
+    "training_seconds": 2.6013082989999248,
+    "feature_importances": [
+      0.08218473941087723,
+      0.12722636759281158,
+      0.04531727358698845,
+      0.13247336447238922,
+      0.2667681872844696,
+      0.1634453982114792,
+      0.18258468806743622
+    ]
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.7887974082853171,
+      "pr_auc": 0.8154079900157221,
+      "brier_score": 0.18584269345976348,
+      "calibration": {
+        "fraction_positives": [
+          0.05447414294015108,
+          0.15291878172588833,
+          0.2611791730474732,
+          0.3621874809903279,
+          0.45801050387395353,
+          0.5514668817421111,
+          0.6388738201150049,
+          0.7414242046869693,
+          0.8466888418506199,
+          0.9465360841294052
+        ],
+        "mean_predicted_value": [
+          0.054231257251147795,
+          0.153381899958114,
+          0.2524333951552648,
+          0.3515526823039124,
+          0.45087760869119364,
+          0.550045073633293,
+          0.6489331107620977,
+          0.7494811557682916,
+          0.8494328095648345,
+          0.9398752301034226
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.7896813001662654,
+      "pr_auc": 0.8152544197182461,
+      "brier_score": 0.18548717810971344,
+      "calibration": {
+        "fraction_positives": [
+          0.05209883894016076,
+          0.14974144570359776,
+          0.2549109883364027,
+          0.3572860353520015,
+          0.4555130722331301,
+          0.5479975850271684,
+          0.6438731429775577,
+          0.742058522145053,
+          0.8483533940245617,
+          0.9428025173265355
+        ],
+        "mean_predicted_value": [
+          0.05387259018035585,
+          0.15311933325316493,
+          0.2524927225434996,
+          0.351580661277844,
+          0.4508662007343329,
+          0.549460025719772,
+          0.649651642334171,
+          0.7496155570515138,
+          0.8497549903343993,
+          0.9398347717076766
+        ]
+      }
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "validation_threshold": 0.6840078830718994,
+      "validation_actual_signal_efficiency": 0.5,
+      "validation_background_rejection": 0.8740058479532163,
+      "test_actual_signal_efficiency": 0.500343137254902,
+      "test_background_rejection": 0.8736842105263158
+    }
+  },
+  "created_at_utc": "2026-11-14T17:34:59.853361+00:00"
+}

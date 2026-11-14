@@ -109,3 +109,17 @@ Environment (OS, Python, commit):
 Minimal failing example:
 Regression test or checklist item added:  yes / no
 ```
+
+## Release closure — 15 November 2026 (Krishna)
+
+| Bug | Resolution |
+|---|---|
+| BUG-015, BUG-017 | Closed. The 0.9406 draft figures are superseded. All reported metrics now come from `outputs/release/release_summary.json`, with zero events shared between train and test after deduplication. |
+| BUG-016 | Closed. Release runs give Logistic Regression all-feature ROC-AUC 0.6864 (250k), 0.6838 (1M) and 0.6842 (2.5M). The 0.8369 figure is not reproduced and is not quoted. |
+| BUG-018 | Accepted limitation. `full_colab_results.json` is kept for traceability only. Per-model training times now come from the release run. |
+| BUG-019 | Closed. Release artifacts record real feature names (`lepton_pt` … `m_wwbb`). |
+| BUG-020 | Closed. Data and checkpoints stay out of git. `scripts/release_benchmark.py` rebuilds every sample from the raw UCI file (seed 42), and each budget records a SHA-256 of its sample indices. |
+| BUG-021 | Closed in issue #21: one loader (`app/loader.py`) and one launcher (`streamlit_app.py`). |
+| BUG-022 | Closed. Streamlit is in the `dashboard` extra and the suite passes with `pip install -e ".[dev,dashboard,training]"` (138 tests). |
+| BUG-023 | Closed. The report is regenerated from artifacts by `scripts/build_final_deliverables.py`. |
+| BUG-024, BUG-025, BUG-026 | Already resolved (ADR-0002, PR #23, PR #24). |

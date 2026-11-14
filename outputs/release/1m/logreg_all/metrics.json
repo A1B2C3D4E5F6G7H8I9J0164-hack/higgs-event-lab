@@ -1,0 +1,141 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "logreg_all",
+  "model": {
+    "name": "logistic_regression",
+    "family": "classical_linear"
+  },
+  "features": {
+    "group": "all",
+    "count": 28,
+    "names": [
+      "lepton_pt",
+      "lepton_eta",
+      "lepton_phi",
+      "missing_energy_magnitude",
+      "missing_energy_phi",
+      "jet_1_pt",
+      "jet_1_eta",
+      "jet_1_phi",
+      "jet_1_btag",
+      "jet_2_pt",
+      "jet_2_eta",
+      "jet_2_phi",
+      "jet_2_btag",
+      "jet_3_pt",
+      "jet_3_eta",
+      "jet_3_phi",
+      "jet_3_btag",
+      "jet_4_pt",
+      "jet_4_eta",
+      "jet_4_phi",
+      "jet_4_btag",
+      "m_jj",
+      "m_jjj",
+      "m_lv",
+      "m_jlv",
+      "m_bb",
+      "m_wbb",
+      "m_wwbb"
+    ]
+  },
+  "data": {
+    "source": "UCI HIGGS seeded sample (1m, seed 42)",
+    "row_count": 1000000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 700000,
+    "validation_rows": 150000,
+    "test_rows": 150000
+  },
+  "training": {
+    "config": {
+      "C": 1.0,
+      "max_iter": 1000,
+      "solver": "lbfgs",
+      "seed": 42,
+      "tol": 0.0001,
+      "target_signal_efficiency": 0.5
+    },
+    "training_seconds": 2.9115667030000623,
+    "n_iter": 17,
+    "intercept": 0.18072793953169936
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.6869365848239881,
+      "pr_auc": 0.6978216126275538,
+      "brier_score": 0.2214605960908204,
+      "calibration": {
+        "fraction_positives": [
+          0.14363512593601088,
+          0.159930212271009,
+          0.23104912067919953,
+          0.31275197849783487,
+          0.430761787800975,
+          0.5722467601805562,
+          0.6742795148547902,
+          0.7222690437601297,
+          0.7919361793876671,
+          0.9053254437869822
+        ],
+        "mean_predicted_value": [
+          0.059277348668423116,
+          0.1556346730781166,
+          0.2549059896667357,
+          0.3558612918038315,
+          0.45541181611374093,
+          0.5512532245498514,
+          0.6456667162461862,
+          0.740751789607883,
+          0.839855597539641,
+          0.9284331827677468
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.6838395698959409,
+      "pr_auc": 0.6945233592708427,
+      "brier_score": 0.22222764865254002,
+      "calibration": {
+        "fraction_positives": [
+          0.13410237923576063,
+          0.17740458015267174,
+          0.21865348980852378,
+          0.30911442483262325,
+          0.4414217412253067,
+          0.5654588668994955,
+          0.6733327778240702,
+          0.7122043519394513,
+          0.799390774586597,
+          0.8763082778306375
+        ],
+        "mean_predicted_value": [
+          0.05814824536922849,
+          0.1555317701856404,
+          0.25522085802521827,
+          0.355902863167934,
+          0.45532398991731443,
+          0.5516391955417937,
+          0.6456109445731395,
+          0.7408347720123314,
+          0.8405850147600576,
+          0.9282047962948343
+        ]
+      }
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "validation_threshold": 0.596904533038116,
+      "validation_actual_signal_efficiency": 0.5,
+      "validation_background_rejection": 0.7433333333333333,
+      "test_actual_signal_efficiency": 0.5025490196078432,
+      "test_background_rejection": 0.7384356725146198
+    }
+  },
+  "created_at_utc": "2026-11-14T17:42:18.616024+00:00"
+}

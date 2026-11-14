@@ -101,3 +101,16 @@ Each hypothesis is open. A test either supports it, rules it out, or shows it ca
 | T7 | **PENDING** | — | Rachit | Recompute the accuracy-threshold relationship for the current 250k MLP artifact from `outputs/mlp_all/test_predictions.csv`; the earlier 0.865 / 0.9406 pair is superseded; use the current saved artifact and do not infer a new threshold from the test set. |
 | Decision on headline (section 5.1) | **CLOSED** | 2026-11-13 | Krishna / Aditya | Classical baselines reconciled: 250k and 1M results are aligned and reproducible. Recommend reporting both side-by-side with exact protocol specifications. |
 
+
+## Release closure (15 November 2026, Krishna)
+
+The outstanding tests were closed by one run of `scripts/release_benchmark.py` on Kaggle (Tesla T4) against the full UCI file. Evidence: `outputs/release/release_summary.json` and the per-run `metrics.json` files under `outputs/release/<budget>/`.
+
+| Test | Status | Evidence |
+|---|---|---|
+| T1 split integrity | **PASS** | 278,698 duplicate events removed before sampling. At 250k, 1M and 2.5M the split indices are disjoint, cover every row, and share **0** events between train and test. The first release run, before deduplication, found 44 (250k) and 454 (1M) shared events, which is why deduplication was added. |
+| T4 MLP reproduction | **PASS** | Two CPU trainings of the compact MLP with seed 42 give identical test probabilities (max difference 0.0). |
+| T5 like-for-like budgets | **PASS** | All 45 runs (5 models × 3 feature groups × 3 budgets) come from one script, one seed and nested samples, so the budgets are directly comparable. |
+| T7 accuracy/threshold | **PASS** | Accuracy at threshold 0.5 is recomputed from each run's saved `test_predictions.csv` by `scripts/build_final_deliverables.py`. |
+
+**Headline decision.** The report leads with the full comparison table rather than one score. The supported claim is that, with the same split and seed, deep networks (5×300 MLP and residual MLP) beat a validation-tuned XGBoost at every budget, with the gap growing from 250k to 2.5M, and that on low-level features alone they beat XGBoost given all 28 features. Earlier figures (the 0.9406 MLP draft, the 412.03 s copied runtime in `full_colab_results.json`) are superseded and are not quoted anywhere as results.

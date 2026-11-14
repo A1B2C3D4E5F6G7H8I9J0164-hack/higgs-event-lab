@@ -1,0 +1,159 @@
+{
+  "schema_version": "higgs-experiment-v1",
+  "run_id": "xgboost_low_level",
+  "model": {
+    "name": "xgboost",
+    "family": "tree_ensemble"
+  },
+  "features": {
+    "group": "low_level",
+    "count": 21,
+    "names": [
+      "lepton_pt",
+      "lepton_eta",
+      "lepton_phi",
+      "missing_energy_magnitude",
+      "missing_energy_phi",
+      "jet_1_pt",
+      "jet_1_eta",
+      "jet_1_phi",
+      "jet_1_btag",
+      "jet_2_pt",
+      "jet_2_eta",
+      "jet_2_phi",
+      "jet_2_btag",
+      "jet_3_pt",
+      "jet_3_eta",
+      "jet_3_phi",
+      "jet_3_btag",
+      "jet_4_pt",
+      "jet_4_eta",
+      "jet_4_phi",
+      "jet_4_btag"
+    ]
+  },
+  "data": {
+    "source": "UCI HIGGS seeded sample (1m, seed 42)",
+    "row_count": 1000000
+  },
+  "split": {
+    "protocol_version": "higgs-split-v1",
+    "seed": 42,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15,
+    "train_rows": 700000,
+    "validation_rows": 150000,
+    "test_rows": 150000
+  },
+  "training": {
+    "config": {
+      "n_estimators": 3000,
+      "max_depth": 8,
+      "learning_rate": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "tree_method": "hist",
+      "seed": 42,
+      "target_signal_efficiency": 0.5,
+      "device": "cuda",
+      "early_stopping_rounds": 50
+    },
+    "training_seconds": 10.407716783000012,
+    "feature_importances": [
+      0.06212841346859932,
+      0.04118780419230461,
+      0.03069407120347023,
+      0.05302443727850914,
+      0.027571778744459152,
+      0.060618363320827484,
+      0.04106691852211952,
+      0.030179275199770927,
+      0.12088444828987122,
+      0.05473155528306961,
+      0.03646767884492874,
+      0.030085040256381035,
+      0.08599593490362167,
+      0.04111656919121742,
+      0.034644052386283875,
+      0.02874034270644188,
+      0.06932968646287918,
+      0.034424398094415665,
+      0.034109361469745636,
+      0.026832351461052895,
+      0.05616750568151474
+    ]
+  },
+  "evaluation": {
+    "validation": {
+      "roc_auc": 0.7517938308035201,
+      "pr_auc": 0.7712423790431299,
+      "brier_score": 0.2005022750368133,
+      "calibration": {
+        "fraction_positives": [
+          0.06767295597484277,
+          0.151801535735381,
+          0.24877606527651858,
+          0.34015076257815696,
+          0.44506787330316744,
+          0.5482873851294904,
+          0.6616099325768788,
+          0.7563854998683402,
+          0.8384020804738858,
+          0.9332037891668691
+        ],
+        "mean_predicted_value": [
+          0.05639574674887981,
+          0.15437724041805878,
+          0.25412161111804643,
+          0.3526273125264839,
+          0.45161755774355583,
+          0.5506917257580841,
+          0.6501518450144423,
+          0.748749227291726,
+          0.8428889322141377,
+          0.9405218736622152
+        ]
+      }
+    },
+    "test": {
+      "roc_auc": 0.7477643634080094,
+      "pr_auc": 0.7678870325721326,
+      "brier_score": 0.20181802547728359,
+      "calibration": {
+        "fraction_positives": [
+          0.05847797062750334,
+          0.15290933694181327,
+          0.24903871948493247,
+          0.3507180650037793,
+          0.4450891007045172,
+          0.547014214081472,
+          0.6561224489795918,
+          0.7528075100894894,
+          0.8300724637681159,
+          0.9326788218793829
+        ],
+        "mean_predicted_value": [
+          0.056277585637705026,
+          0.15463841830186603,
+          0.2537705579035229,
+          0.35308326285650193,
+          0.4511159735555482,
+          0.5510138789280841,
+          0.6499717144187616,
+          0.7484181150441045,
+          0.8423256166689638,
+          0.9397037795014669
+        ]
+      }
+    },
+    "operating_point": {
+      "target_signal_efficiency": 0.5,
+      "validation_threshold": 0.6515186429023743,
+      "validation_actual_signal_efficiency": 0.5,
+      "validation_background_rejection": 0.82796783625731,
+      "test_actual_signal_efficiency": 0.49833333333333335,
+      "test_background_rejection": 0.8244298245614035
+    }
+  },
+  "created_at_utc": "2026-11-14T17:27:20.983247+00:00"
+}
